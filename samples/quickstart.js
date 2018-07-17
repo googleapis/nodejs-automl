@@ -16,5 +16,6 @@
 'use strict';
 
 // [START automl_quickstart]
-// TODO: Quickstart
+// TBD
 // [END automl_quickstart]
+
