@@ -16,10 +16,5 @@
 'use strict';
 
 // [START automl_quickstart]
-// Import the Google Cloud client library
-const automl = require('@google-cloud/automl');
-
-// Creates a client
-const client = new automl.AutoMlClient();
-
+// TODO: Quickstart
 // [END automl_quickstart]
