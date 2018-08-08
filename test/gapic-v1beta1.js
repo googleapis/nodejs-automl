@@ -31,11 +31,7 @@ describe('PredictionServiceClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var payload = {};
       var request = {
         name: formattedName,
@@ -65,11 +61,7 @@ describe('PredictionServiceClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var payload = {};
       var request = {
         name: formattedName,
@@ -91,6 +83,7 @@ describe('PredictionServiceClient', () => {
       });
     });
   });
+
 });
 describe('AutoMlClient', () => {
   describe('createDataset', () => {
@@ -169,11 +162,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var request = {
         name: formattedName,
       };
@@ -208,11 +197,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var request = {
         name: formattedName,
       };
@@ -256,11 +241,7 @@ describe('AutoMlClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.listDatasets = (
-        actualRequest,
-        options,
-        callback
-      ) => {
+      client._innerApiCalls.listDatasets = (actualRequest, options, callback) => {
         assert.deepStrictEqual(actualRequest, request);
         callback(null, expectedResponse.datasets);
       };
@@ -308,11 +289,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var request = {
         name: formattedName,
       };
@@ -321,24 +298,17 @@ describe('AutoMlClient', () => {
       var expectedResponse = {};
 
       // Mock Grpc layer
-      client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .deleteDataset(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.deleteDataset(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes deleteDataset with error', done => {
@@ -348,36 +318,24 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var request = {
         name: formattedName,
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .deleteDataset(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.deleteDataset(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -385,14 +343,8 @@ describe('AutoMlClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.deleteDataset.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.deleteDataset.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.deleteDataset.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.deleteDataset.metadataDecoder instanceof Function);
     });
   });
 
@@ -404,11 +356,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var inputConfig = {};
       var request = {
         name: formattedName,
@@ -419,24 +367,17 @@ describe('AutoMlClient', () => {
       var expectedResponse = {};
 
       // Mock Grpc layer
-      client._innerApiCalls.importData = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.importData = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .importData(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.importData(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes importData with error', done => {
@@ -446,11 +387,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var inputConfig = {};
       var request = {
         name: formattedName,
@@ -458,26 +395,18 @@ describe('AutoMlClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.importData = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.importData = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .importData(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.importData(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -485,14 +414,8 @@ describe('AutoMlClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.importData.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.importData.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.importData.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.importData.metadataDecoder instanceof Function);
     });
   });
 
@@ -504,11 +427,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var outputConfig = {};
       var request = {
         name: formattedName,
@@ -519,24 +438,17 @@ describe('AutoMlClient', () => {
       var expectedResponse = {};
 
       // Mock Grpc layer
-      client._innerApiCalls.exportData = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.exportData = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .exportData(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.exportData(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes exportData with error', done => {
@@ -546,11 +458,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.datasetPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[DATASET]'
-      );
+      var formattedName = client.datasetPath('[PROJECT]', '[LOCATION]', '[DATASET]');
       var outputConfig = {};
       var request = {
         name: formattedName,
@@ -558,26 +466,18 @@ describe('AutoMlClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.exportData = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.exportData = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .exportData(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.exportData(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -585,14 +485,8 @@ describe('AutoMlClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.exportData.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.exportData.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.exportData.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.exportData.metadataDecoder instanceof Function);
     });
   });
 
@@ -622,24 +516,17 @@ describe('AutoMlClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.createModel = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .createModel(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.createModel(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes createModel with error', done => {
@@ -657,26 +544,18 @@ describe('AutoMlClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.createModel = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .createModel(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.createModel(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -684,14 +563,8 @@ describe('AutoMlClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.createModel.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.createModel.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.createModel.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.createModel.metadataDecoder instanceof Function);
     });
   });
 
@@ -703,11 +576,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -742,11 +611,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -838,11 +703,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -851,24 +712,17 @@ describe('AutoMlClient', () => {
       var expectedResponse = {};
 
       // Mock Grpc layer
-      client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .deleteModel(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.deleteModel(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes deleteModel with error', done => {
@@ -878,36 +732,24 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .deleteModel(request)
-        .then(responses => {
-          var operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.deleteModel(request).then(responses => {
+        var operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -915,14 +757,8 @@ describe('AutoMlClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.deleteModel.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.deleteModel.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.deleteModel.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.deleteModel.metadataDecoder instanceof Function);
     });
   });
 
@@ -934,11 +770,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -971,11 +803,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -1004,11 +832,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -1041,11 +865,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedName = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         name: formattedName,
       };
@@ -1074,12 +894,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelEvaluationPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]',
-        '[MODEL_EVALUATION]'
-      );
+      var formattedName = client.modelEvaluationPath('[PROJECT]', '[LOCATION]', '[MODEL]', '[MODEL_EVALUATION]');
       var request = {
         name: formattedName,
       };
@@ -1114,12 +929,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedName = client.modelEvaluationPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]',
-        '[MODEL_EVALUATION]'
-      );
+      var formattedName = client.modelEvaluationPath('[PROJECT]', '[LOCATION]', '[MODEL]', '[MODEL_EVALUATION]');
       var request = {
         name: formattedName,
       };
@@ -1148,11 +958,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedParent = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedParent = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         parent: formattedParent,
       };
@@ -1167,11 +973,7 @@ describe('AutoMlClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.listModelEvaluations = (
-        actualRequest,
-        options,
-        callback
-      ) => {
+      client._innerApiCalls.listModelEvaluations = (actualRequest, options, callback) => {
         assert.deepStrictEqual(actualRequest, request);
         callback(null, expectedResponse.modelEvaluation);
       };
@@ -1190,11 +992,7 @@ describe('AutoMlClient', () => {
       });
 
       // Mock request
-      var formattedParent = client.modelPath(
-        '[PROJECT]',
-        '[LOCATION]',
-        '[MODEL]'
-      );
+      var formattedParent = client.modelPath('[PROJECT]', '[LOCATION]', '[MODEL]');
       var request = {
         parent: formattedParent,
       };
@@ -1214,6 +1012,7 @@ describe('AutoMlClient', () => {
       });
     });
   });
+
 });
 
 function mockSimpleGrpcMethod(expectedRequest, response, error) {
@@ -1237,11 +1036,12 @@ function mockLongRunningGrpcMethod(expectedRequest, response, error) {
         return new Promise((resolve, reject) => {
           if (error) {
             reject(error);
-          } else {
+          }
+          else {
             resolve([response]);
           }
         });
-      },
+      }
     };
     return Promise.resolve([mockOperation]);
   };

@@ -127,7 +127,9 @@ class PredictionServiceClient {
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    var predictionServiceStubMethods = ['predict'];
+    var predictionServiceStubMethods = [
+      'predict',
+    ];
     for (let methodName of predictionServiceStubMethods) {
       this._innerApiCalls[methodName] = gax.createApiCall(
         predictionServiceStub.then(
@@ -162,7 +164,9 @@ class PredictionServiceClient {
    * in this service.
    */
   static get scopes() {
-    return ['https://www.googleapis.com/auth/cloud-platform'];
+    return [
+      'https://www.googleapis.com/auth/cloud-platform',
+    ];
   }
 
   /**
@@ -273,7 +277,9 @@ class PredictionServiceClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromModelName(modelName) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).project;
+    return this._pathTemplates.modelPathTemplate
+      .match(modelName)
+      .project;
   }
 
   /**
@@ -284,7 +290,9 @@ class PredictionServiceClient {
    * @returns {String} - A string representing the location.
    */
   matchLocationFromModelName(modelName) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).location;
+    return this._pathTemplates.modelPathTemplate
+      .match(modelName)
+      .location;
   }
 
   /**
@@ -295,8 +303,11 @@ class PredictionServiceClient {
    * @returns {String} - A string representing the model.
    */
   matchModelFromModelName(modelName) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).model;
+    return this._pathTemplates.modelPathTemplate
+      .match(modelName)
+      .model;
   }
 }
+
 
 module.exports = PredictionServiceClient;
