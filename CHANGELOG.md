@@ -31,4 +31,3 @@ This patch release addresses a namespacing issue that affected our docs.
 
 ### Documentation
 - Add missing JSDoc namespaces. (#14)
-
