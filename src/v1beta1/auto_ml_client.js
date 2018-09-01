@@ -132,7 +132,11 @@ class AutoMlClient {
         'nextPageToken',
         'datasets'
       ),
-      listModels: new gax.PageDescriptor('pageToken', 'nextPageToken', 'model'),
+      listModels: new gax.PageDescriptor(
+        'pageToken',
+        'nextPageToken',
+        'model'
+      ),
       listModelEvaluations: new gax.PageDescriptor(
         'pageToken',
         'nextPageToken',
@@ -141,15 +145,10 @@ class AutoMlClient {
     };
     var protoFilesRoot = new gax.GoogleProtoFilesRoot();
     protoFilesRoot = protobuf.loadSync(
-      path.join(
-        __dirname,
-        '..',
-        '..',
-        'protos',
-        'google/cloud/automl/v1beta1/service.proto'
-      ),
+      path.join(__dirname, '..', '..', 'protos', 'google/cloud/automl/v1beta1/service.proto'),
       protoFilesRoot
     );
+
 
     // This API contains "long-running operations", which return a
     // an Operation object that allows for tracking of the operation,
@@ -159,15 +158,21 @@ class AutoMlClient {
       grpc: gaxGrpc.grpc,
     }).operationsClient(opts);
 
-    var deleteDatasetResponse = protoFilesRoot.lookup('google.protobuf.Empty');
+    var deleteDatasetResponse = protoFilesRoot.lookup(
+      'google.protobuf.Empty'
+    );
     var deleteDatasetMetadata = protoFilesRoot.lookup(
       'google.cloud.automl.v1beta1.OperationMetadata'
     );
-    var importDataResponse = protoFilesRoot.lookup('google.protobuf.Empty');
+    var importDataResponse = protoFilesRoot.lookup(
+      'google.protobuf.Empty'
+    );
     var importDataMetadata = protoFilesRoot.lookup(
       'google.cloud.automl.v1beta1.OperationMetadata'
     );
-    var exportDataResponse = protoFilesRoot.lookup('google.protobuf.Empty');
+    var exportDataResponse = protoFilesRoot.lookup(
+      'google.protobuf.Empty'
+    );
     var exportDataMetadata = protoFilesRoot.lookup(
       'google.cloud.automl.v1beta1.OperationMetadata'
     );
@@ -177,7 +182,9 @@ class AutoMlClient {
     var createModelMetadata = protoFilesRoot.lookup(
       'google.cloud.automl.v1beta1.OperationMetadata'
     );
-    var deleteModelResponse = protoFilesRoot.lookup('google.protobuf.Empty');
+    var deleteModelResponse = protoFilesRoot.lookup(
+      'google.protobuf.Empty'
+    );
     var deleteModelMetadata = protoFilesRoot.lookup(
       'google.cloud.automl.v1beta1.OperationMetadata'
     );
@@ -258,8 +265,7 @@ class AutoMlClient {
             }
         ),
         defaults[methodName],
-        this._descriptors.page[methodName] ||
-          this._descriptors.longrunning[methodName]
+        this._descriptors.page[methodName] || this._descriptors.longrunning[methodName]
       );
     }
   }
@@ -283,7 +289,9 @@ class AutoMlClient {
    * in this service.
    */
   static get scopes() {
-    return ['https://www.googleapis.com/auth/cloud-platform'];
+    return [
+      'https://www.googleapis.com/auth/cloud-platform',
+    ];
   }
 
   /**
@@ -565,7 +573,7 @@ class AutoMlClient {
       request,
       options
     );
-  }
+  };
 
   /**
    * Deletes a dataset and all of its contents.
@@ -1199,7 +1207,7 @@ class AutoMlClient {
       request,
       options
     );
-  }
+  };
 
   /**
    * Deletes a model.
@@ -1615,7 +1623,7 @@ class AutoMlClient {
       request,
       options
     );
-  }
+  };
 
   // --------------------
   // -- Path templates --
@@ -1693,7 +1701,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromLocationName(locationName) {
-    return this._pathTemplates.locationPathTemplate.match(locationName).project;
+    return this._pathTemplates.locationPathTemplate
+      .match(locationName)
+      .project;
   }
 
   /**
@@ -1704,7 +1714,8 @@ class AutoMlClient {
    * @returns {String} - A string representing the location.
    */
   matchLocationFromLocationName(locationName) {
-    return this._pathTemplates.locationPathTemplate.match(locationName)
+    return this._pathTemplates.locationPathTemplate
+      .match(locationName)
       .location;
   }
 
@@ -1716,7 +1727,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromDatasetName(datasetName) {
-    return this._pathTemplates.datasetPathTemplate.match(datasetName).project;
+    return this._pathTemplates.datasetPathTemplate
+      .match(datasetName)
+      .project;
   }
 
   /**
@@ -1727,7 +1740,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the location.
    */
   matchLocationFromDatasetName(datasetName) {
-    return this._pathTemplates.datasetPathTemplate.match(datasetName).location;
+    return this._pathTemplates.datasetPathTemplate
+      .match(datasetName)
+      .location;
   }
 
   /**
@@ -1738,7 +1753,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the dataset.
    */
   matchDatasetFromDatasetName(datasetName) {
-    return this._pathTemplates.datasetPathTemplate.match(datasetName).dataset;
+    return this._pathTemplates.datasetPathTemplate
+      .match(datasetName)
+      .dataset;
   }
 
   /**
@@ -1749,7 +1766,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromModelName(modelName) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).project;
+    return this._pathTemplates.modelPathTemplate
+      .match(modelName)
+      .project;
   }
 
   /**
@@ -1760,7 +1779,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the location.
    */
   matchLocationFromModelName(modelName) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).location;
+    return this._pathTemplates.modelPathTemplate
+      .match(modelName)
+      .location;
   }
 
   /**
@@ -1771,7 +1792,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the model.
    */
   matchModelFromModelName(modelName) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).model;
+    return this._pathTemplates.modelPathTemplate
+      .match(modelName)
+      .model;
   }
 
   /**
@@ -1782,9 +1805,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromModelEvaluationName(modelEvaluationName) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).project;
+    return this._pathTemplates.modelEvaluationPathTemplate
+      .match(modelEvaluationName)
+      .project;
   }
 
   /**
@@ -1795,9 +1818,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the location.
    */
   matchLocationFromModelEvaluationName(modelEvaluationName) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).location;
+    return this._pathTemplates.modelEvaluationPathTemplate
+      .match(modelEvaluationName)
+      .location;
   }
 
   /**
@@ -1808,9 +1831,9 @@ class AutoMlClient {
    * @returns {String} - A string representing the model.
    */
   matchModelFromModelEvaluationName(modelEvaluationName) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).model;
+    return this._pathTemplates.modelEvaluationPathTemplate
+      .match(modelEvaluationName)
+      .model;
   }
 
   /**
@@ -1821,10 +1844,11 @@ class AutoMlClient {
    * @returns {String} - A string representing the model_evaluation.
    */
   matchModelEvaluationFromModelEvaluationName(modelEvaluationName) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).model_evaluation;
+    return this._pathTemplates.modelEvaluationPathTemplate
+      .match(modelEvaluationName)
+      .model_evaluation;
   }
 }
+
 
 module.exports = AutoMlClient;
