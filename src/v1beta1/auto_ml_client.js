@@ -250,7 +250,7 @@ class AutoMlClient {
       'getModelEvaluation',
       'listModelEvaluations',
     ];
-    for (const methodName of autoMlStubMethods) {
+    for (let methodName of autoMlStubMethods) {
       this._innerApiCalls[methodName] = gax.createApiCall(
         autoMlStub.then(
           stub =>

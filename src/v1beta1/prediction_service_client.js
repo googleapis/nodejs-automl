@@ -128,7 +128,7 @@ class PredictionServiceClient {
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
     const predictionServiceStubMethods = ['predict'];
-    for (const methodName of predictionServiceStubMethods) {
+    for (let methodName of predictionServiceStubMethods) {
       this._innerApiCalls[methodName] = gax.createApiCall(
         predictionServiceStub.then(
           stub =>
