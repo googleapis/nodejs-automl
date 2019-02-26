@@ -20,9 +20,9 @@ const {assert} = require('chai');
 const execa = require('execa');
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
-const cmdDataset = `node automl/automlVisionDataset.js`;
-const cmdModel = `node automl/automlVisionModel.js`;
-const cmdPredict = `node automl/automlVisionPredict.js`;
+const cmdDataset = `node vision/automlVisionDataset.js`;
+const cmdModel = `node vision/automlVisionModel.js`;
+const cmdPredict = `node vision/automlVisionPredict.js`;
 
 const testDataSetName = `testDataSet`;
 const dummyDataSet = `dummyDataSet`;
