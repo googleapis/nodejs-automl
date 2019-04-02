@@ -41,11 +41,15 @@ describe('AutoMlClient', () => {
       // Mock response
       const name = 'name3373707';
       const displayName = 'displayName1615086568';
+      const description = 'description-1724546052';
       const exampleCount = 1517063674;
+      const etag = 'etag3123477';
       const expectedResponse = {
         name: name,
         displayName: displayName,
+        description: description,
         exampleCount: exampleCount,
+        etag: etag,
       };
 
       // Mock Grpc layer
@@ -111,11 +115,15 @@ describe('AutoMlClient', () => {
       // Mock response
       const name2 = 'name2-1052831874';
       const displayName = 'displayName1615086568';
+      const description = 'description-1724546052';
       const exampleCount = 1517063674;
+      const etag = 'etag3123477';
       const expectedResponse = {
         name: name2,
         displayName: displayName,
+        description: description,
         exampleCount: exampleCount,
+        etag: etag,
       };
 
       // Mock Grpc layer
@@ -1017,10 +1025,12 @@ describe('AutoMlClient', () => {
       // Mock response
       const name2 = 'name2-1052831874';
       const annotationSpecId = 'annotationSpecId60690191';
+      const displayName = 'displayName1615086568';
       const evaluatedExampleCount = 277565350;
       const expectedResponse = {
         name: name2,
         annotationSpecId: annotationSpecId,
+        displayName: displayName,
         evaluatedExampleCount: evaluatedExampleCount,
       };
 
@@ -1144,6 +1154,600 @@ describe('AutoMlClient', () => {
       });
     });
   });
+
+  describe('updateDataset', () => {
+    it('invokes updateDataset without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const displayName = 'displayName1615086568';
+      const description = 'description-1724546052';
+      const exampleCount = 1517063674;
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        name: name,
+        displayName: displayName,
+        description: description,
+        exampleCount: exampleCount,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.updateDataset = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.updateDataset(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes updateDataset with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.updateDataset = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.updateDataset(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('getAnnotationSpec', () => {
+    it('invokes getAnnotationSpec without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const displayName = 'displayName1615086568';
+      const exampleCount = 1517063674;
+      const expectedResponse = {
+        name: name,
+        displayName: displayName,
+        exampleCount: exampleCount,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.getAnnotationSpec = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.getAnnotationSpec(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes getAnnotationSpec with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.getAnnotationSpec = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.getAnnotationSpec(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('getTableSpec', () => {
+    it('invokes getTableSpec without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const timeColumnSpecId = 'timeColumnSpecId1558734824';
+      const rowCount = 1340416618;
+      const columnCount = 122671386;
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        name: name,
+        timeColumnSpecId: timeColumnSpecId,
+        rowCount: rowCount,
+        columnCount: columnCount,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.getTableSpec = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.getTableSpec(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes getTableSpec with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.getTableSpec = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.getTableSpec(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('listTableSpecs', () => {
+    it('invokes listTableSpecs without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const nextPageToken = '';
+      const tableSpecsElement = {};
+      const tableSpecs = [tableSpecsElement];
+      const expectedResponse = {
+        nextPageToken: nextPageToken,
+        tableSpecs: tableSpecs,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.listTableSpecs = (
+        actualRequest,
+        options,
+        callback
+      ) => {
+        assert.deepStrictEqual(actualRequest, request);
+        callback(null, expectedResponse.tableSpecs);
+      };
+
+      client.listTableSpecs(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse.tableSpecs);
+        done();
+      });
+    });
+
+    it('invokes listTableSpecs with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.listTableSpecs = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.listTableSpecs(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('updateTableSpec', () => {
+    it('invokes updateTableSpec without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const timeColumnSpecId = 'timeColumnSpecId1558734824';
+      const rowCount = 1340416618;
+      const columnCount = 122671386;
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        name: name,
+        timeColumnSpecId: timeColumnSpecId,
+        rowCount: rowCount,
+        columnCount: columnCount,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.updateTableSpec = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.updateTableSpec(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes updateTableSpec with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.updateTableSpec = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.updateTableSpec(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('getColumnSpec', () => {
+    it('invokes getColumnSpec without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const displayName = 'displayName1615086568';
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        name: name,
+        displayName: displayName,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.getColumnSpec = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.getColumnSpec(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes getColumnSpec with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.getColumnSpec = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.getColumnSpec(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('listColumnSpecs', () => {
+    it('invokes listColumnSpecs without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const nextPageToken = '';
+      const columnSpecsElement = {};
+      const columnSpecs = [columnSpecsElement];
+      const expectedResponse = {
+        nextPageToken: nextPageToken,
+        columnSpecs: columnSpecs,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.listColumnSpecs = (
+        actualRequest,
+        options,
+        callback
+      ) => {
+        assert.deepStrictEqual(actualRequest, request);
+        callback(null, expectedResponse.columnSpecs);
+      };
+
+      client.listColumnSpecs(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse.columnSpecs);
+        done();
+      });
+    });
+
+    it('invokes listColumnSpecs with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.listColumnSpecs = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.listColumnSpecs(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('updateColumnSpec', () => {
+    it('invokes updateColumnSpec without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const displayName = 'displayName1615086568';
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        name: name,
+        displayName: displayName,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.updateColumnSpec = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.updateColumnSpec(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes updateColumnSpec with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.updateColumnSpec = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.updateColumnSpec(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('exportModel', () => {
+    it('invokes exportModel without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const done_ = true;
+      const expectedResponse = {
+        name: name,
+        done: done_,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.exportModel = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.exportModel(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes exportModel with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.exportModel = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.exportModel(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('exportEvaluatedExamples', () => {
+    it('invokes exportEvaluatedExamples without error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const done_ = true;
+      const expectedResponse = {
+        name: name,
+        done: done_,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.exportEvaluatedExamples = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.exportEvaluatedExamples(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes exportEvaluatedExamples with error', done => {
+      const client = new automlModule.v1beta1.AutoMlClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.exportEvaluatedExamples = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.exportEvaluatedExamples(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
 });
 describe('PredictionServiceClient', () => {
   describe('predict', () => {
@@ -1207,6 +1811,62 @@ describe('PredictionServiceClient', () => {
       );
 
       client.predict(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('batchPredict', () => {
+    it('invokes batchPredict without error', done => {
+      const client = new automlModule.v1beta1.PredictionServiceClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock response
+      const name = 'name3373707';
+      const done_ = true;
+      const expectedResponse = {
+        name: name,
+        done: done_,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.batchPredict = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.batchPredict(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes batchPredict with error', done => {
+      const client = new automlModule.v1beta1.PredictionServiceClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const request = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.batchPredict = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.batchPredict(request, (err, response) => {
         assert(err instanceof Error);
         assert.strictEqual(err.code, FAKE_STATUS_CODE);
         assert(typeof response === 'undefined');
