@@ -712,9 +712,7 @@ const BatchPredictOutputConfig = {
  *    will be created. Inside the model and any of its supporting files
  *    will be written, as described
  *
- *   [here](https:
- *   //cloud.google.com/vision/automl/alpha/d
- *   // ocs/predict#deployment_to_devices).
+ *   [here](https://cloud.google.com/vision/automl/alpha/docs/predict#deployment_to_devices).
  *
  *   This object should have the same structure as [GcsDestination]{@link google.cloud.automl.v1beta1.GcsDestination}
  *
