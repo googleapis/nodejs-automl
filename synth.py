@@ -39,11 +39,6 @@ s.replace('**/doc/google/protobuf/doc_timestamp.js',
         'toISOString)')
 # [END fix-dead-link]
 
-s.replace('src/v1beta1/doc/google/cloud/automl/v1beta1/doc_io.js',
-        'https:[\s\*]+//cloud\.google\.com\/vision\/automl\/alpha\/d[\s\*\/]+ocs\/predict#deployment_to_devices',
-        'https://cloud.google.com/vision/automl/alpha/docs/predict#deployment_to_devices')
-
-
 # Node.js specific cleanup
 subprocess.run(['npm', 'install'])
 subprocess.run(['npm', 'run', 'fix'])

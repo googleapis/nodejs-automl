@@ -710,9 +710,7 @@ const BatchPredictOutputConfig = {
  *    "model-export-<model-display-name>-<timestamp-of-export-call>",
  *    where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format,
  *    will be created. Inside the model and any of its supporting files
- *    will be written, as described
- *
- *   [here](https://cloud.google.com/vision/automl/alpha/docs/predict#deployment_to_devices).
+ *    will be written.
  *
  *   This object should have the same structure as [GcsDestination]{@link google.cloud.automl.v1beta1.GcsDestination}
  *
