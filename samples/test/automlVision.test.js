@@ -105,9 +105,7 @@ describe(`auto ml vision`, () => {
     );
 
     // Display evaluation
-    output = execSync(
-      `${cmdModel} display-evaluation -a "${flowersModelId}"`
-    );
+    output = execSync(`${cmdModel} display-evaluation -a "${flowersModelId}"`);
     assert.match(output, /Model Precision/);
   });
 
