@@ -33,7 +33,7 @@ const filePath = './resource/entityInput.txt';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip(`PredictionAPI`, () => {
+describe.skip(`Language Entity PredictionAPI`, () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'entityInput.txt' in resource folder
     const output = await exec(

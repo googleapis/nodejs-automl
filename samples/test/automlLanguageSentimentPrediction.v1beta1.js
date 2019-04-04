@@ -34,7 +34,7 @@ const filePath = './resource/sentimentInput.txt';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip('PredictionAPI', () => {
+describe.skip('Language Sentiment PredictionAPI', () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'test.txt' in resources folder
     const output = await exec(

@@ -32,7 +32,7 @@ const importDataCsv = 'gs://cloud-ml-data/NL-entity/dataset.csv';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip(`DatasetAPI`, () => {
+describe.skip(`Language Entity DatasetAPI`, () => {
   it(`should create, import and delete a dataset`, async () => {
     // Create dataset
     let output = await exec(

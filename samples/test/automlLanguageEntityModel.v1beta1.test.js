@@ -33,7 +33,7 @@ const undeployModelId = 'TEN4279035372513525760';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip(`ModelAPI`, () => {
+describe.skip(`Language Entity ModelAPI`, () => {
   it(`should create  a model`, async () => {
     // Create model
     let output = await exec(

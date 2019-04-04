@@ -36,7 +36,7 @@ const importDataCsv = 'gs://' + projectId + '-lcm/automl-sentiment/train.csv';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe('DatasetAPI', () => {
+describe.skip('Language Sentiment DatasetAPI', () => {
   it(`should create, import and delete a dataset`, async () => {
     // Create dataset
     let output = await exec(
