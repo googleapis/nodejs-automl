@@ -34,7 +34,7 @@ const outputUriPrefix = 'gs://video-intelligence/';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe(`PredictionAPI`, () => {
+describe.skip(`Video Intelligence PredictionAPI`, () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'annotate_video.csv' from gcs inputUri
     const output = await exec(

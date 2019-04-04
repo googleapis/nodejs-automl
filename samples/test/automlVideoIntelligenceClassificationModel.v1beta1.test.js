@@ -33,7 +33,7 @@ const testModelName = 'test_video_model';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe(`ModelAPI`, () => {
+describe.skip(`Video Intelligence ModelAPI`, () => {
   it(`should create a model`, async () => {
     // Create model
     let output = await exec(

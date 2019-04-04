@@ -35,7 +35,7 @@ const importDataCsv = 'gs://automl-video-demo-data/hmdb_split1.csv';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe(`DatasetAPI`, () => {
+describe.skip(`DatasetAPI`, () => {
   it(`should create, import and delete a dataset`, async () => {
     // Create dataset
     let output = await exec(`${cmdDataset} create-dataset "${datasetName}"`);
