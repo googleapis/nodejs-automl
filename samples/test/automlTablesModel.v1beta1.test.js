@@ -39,7 +39,7 @@ const filter = 'tablesModelMetadata:*';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe('ModelAPI', () => {
+describe.skip('Tables ModelAPI', () => {
   it(`should create a model`, async () => {
     // Create model
     let output = await exec(

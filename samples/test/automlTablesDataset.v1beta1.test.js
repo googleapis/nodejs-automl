@@ -40,7 +40,7 @@ const outputBigQueryUri = 'bq://automl-tables-bg-output';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe('DatasetAPI', () => {
+describe.skip('Tables DatasetAPI', () => {
   it(`should create, import, update and delete a dataset`, async () => {
     // Create dataset
     let output = await exec(`${cmdDataset} create-dataset "${datasetName}"`);

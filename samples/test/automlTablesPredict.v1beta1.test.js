@@ -37,7 +37,7 @@ const bqOutputUriPrefix = 'bq://automl-tables-bg-output';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe('PredictionAPI', () => {
+describe.skip('Tables PredictionAPI', () => {
   it(`should perform single prediction`, async () => {
     // Run single prediction on predictTest.csv in resource folder
     const output = await exec(
