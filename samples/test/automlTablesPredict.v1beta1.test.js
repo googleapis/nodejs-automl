@@ -37,8 +37,8 @@ const bqOutputUriPrefix = 'bq://automl-tables-bg-output';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip('Tables PredictionAPI', () => {
-  it(`should perform single prediction`, async () => {
+describe('Tables PredictionAPI', () => {
+  it.skip(`should perform single prediction`, async () => {
     // Run single prediction on predictTest.csv in resource folder
     const output = await exec(
       `${cmdPredict} predict "${modelId}" "${filePath}"`
@@ -46,7 +46,7 @@ describe.skip('Tables PredictionAPI', () => {
     assert.match(output, /Prediction results:/);
   });
 
-  it(`should perform batch prediction using GCS as source and
+  it.skip(`should perform batch prediction using GCS as source and
     GCS as destination`, async () => {
     // Run batch prediction using GCS as source and GCS as destination
     const output = await exec(
@@ -56,7 +56,7 @@ describe.skip('Tables PredictionAPI', () => {
     assert.match(output, /Operation name:/);
   });
 
-  it(`should perform batch prediction using BQ as source and
+  it.skip(`should perform batch prediction using BQ as source and
     GCS as destination`, async () => {
     //  Run batch prediction using BQ as source and GCS as destination
     const output = await exec(
@@ -66,7 +66,7 @@ describe.skip('Tables PredictionAPI', () => {
     assert.match(output, /Operation name:/);
   });
 
-  it(`should perform batch prediction using GCS as source and
+  it.skip(`should perform batch prediction using GCS as source and
     BQ as destination`, async () => {
     // Run batch prediction using GCS as source and BQ as destination
     const output = await exec(
@@ -76,7 +76,7 @@ describe.skip('Tables PredictionAPI', () => {
     assert.match(output, /Operation name:/);
   });
 
-  it(`should perform batch prediction using BQ as source and
+  it.skip(`should perform batch prediction using BQ as source and
     BQ as destination`, async () => {
     // Run batch prediction using BQ as source and BQ as destination
     const output = await exec(

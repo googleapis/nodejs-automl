@@ -40,8 +40,8 @@ const outputBigQueryUri = 'bq://automl-tables-bg-output';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip('Tables DatasetAPI', () => {
-  it(`should create, import, update and delete a dataset`, async () => {
+describe('Tables DatasetAPI', () => {
+  it.skip(`should create, import, update and delete a dataset`, async () => {
     // Create dataset
     let output = await exec(`${cmdDataset} create-dataset "${datasetName}"`);
     const parsedOut = output.split('\n');
@@ -66,19 +66,19 @@ describe.skip('Tables DatasetAPI', () => {
     assert.match(output, /Dataset delete details:/);
   });
 
-  it(`should list datasets`, async () => {
+  it.skip(`should list datasets`, async () => {
     // List dataset
     const output = await exec(`${cmdDataset} list-datasets "${filter}"`);
     assert.match(output, /Dataset Id:/);
   });
 
-  it(`should get preexisting dataset`, async () => {
+  it.skip(`should get preexisting dataset`, async () => {
     // Get dataset
     const output = await exec(`${cmdDataset} get-dataset "${datasetId}"`);
     assert.match(output, /Dataset Id:/);
   });
 
-  it(`should get,list,update tablespec and columnspec`, async () => {
+  it.skip(`should get,list,update tablespec and columnspec`, async () => {
     // List table
     let output = await exec(
       `${cmdDataset} list-table-specs` + ` "${datasetId}" "${filter}"`
@@ -122,7 +122,7 @@ describe.skip('Tables DatasetAPI', () => {
     assert.match(output, /Column Id:/);
   });
 
-  it(`should export CSV dataset`, async () => {
+  it.skip(`should export CSV dataset`, async () => {
     // Export data to csv
     const output = await exec(
       `${cmdDataset} export-data-to-csv` + ` "${datasetId}" "${outputGcsUri}"`
@@ -130,7 +130,7 @@ describe.skip('Tables DatasetAPI', () => {
     assert.match(output, /Processing export.../);
   });
 
-  it(`should export BigQuery dataset`, async () => {
+  it.skip(`should export BigQuery dataset`, async () => {
     // Export data to bigquery
     const output = await exec(
       `${cmdDataset} export-data-to-bigquery` +

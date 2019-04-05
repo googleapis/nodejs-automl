@@ -39,8 +39,8 @@ const filter = 'tablesModelMetadata:*';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
-describe.skip('Tables ModelAPI', () => {
-  it(`should create a model`, async () => {
+describe('Tables ModelAPI', () => {
+  it.skip(`should create a model`, async () => {
     // Create model
     let output = await exec(
       `${cmdModel} create-model "${datasetId}" "${tableId}" "${columnId}"` +
@@ -56,7 +56,7 @@ describe.skip('Tables ModelAPI', () => {
     assert.match(output, /Operation details:/);
   });
 
-  it(`should list models, get and delete a model. list, get, export and display
+  it.skip(`should list models, get and delete a model. list, get, export and display
      model evaluations from preexisting models`, async () => {
     // List models
     let output = await exec(`${cmdModel} list-models "${filter}"`);
@@ -97,13 +97,13 @@ describe.skip('Tables ModelAPI', () => {
     assert.match(output, /Model delete details:/);
   });
 
-  it(`should deploy the model`, async () => {
+  it.skip(`should deploy the model`, async () => {
     // Deploy model
     const output = await exec(`${cmdModel} deploy-model "${deployModelId}"`);
     assert.match(output, /Name:/);
   });
 
-  it(`should undeploy the model`, async () => {
+  it.skip(`should undeploy the model`, async () => {
     // Undeploy model
     const output = await exec(
       `${cmdModel} undeploy-model "${undeployModelId}"`
@@ -111,7 +111,7 @@ describe.skip('Tables ModelAPI', () => {
     assert.match(output, /Name:/);
   });
 
-  it(`should list and get operation status`, async () => {
+  it.skip(`should list and get operation status`, async () => {
     // List operations status
     let output = await exec(`${cmdModel} list-operations-status `);
     const operationFullId = output
