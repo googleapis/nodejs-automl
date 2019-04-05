@@ -55,18 +55,18 @@ function main(
 
     // Set the request
     const request = {
-    name: datasetFullId,
-    outputConfig: outputConfig
+      name: datasetFullId,
+      outputConfig: outputConfig,
     };
 
     // Export the data to the output URI.
-  const [operation] = await automlClient.exportData(request);
+    const [operation] = await automlClient.exportData(request);
 
-  const [response] = await operation.promise();
-        console.log('Data export details:');
-        console.log(` Operation details:`);
-        console.log(`   Name: ${response.name}`);
-         console.log(`  Done: ${response.done}`);
+    const [response] = await operation.promise();
+    console.log('Data export details:');
+    console.log(` Operation details:`);
+    console.log(`   Name: ${response.name}`);
+    console.log(`  Done: ${response.done}`);
   }
   exportData();
   // [END automl_vision_object_detection_export_data]
