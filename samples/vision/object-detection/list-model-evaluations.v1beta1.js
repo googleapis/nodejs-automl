@@ -34,10 +34,10 @@ function main(
   const math = require(`mathjs`);
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
 
   async function listModelEvaluations() {
     // Get the full path of the model.
@@ -48,101 +48,89 @@ function main(
     );
 
     // List all the model evaluations in the model by applying filter.
-    automlClient
-      .listModelEvaluations({parent: modelFullId, filter: filter})
-      .then(responses => {
-        const element = responses[0];
-        console.log(`List of model evaluations:`);
-        for (let i = 0; i < element.length; i++) {
-          const detectMetrics =
-            element[i].imageObjectDetectionEvaluationMetrics;
-          const boundingBoxMetricsEntries =
-            detectMetrics.boundingBoxMetricsEntries;
+    const [response] = await automlClient.listModelEvaluations({
+      parent: modelFullId,
+      filter: filter,
+    });
+    console.log(`List of model evaluations:`);
+    for (const element of response) {
+      const detectMetrics = element.imageObjectDetectionEvaluationMetrics;
+      const boundingBoxMetricsEntries = detectMetrics.boundingBoxMetricsEntries;
 
-          // Display the model evaluations information.
-          console.log(`\nModel evaluation name: ${element[i].name}`);
+      // Display the model evaluations information.
+      console.log(`\nModel evaluation name: ${element.name}`);
+      console.log(
+        `Model evaluation Id: ${element.name
+          .split(`/`)
+          .slice(-1)
+          .pop()}`
+      );
+      console.log(
+        `Model evaluation annotation spec Id: ${element.annotationSpecId}`
+      );
+      console.log(`Model evaluation display name: ${element.displayName}`);
+      console.log(
+        `Model evaluation example count: ${element.evaluatedExampleCount}`
+      );
+      console.log(`Image object detection evaluation metrics:`);
+      console.log(
+        `Evaluated bounding box count:  ${
+          detectMetrics.evaluatedBoundingBoxCount
+        }`
+      );
+      console.log(
+        `Bounding box mean average precision:  ${math.round(
+          detectMetrics.boundingBoxMeanAveragePrecision,
+          6
+        )}`
+      );
+
+      for (const boundingBoxMetricsEntry of boundingBoxMetricsEntries) {
+        console.log(`\tBounding box metrics entries:`);
+        console.log(
+          `Iou threshold:  ${math.round(
+            boundingBoxMetricsEntry.iouThreshold,
+            2
+          )}`
+        );
+        console.log(
+          `Mean average precision:  ${math.round(
+            boundingBoxMetricsEntry.meanAveragePrecision,
+            6
+          )}`
+        );
+        console.log(`Confidence metrics entries:`);
+        const confidenceMetricsEntries =
+          boundingBoxMetricsEntry.confidenceMetricsEntries;
+
+        for (const confidenceMetricsEntry of confidenceMetricsEntries) {
           console.log(
-            `Model evaluation Id: ${element[i].name
-              .split(`/`)
-              .slice(-1)
-              .pop()}`
-          );
-          console.log(
-            `Model evaluation annotation spec Id: ${
-              element[i].annotationSpecId
-            }`
-          );
-          console.log(
-            `Model evaluation display name: ${element[i].displayName}`
-          );
-          console.log(
-            `Model evaluation example count: ${
-              element[i].evaluatedExampleCount
-            }`
-          );
-          console.log(`Image object detection evaluation metrics:`);
-          console.log(
-            `\tEvaluated bounding box count:  ${
-              detectMetrics.evaluatedBoundingBoxCount
-            }`
-          );
-          console.log(
-            `\tBounding box mean average precision:  ${math.round(
-              detectMetrics.boundingBoxMeanAveragePrecision,
+            `Model confidence threshold:  ${math.round(
+              confidenceMetricsEntry.confidenceThreshold * 100,
               6
             )}`
           );
-
-          for (const boundingBoxMetricsEntry of boundingBoxMetricsEntries) {
-            console.log(`\tBounding box metrics entries:`);
-            console.log(
-              `\t\tIou threshold:  ${math.round(
-                boundingBoxMetricsEntry.iouThreshold,
-                2
-              )}`
-            );
-            console.log(
-              `\t\tMean average precision:  ${math.round(
-                boundingBoxMetricsEntry.meanAveragePrecision,
-                6
-              )}`
-            );
-            console.log(`\t\tConfidence metrics entries:`);
-            const confidenceMetricsEntries =
-              boundingBoxMetricsEntry.confidenceMetricsEntries;
-
-            for (const confidenceMetricsEntry of confidenceMetricsEntries) {
-              console.log(
-                `\t\t\tModel confidence threshold:  ${math.round(
-                  confidenceMetricsEntry.confidenceThreshold * 100,
-                  6
-                )}`
-              );
-              console.log(
-                `\t\t\tModel recall:  ${math.round(
-                  confidenceMetricsEntry.recall * 100,
-                  2
-                )} %`
-              );
-              console.log(
-                `\t\t\tModel precision:  ${math.round(
-                  confidenceMetricsEntry.precision * 100,
-                  2
-                )} %`
-              );
-              console.log(
-                `\t\t\tModel f1 score:  ${math.round(
-                  confidenceMetricsEntry.f1Score * 100,
-                  2
-                )} % \n`
-              );
-            }
-          }
+          console.log(
+            `\t\t\tModel recall:  ${math.round(
+              confidenceMetricsEntry.recall * 100,
+              2
+            )} %`
+          );
+          console.log(
+            `Model precision:  ${math.round(
+              confidenceMetricsEntry.precision * 100,
+              2
+            )} %`
+          );
+          console.log(
+            `Model f1 score:  ${math.round(
+              confidenceMetricsEntry.f1Score * 100,
+              2
+            )} % \n`
+          );
         }
-      })
-      .catch(err => {
-        console.error(err);
-      });
+      }
+    }
   }
   listModelEvaluations();
   // [END automl_vision_object_detection_list_model_evaluations]

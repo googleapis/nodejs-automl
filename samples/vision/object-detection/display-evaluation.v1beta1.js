@@ -33,10 +33,10 @@ function main(
 
   const math = require(`mathjs`);
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
 
   // Get the full path of the model.
   const modelFullId = automlClient.modelPath(projectId, computeRegion, modelId);

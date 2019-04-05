@@ -31,10 +31,10 @@ function main(
   // const gcsPath = '[GCS_PATH]' e.g., "gs://<bucket-name>/<csv file>",
   // `.csv paths in AutoML Vision Object Detection CSV format`;
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   async function importData() {
     // Get the full path of the dataset.
     const datasetFullId = automlClient.datasetPath(
@@ -52,25 +52,17 @@ function main(
     };
 
     // Import the data from the input URI.
-    automlClient
-      .importData({name: datasetFullId, inputConfig: inputConfig})
-      .then(responses => {
-        const operation = responses[0];
-        console.log(`Processing import...`);
-        return operation.promise();
-      })
-      .then(responses => {
-        // The final result of the operation.
-        const operationDetails = responses[2];
-        // Get the data import details.
-        console.log('Data import details:');
-        console.log(`\tOperation details:`);
-        console.log(`\t\tName: ${operationDetails.name}`);
-        console.log(`\t\tDone: ${operationDetails.done}`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [operation] = await automlClient.importData({
+      name: datasetFullId,
+      inputConfig: inputConfig,
+    });
+
+    const [response] = await operation.promise();
+    // Get the data import details.
+    console.log('Data import details:');
+    console.log(` Operation details:`);
+    console.log(`   Name: ${response.name}`);
+    console.log(`   Done: ${response.done}`);
   }
   importData();
   // [END automl_vision_object_detection_import_data]

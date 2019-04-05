@@ -29,10 +29,10 @@ function main(
   // const datasetName = '[DATASET_NAME]' e.g., "myDataset";
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   const util = require(`util`);
 
   async function createDataset() {
@@ -51,15 +51,15 @@ function main(
       dataset: myDataset,
     });
 
-    const dataset = response[0];
+    //const dataset = response[0];
     // Display the dataset information.
-    console.log(`Dataset name: ${dataset.name}`);
-    console.log(`Dataset Id: ${dataset.name.split(`/`).pop(-1)}`);
-    console.log(`Dataset display name: ${dataset.displayName}`);
-    console.log(`Dataset example count: ${dataset.exampleCount}`);
+    console.log(`Dataset name: ${response.name}`);
+    console.log(`Dataset Id: ${response.name.split(`/`).pop(-1)}`);
+    console.log(`Dataset display name: ${response.displayName}`);
+    console.log(`Dataset example count: ${response.exampleCount}`);
     console.log(
       `Image object detection dataset metadata: ${util.inspect(
-        dataset.imageObjectDetectionDatasetMetadata,
+        response.imageObjectDetectionDatasetMetadata,
         false,
         null
       )}`

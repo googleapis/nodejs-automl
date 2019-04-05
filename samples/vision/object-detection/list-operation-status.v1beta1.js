@@ -29,45 +29,26 @@ function main(
   // const filter = '[FILTER_EXPRESSIONS]';
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   async function listOperationStatus() {
     // A resource that represents Google Cloud Platform location.
     const projectLocation = automlClient.locationPath(projectId, computeRegion);
 
     // List all the operations available in the region by applying filter.
-    automlClient.operationsClient
-      .listOperations({
-        name: projectLocation,
-        filter: filter,
-      })
-      .then(responses => {
-        const response = responses[0];
-        console.log(`List of operations:`);
-        for (let i = 0; i < response.length; i++) {
-          console.log(`\n\tOperation details:`);
-          console.log(`\t\tName: ${response[i].name}`);
-          console.log(`\t\tMetadata:`);
-          console.log(`\t\t\tType Url: ${response[i].metadata.typeUrl}`);
-          console.log(`\t\tDone: ${response[i].done}`);
-
-          if (response[i].response) {
-            console.log(`\t\tResponse:`);
-            console.log(`\t\t\tType Url: ${response[i].response.typeUrl}`);
-          }
-
-          if (response[i].error) {
-            console.log(`\t\tResponse:`);
-            console.log(`\t\t\tError code: ${response[i].error.code}`);
-            console.log(`\t\t\tError message: ${response[i].error.message}`);
-          }
-        }
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [operations] = await automlClient.operationsClient.listOperations({
+      name: projectLocation,
+      filter: filter,
+    });
+    for (const element of operations) {
+      console.log(`\nOperation details:`);
+      console.log(`Name: ${element.name}`);
+      console.log(`Metadata:`);
+      console.log(`Type Url: ${element.metadata.typeUrl}`);
+      console.log(`Done: ${element.done}`);
+    }
   }
   listOperationStatus();
   // [END automl_vision_object_detection_list_operations_status]

@@ -30,10 +30,10 @@ function main(
   // const datasetId = '[DATASET_ID]' e.g., "IOD34216801856389120";
   // const modelName = '[MODEL_NAME]' e.g., "myModel";
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   async function createModel() {
     // A resource that represents Google Cloud Platform location.
     const projectLocation = automlClient.locationPath(projectId, computeRegion);

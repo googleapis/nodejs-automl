@@ -25,36 +25,33 @@ function main(operationFullId = 'OPERATION_FULL_ID') {
   // `Full name of an operation`;
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
-
-  // Get the latest state of a long-running operation.
-  automlClient.operationsClient
-    .getOperation({name: operationFullId})
-    .then(responses => {
-      const response = responses[0];
-      console.log(`Operation details:`);
-      console.log(`\tName: ${response.name}`);
-      console.log(`\tMetadata:`);
-      console.log(`\t\tType Url: ${response.metadata.typeUrl}`);
-      console.log(`\tDone: ${response.done}`);
-
-      if (response.response) {
-        console.log(`\tResponse:`);
-        console.log(`\t\tType Url: ${response.response.typeUrl}`);
-      }
-
-      if (response.error) {
-        console.log(`\tResponse:`);
-        console.log(`\t\tError code: ${response.error.code}`);
-        console.log(`\t\tError message: ${response.error.message}`);
-      }
-    })
-    .catch(err => {
-      console.error(err);
+  const automlClient = new AutoMlClient();
+  async function getOperationStatus() {
+    // Get the latest state of a long-running operation.
+    const [response] = await automlClient.operationsClient.getOperation({
+      name: operationFullId,
     });
+    console.log(`Operation details:`);
+    console.log(`\tName: ${response.name}`);
+    console.log(`\tMetadata:`);
+    console.log(`\t\tType Url: ${response.metadata.typeUrl}`);
+    console.log(`\tDone: ${response.done}`);
+
+    if (response.response) {
+      console.log(`\tResponse:`);
+      console.log(`\t\tType Url: ${response.response.typeUrl}`);
+    }
+
+    if (response.error) {
+      console.log(`\tResponse:`);
+      console.log(`\t\tError code: ${response.error.code}`);
+      console.log(`\t\tError message: ${response.error.message}`);
+    }
+  }
+  getOperationStatus();
   // [END automl_vision_object_detection_get_operation_status]
 }
 main(...process.argv.slice(2));

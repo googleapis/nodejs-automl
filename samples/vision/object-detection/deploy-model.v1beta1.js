@@ -30,10 +30,10 @@ function main(
   // const modelId = '[MODEL_ID]' e.g., "TEN5200971474357190656";
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   async function deployModel() {
     // Get the full path of the model.
     const modelFullId = automlClient.modelPath(

@@ -30,40 +30,34 @@ function main(
   // e.g., "imageObjectDetectionDatasetMetadata:*";
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   const util = require(`util`);
 
   async function listDatasets() {
     const projectLocation = automlClient.locationPath(projectId, computeRegion);
 
     // List all the datasets available in the region by applying filter.
-    automlClient
-      .listDatasets({parent: projectLocation, filter: filter})
-      .then(responses => {
-        const dataset = responses[0];
-
-        // Display the dataset information.
-        console.log(`List of datasets:`);
-        for (let i = 0; i < dataset.length; i++) {
-          console.log(`\nDataset name: ${dataset[i].name}`);
-          console.log(`Dataset Id: ${dataset[i].name.split(`/`).pop(-1)}`);
-          console.log(`Dataset display name: ${dataset[i].displayName}`);
-          console.log(`Dataset example count: ${dataset[i].exampleCount}`);
-          console.log(
-            `Image object detection dataset metadata: ${util.inspect(
-              dataset.imageObjectDetectionDatasetMetadata,
-              false,
-              null
-            )}`
-          );
-        }
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [response] = await automlClient.listDatasets({
+      parent: projectLocation,
+      filter: filter,
+    });
+    console.log('List of datasets:');
+    for (const dataset of response) {
+      console.log(`\nDataset name: ${dataset.name}`);
+      console.log(`Dataset Id: ${dataset.name.split(`/`).pop(-1)}`);
+      console.log(`Dataset display name: ${dataset.displayName}`);
+      console.log(`Dataset example count: ${dataset.exampleCount}`);
+      console.log(
+        `Image object detection dataset metadata: ${util.inspect(
+          dataset.imageObjectDetectionDatasetMetadata,
+          false,
+          null
+        )}`
+      );
+    }
   }
   listDatasets();
   // [END automl_vision_object_detection_list_datasets]

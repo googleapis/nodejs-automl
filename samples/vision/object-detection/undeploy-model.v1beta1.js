@@ -29,10 +29,10 @@ function main(
   // const modelId = '[MODEL_ID]' e.g., "TEN5200971474357190656";
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
 
   async function undeployModel() {
     // Get the full path of the model.
@@ -43,19 +43,15 @@ function main(
     );
 
     // Deploy a model with the deploy model request.
-    automlClient
-      .undeployModel({name: modelFullId})
-      .then(responses => {
-        const response = responses[0];
-        console.log(`Undeployment Details:`);
-        console.log(`\tName: ${response.name}`);
-        console.log(`\tMetadata:`);
-        console.log(`\t\tType Url: ${response.metadata.typeUrl}`);
-        console.log(`\tDone: ${response.done}`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [operation] = await automlClient.undeployModel({name: modelFullId});
+    const [response] = await operation.promise();
+    for (const element of response) {
+      console.log(`Undeployment Details:`);
+      console.log(`\tName: ${element.name}`);
+      console.log(`\tMetadata:`);
+      console.log(`\t\tType Url: ${element.metadata.typeUrl}`);
+      console.log(`\tDone: ${element.done}`);
+    }
   }
   undeployModel();
   // [END automl_vision_object_detection_undeploy_model]

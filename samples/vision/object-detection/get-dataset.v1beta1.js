@@ -29,10 +29,10 @@ function main(
   // const datasetId = '[DATASET_ID]' e.g.,"IOD34216801856389120";
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
   const util = require(`util`);
   async function getDataset() {
     // Get the full path of the dataset.
@@ -42,28 +42,19 @@ function main(
       datasetId
     );
 
-    // Get all the information about a given dataset.
-    automlClient
-      .getDataset({name: datasetFullId})
-      .then(responses => {
-        const dataset = responses[0];
-
-        // Display the dataset information.
-        console.log(`Dataset name: ${dataset.name}`);
-        console.log(`Dataset Id: ${dataset.name.split(`/`).pop(-1)}`);
-        console.log(`Dataset display name: ${dataset.displayName}`);
-        console.log(`Dataset example count: ${dataset.exampleCount}`);
-        console.log(
-          `Image object detection dataset metadata: ${util.inspect(
-            dataset.imageObjectDetectionDatasetMetadata,
-            false,
-            null
-          )}`
-        );
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    // Get a dataset.
+    const [response] = await automlClient.getDataset({name: datasetFullId});
+    console.log(`Got dataset: ${response.name}`);
+    console.log(`Dataset Id: ${response.name.split(`/`).pop(-1)}`);
+    console.log(`Dataset display name: ${response.displayName}`);
+    console.log(`Dataset example count: ${response.exampleCount}`);
+    console.log(
+      `Image object detection dataset metadata: ${util.inspect(
+        response.imageObjectDetectionDatasetMetadata,
+        false,
+        null
+      )}`
+    );
   }
   getDataset();
   // [END automl_vision_object_detection_get_dataset]

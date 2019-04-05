@@ -33,10 +33,10 @@ function main(
   // `Google Cloud Storage URI for the export directory`;
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const automlClient = new AutoMlClient();
 
   async function exportData() {
     // Get the full path of the dataset.
@@ -53,27 +53,20 @@ function main(
       },
     };
 
-    // Export the data to the output URI.
-    automlClient
-      .exportData({name: datasetFullId, outputConfig: outputConfig})
-      .then(responses => {
-        const operation = responses[0];
-        console.log(`Processing export...`);
-        return operation.promise();
-      })
-      .then(responses => {
-        // The final result of the operation.
-        const operationDetails = responses[2];
+    // Set the request
+    const request = {
+    name: datasetFullId,
+    outputConfig: outputConfig
+    };
 
-        // Get the data export details.
+    // Export the data to the output URI.
+  const [operation] = await automlClient.exportData(request);
+
+  const [response] = await operation.promise();
         console.log('Data export details:');
-        console.log(`\tOperation details:`);
-        console.log(`\t\tName: ${operationDetails.name}`);
-        console.log(`\t\tDone: ${operationDetails.done}`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+        console.log(` Operation details:`);
+        console.log(`   Name: ${response.name}`);
+         console.log(`  Done: ${response.done}`);
   }
   exportData();
   // [END automl_vision_object_detection_export_data]

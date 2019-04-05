@@ -36,16 +36,16 @@ function main(
   // `Set the score threshold for Prediction of the created model`;
 
   //Imports the Google Cloud Automl library
-  const {AutomlClient} = require('@google-cloud/automl').v1beta1;
+  const {PredictionServiceClient} = require('@google-cloud/automl').v1beta1;
 
   // Instantiates a client
-  const automlClient = new AutomlClient();
+  const predictionServiceClient = new PredictionServiceClient();
 
   const fs = require(`fs`);
 
   async function predict() {
     // Get the full path of the model.
-    const modelFullId = automlClient.modelPath(
+    const modelFullId = predictionServiceClient.modelPath(
       projectId,
       computeRegion,
       modelId
@@ -69,21 +69,18 @@ function main(
 
     // params is additional domain-specific parameters.
     // currently there is no additional parameters supported.
-    automlClient
-      .predict({name: modelFullId, payload: payload, params: params})
-      .then(responses => {
-        console.log(`Prediction results:`);
-        for (const result of responses[0].payload) {
-          console.log(`\nPredicted class name:  ${result.displayName}`);
-          console.log(
-            `Predicted class score:  ${result.imageObjectDetection.score}`
-          );
-        }
-      })
-
-      .catch(err => {
-        console.error(err);
-      });
+    const [response] = await predictionServiceClient.predict({
+      name: modelFullId,
+      payload: payload,
+      params: params,
+    });
+    console.log(`Prediction results:`);
+    for (const result of response[0].payload) {
+      console.log(`\nPredicted class name:  ${result.displayName}`);
+      console.log(
+        `Predicted class score:  ${result.imageObjectDetection.score}`
+      );
+    }
   }
   predict();
   // [END automl_vision_object_detection_predict]
