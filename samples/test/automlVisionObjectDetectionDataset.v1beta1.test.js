@@ -26,7 +26,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 // change the value of datasetId
 const projectId = 'nodejs-docs-samples';
 const computeRegion = 'us-central1';
-const bucket = projectId + '-vision';
+const outputPath = 'gs://nodejs-docs-samples/VISION_OBJECT_DETECTION/';
 const datasetName = 'test_vision_create_dataset';
 const filter = 'imageObjectDetectionDatasetMetadata:*';
 const datasetId = 'ICN3946265060617537378';
@@ -55,7 +55,7 @@ describe('Vision Object Detection DatasetAPI', () => {
     assert.match(output, /Dataset delete details:/);
   });
 
-  it(`should list datasets`, async () => {
+  it.skip(`should list datasets`, async () => {
     // List datasets
     const output = await execSync(
       `node vision/object-detection/list-datasets.v1beta1.js "${projectId}" "${computeRegion}" "${filter}"`
@@ -63,7 +63,7 @@ describe('Vision Object Detection DatasetAPI', () => {
     assert.match(output, /List of datasets:/);
   });
 
-  it(`should get preexisting dataset`, async () => {
+  it.skip(`should get preexisting dataset`, async () => {
     // Get dataset
     const output = await execSync(
       `node vision/object-detection/get-dataset.v1beta1.js "${projectId}" "${computeRegion}" "${datasetId}"`
@@ -73,7 +73,7 @@ describe('Vision Object Detection DatasetAPI', () => {
 
   it.skip(`should export dataset`, async () => {
     // Export data
-    const outputUri = 'gs://' + bucket + '/' + datasetId;
+    const outputUri = outputPath + datasetId;
     const output = await execSync(
       `node vision/object-detection/export-data.v1beta1.js "${projectId}" "${computeRegion}" "${datasetId}" "${outputUri}"`
     );

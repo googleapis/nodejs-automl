@@ -20,14 +20,12 @@ const execa = require('execa');
 
 /** Tests for AutoML Vision Object Detection "Prediction API" sample. */
 
-const cmdPredict = 'node automlVisionObjectDetectionPrediction.js';
-
 // TODO(developer): Before running the test cases,
 // set the environment variables PROJECT_ID, REGION_NAME and change the value of modelId
-//const projectId = process.env.PROJECT_ID;
-//const computeRegion = process.env.REGION_NAME;
-const modelId = 'IOD7620108161696923648';
-const filePath = './resource/salad.jpg';
+const projectId = 'nodejs-docs-samples';
+const computeRegion = 'us-central1';
+const modelId = '';
+const filePath = './resource/songbird.jpg';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
@@ -35,7 +33,7 @@ describe.skip('Vision Object Detection PredictionAPI', () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'salad.jpg' in resource folder
     const output = await exec(
-      `${cmdPredict} predict "${modelId}" "${filePath}"`
+      `node vision/object-detection/predict.v1beta1.js "${projectId}" "${computeRegion}" "${modelId}" "${filePath}"`
     );
     assert.match(output, /Prediction results:/);
   });

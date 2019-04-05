@@ -16,29 +16,26 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const cp = require('child_process');
+
+const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 /** Tests for AutoML Vision Object Detection "Model API" sample. */
-
-const cmdModel = 'node automlVisionObjectDetectionModel.js';
-
 // TODO(developer): Before running the test cases,
 // set the environment variables PROJECT_ID, REGION_NAME and
 // change the value of datasetId, deployModelId and  undeployModelId
-//const projectId = process.env.PROJECT_ID;
-//const computeRegion = process.env.REGION_NAME;
+const projectId = 'nodejs-docs-samples';
+const computeRegion = 'us-central1';
 const filter = 'imageObjectDetectionModelMetadata:*';
-const datasetId = 'IOD5253923954350882816';
-const testModelName = 'test_vision_model';
+const datasetId = 'ICN3217071205693347964';
+const testModelName = 'birds2_201804101601_base';
 const deployModelId = 'IOD1728502647608049664';
 const undeployModelId = 'IOD3348109663601164288';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
-
-describe.skip(' Vision Object Detection ModelAPI', () => {
-  it(`should create a model`, async () => {
-    let output = await exec(
-      `${cmdModel} create-model "${datasetId}" "${testModelName}"`
+describe(' Vision Object Detection ModelAPI', () => {
+  it.skip(`should create a model`, async () => {
+    let output = await execSync(
+      `node vision/object-detection/create-model.v1beta1.js "${projectId}" "${computeRegion}" "${datasetId}" "${testModelName}"`
     );
     const operationName = output
       .split('\n')[0]
@@ -46,69 +43,85 @@ describe.skip(' Vision Object Detection ModelAPI', () => {
       .trim();
     assert.match(output, /Training started.../);
 
-    output = await exec(`${cmdModel} get-operation-status "${operationName}"`);
+    output = await execSync(
+      `node vision/object-detection/get-operation-status.v1beta1.js "${operationName}"`
+    );
     assert.match(output, /Operation details:/);
   });
 
   it(`should list models, get and delete a model. list, get and display model
     evaluations from preexisting models`, async () => {
     // List models
-    let output = await exec(`${cmdModel} list-models "${filter}"`);
+    let output = await execSync(
+      `node vision/object-detection/list-models.v1beta1.js "${projectId}" "${computeRegion}" "${filter}"`
+    );
     const parsedOut = output.split('\n');
     const outputModelId = parsedOut[3].split(':')[1].trim();
     assert.match(output, /List of models:/);
 
     // Get Model
-    output = await exec(`${cmdModel} get-model "${outputModelId}"`);
+    output = await execSync(
+      `node vision/object-detection/get-model.v1beta1.js "${projectId}" "${computeRegion}" "${outputModelId}"`
+    );
     assert.match(output, /Model name:/);
 
     // List model evaluation
-    output = await exec(
-      `${cmdModel} list-model-evaluations "${outputModelId}"`
+    output = await execSync(
+      `node vision/object-detection/list-model-evaluations.v1beta1.js "${projectId}" "${computeRegion}" "${outputModelId}"`
     );
     const parsedModelEvaluation = output.split('\n');
     const modelEvaluationId = parsedModelEvaluation[3].split(':')[1].trim();
     assert.match(output, /Model evaluation Id:/);
 
     // Get model evaluation
-    output = await exec(
-      `${cmdModel} get-model-evaluation "${outputModelId}"` +
+    output = await execSync(
+      `node vision/object-detection/get-model-evaluation.v1beta1.js "${projectId}" "${computeRegion}" "${outputModelId}"` +
         ` "${modelEvaluationId}"`
     );
     assert.match(output, /Model evaluation Id:/);
 
     // Display evaluation
-    output = await exec(`${cmdModel} display-evaluation "${outputModelId}" `);
+    output = await execSync(
+      `node vision/object-detection/display-evaluation.v1beta1.js "${projectId}" "${computeRegion}" "${outputModelId}" `
+    );
     assert.match(output, /Model Evaluation ID:/);
 
     // Delete Model
-    output = await exec(`${cmdModel} delete-model "${outputModelId}"`);
+    output = await execSync(
+      `node vision/object-detection/delete-model.v1beta1.js "${projectId}" "${computeRegion}" "${outputModelId}"`
+    );
     assert.match(output, /Model delete details:/);
   });
 
-  it(`should list and get operation status`, async () => {
+  it.skip(`should list and get operation status`, async () => {
     // List operation status
-    let output = await exec(`${cmdModel} list-operations-status`);
+    let output = await execSync(
+      `node vision/object-detection/list-operations-status.v1beta1.js`
+    );
     const parsedOut = output.split('\n');
     const operationFullId = parsedOut[3].split(':')[1].trim();
 
     // Get operation status
     // Poll operation status, here confirming that operation is not complete yet
-    output = await exec(
-      `${cmdModel} get-operation-status "${operationFullId}"`
+    output = await execSync(
+      `node vision/object-detection/get-operation-status.v1beta1.js "${operationFullId}"`
     );
     assert.match(output, /Operation details:/);
   });
 
-  it(`should deploy the model`, async () => {
+  it.skip(`should deploy the model`, async () => {
     // Deploy the model
-    const output = await exec(`${cmdModel} deploy-model ${deployModelId}`);
+    const output = await execSync(
+      `node vision/object-detection/deploy-model.v1beta1.js "${projectId}" "${computeRegion}" ${deployModelId}`
+    );
     assert.match(output, /Name:/);
   });
 
-  it(`should undeploy the model`, async () => {
+  it.skip(`should undeploy the model`, async () => {
     // Undeploy the model
-    const output = await exec(`${cmdModel} undeploy-model ${undeployModelId}`);
+    const output = await execSync(
+      `node vision/object-detection/undeploy-model.v1beta1.js "${projectId}" "${computeRegion}" ${undeployModelId}`
+    );
     assert.match(output, /Name:/);
   });
 });
