@@ -16,7 +16,9 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const cp = require('child_process');
+
+const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 /** Tests for AutoML Vision Object Detection "Dataset API" sample. */
 // TODO(developer): Before running the test cases,
@@ -30,12 +32,10 @@ const filter = 'imageObjectDetectionDatasetMetadata:*';
 const datasetId = 'ICN3946265060617537378';
 const importDataCsv = 'gs://nodejs-docs-samples-vcm/flowerTraindata20lines.csv';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
-
 describe('Vision Object Detection DatasetAPI', () => {
   it.skip(`should create, import and delete a dataset`, async () => {
     // Create dataset
-    let output = await exec(
+    let output = await execSync(
       `node vision/object-detection/create-dataset.v1beta1.js "${projectId}" "${computeRegion}" "${datasetName}"`
     );
     const parsedOut = output.split('\n');
@@ -43,13 +43,13 @@ describe('Vision Object Detection DatasetAPI', () => {
     assert.match(output, /Dataset display name:/);
 
     // Import data
-    output = await exec(
+    output = await execSync(
       `node vision/object-detection/import-data.v1beta1.js "${projectId}" "${computeRegion}" "${outputDatasetId}" "${importDataCsv}"`
     );
     assert.match(output, /Processing import.../);
 
     // Delete dataset
-    output = await exec(
+    output = await execSync(
       `node vision/object-detection/delete-dataset.v1beta1.js "${projectId}" "${computeRegion}" "${outputDatasetId}"`
     );
     assert.match(output, /Dataset delete details:/);
@@ -57,16 +57,16 @@ describe('Vision Object Detection DatasetAPI', () => {
 
   it(`should list datasets`, async () => {
     // List datasets
-    const output = await exec(
-      `node samples/vision/object-detection/list-datasets.v1beta1.js "${projectId}" "${computeRegion}" "${filter}"`
+    const output = await execSync(
+      `node vision/object-detection/list-datasets.v1beta1.js "${projectId}" "${computeRegion}" "${filter}"`
     );
     assert.match(output, /List of datasets:/);
   });
 
   it(`should get preexisting dataset`, async () => {
     // Get dataset
-    const output = await exec(
-      `node samples/vision/object-detection/get-dataset.v1beta1.js "${projectId}" "${computeRegion}" "${datasetId}"`
+    const output = await execSync(
+      `node vision/object-detection/get-dataset.v1beta1.js "${projectId}" "${computeRegion}" "${datasetId}"`
     );
     assert.match(output, /Dataset display name:/);
   });
@@ -74,7 +74,7 @@ describe('Vision Object Detection DatasetAPI', () => {
   it.skip(`should export dataset`, async () => {
     // Export data
     const outputUri = 'gs://' + bucket + '/' + datasetId;
-    const output = await exec(
+    const output = await execSync(
       `node vision/object-detection/export-data.v1beta1.js "${projectId}" "${computeRegion}" "${datasetId}" "${outputUri}"`
     );
     assert.match(output, /Processing export.../);
