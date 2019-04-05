@@ -23,7 +23,6 @@ async function main(
   // [START automl_tables_predict]
   const automl = require(`@google-cloud/automl`);
   const fs = require(`fs`);
-  const csv = require(`fast-csv`);
 
   // Create client for prediction service.
   const client = new automl.v1beta1.PredictionServiceClient();
@@ -43,8 +42,7 @@ async function main(
   const modelFullId = client.modelPath(projectId, computeRegion, modelId);
 
   // Read the csv file content for prediction.
-  const stream = fs.createReadStream(filePath);
-  const csvStream = csv().on(`data`, function(data) {
+  const stream = fs.createReadStream(filePath).on(`data`, function(data) {
     const values = [];
     for (const val of data) {
       values.push({string_value: val});
@@ -74,7 +72,7 @@ async function main(
         console.error(err);
       });
   });
-  stream.pipe(csvStream);
+  stream.read();
   // [END automl_tables_predict]
 }
 main(...process.argv.slice(2)).catch(console.error());
