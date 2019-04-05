@@ -49,7 +49,7 @@ describe(' Vision Object Detection ModelAPI', () => {
     assert.match(output, /Operation details:/);
   });
 
-  it(`should list models, get and delete a model. list, get and display model
+  it.skip(`should list models, get and delete a model. list, get and display model
     evaluations from preexisting models`, async () => {
     // List models
     let output = await execSync(
