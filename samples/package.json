@@ -22,8 +22,7 @@
     "chai": "^4.2.0",
     "execa": "^1.0.0",
     "mathjs": "^5.5.0",
-    "yargs": "^13.2.1",
-    "fast-csv": "^2.4.1"
+    "yargs": "^13.2.1"
   },
   "devDependencies": {
     "mocha": "^6.0.1"
