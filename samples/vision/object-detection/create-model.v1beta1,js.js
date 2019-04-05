@@ -46,16 +46,14 @@ function main(
     };
 
     // Create a model with the model metadata in the region.
-    automlClient
-      .createModel({parent: projectLocation, model: myModel})
-      .then(responses => {
-        const initialApiResponse = responses[1];
-        console.log(`Training operation name: ${initialApiResponse.name}`);
-        console.log(`Training started...`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [response] = await automlClient.createModel({
+      parent: projectLocation,
+      model: myModel,
+    });
+
+    const initialApiResponse = response[1];
+    console.log(`Training operation name: ${initialApiResponse.name}`);
+    console.log(`Training started...`);
   }
   createModel();
   // [END automl_vision_object_detection_create_model]

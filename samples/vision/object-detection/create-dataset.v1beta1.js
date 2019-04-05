@@ -46,27 +46,24 @@ function main(
     };
 
     // Create a dataset with the dataset metadata in the region.
-    automlClient
-      .createDataset({parent: projectLocation, dataset: myDataset})
-      .then(responses => {
-        const dataset = responses[0];
+    const [response] = await automlClient.createDataset({
+      parent: projectLocation,
+      dataset: myDataset,
+    });
 
-        // Display the dataset information.
-        console.log(`Dataset name: ${dataset.name}`);
-        console.log(`Dataset Id: ${dataset.name.split(`/`).pop(-1)}`);
-        console.log(`Dataset display name: ${dataset.displayName}`);
-        console.log(`Dataset example count: ${dataset.exampleCount}`);
-        console.log(
-          `Image object detection dataset metadata: ${util.inspect(
-            dataset.imageObjectDetectionDatasetMetadata,
-            false,
-            null
-          )}`
-        );
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const dataset = response[0];
+    // Display the dataset information.
+    console.log(`Dataset name: ${dataset.name}`);
+    console.log(`Dataset Id: ${dataset.name.split(`/`).pop(-1)}`);
+    console.log(`Dataset display name: ${dataset.displayName}`);
+    console.log(`Dataset example count: ${dataset.exampleCount}`);
+    console.log(
+      `Image object detection dataset metadata: ${util.inspect(
+        dataset.imageObjectDetectionDatasetMetadata,
+        false,
+        null
+      )}`
+    );
   }
   createDataset();
   // [END automl_vision_object_detection_create_dataset]

@@ -43,25 +43,16 @@ function main(
     );
 
     // Delete a dataset.
-    automlClient
-      .deleteDataset({name: datasetFullId})
-      .then(responses => {
-        const operation = responses[0];
-        return operation.promise();
-      })
-      .then(responses => {
-        // The final result of the operation.
-        const operationDetails = responses[2];
+    const [operation] = await automlClient.deleteDataset({name: datasetFullId});
 
-        // Get the Dataset delete details.
-        console.log('Dataset delete details:');
-        console.log(`\tOperation details:`);
-        console.log(`\t\tName: ${operationDetails.name}`);
-        console.log(`\t\tDone: ${operationDetails.done}`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [response] = await operation.promise();
+    const operationDetails = response[2];
+
+    // Get the Dataset delete details.
+    console.log('Dataset delete details:');
+    console.log(`  Operation details:`);
+    console.log(`    Name: ${operationDetails.name}`);
+    console.log(`    Done: ${operationDetails.done}`);
   }
   deleteDataset();
   // [END automl_vision_object_detection_delete_dataset]

@@ -43,19 +43,14 @@ function main(
     );
 
     // Deploy a model with the deploy model request.
-    automlClient
-      .deployModel({name: modelFullId})
-      .then(responses => {
-        const response = responses[0];
-        console.log(`Deployment Details:`);
-        console.log(`\tName: ${response.name}`);
-        console.log(`\tMetadata:`);
-        console.log(`\t\tType Url: ${response.metadata.typeUrl}`);
-        console.log(`\tDone: ${response.done}`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [operation] = await automlClient.deployModel({name: modelFullId});
+
+    const [response] = await operation.promise();
+    console.log(`Deployment Details:`);
+    console.log(` Name: ${response.name}`);
+    console.log(` Metadata:`);
+    console.log(`   Type Url: ${response.metadata.typeUrl}`);
+    console.log(` Done: ${response.done}`);
   }
   deployModel();
   // [END automl_vision_object_detection_deploy_model]

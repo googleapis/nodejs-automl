@@ -42,25 +42,16 @@ function main(
     );
 
     // Delete a model.
-    automlClient
-      .deleteModel({name: modelFullId})
-      .then(responses => {
-        const operation = responses[0];
-        return operation.promise();
-      })
-      .then(responses => {
-        // The final result of the operation.
-        const operationDetails = responses[2];
+    const [operation] = await automlClient.deleteModel({name: modelFullId});
 
-        // Get the Model delete details.
-        console.log('Model delete details:');
-        console.log(`\tOperation details:`);
-        console.log(`\t\tName: ${operationDetails.name}`);
-        console.log(`\tDone: ${operationDetails.done}`);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    const [response] = await operation.promise();
+    const operationDetails = response[2];
+
+    // Get the Model delete details.
+    console.log('Model delete details:');
+    console.log(`  Operation details:`);
+    console.log(`   Name: ${operationDetails.name}`);
+    console.log(`   Done: ${operationDetails.done}`);
   }
   deleteModel();
   // [END automl_vision_object_detection_delete_model]
