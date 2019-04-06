@@ -14,6 +14,7 @@
  */
 
 `use strict`;
+const math = require('mathjs');
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -45,7 +46,7 @@ async function main(
   const stream = fs.createReadStream(filePath).on(`data`, function(data) {
     const values = [];
     for (const val of data) {
-      values.push({string_value: val});
+      values.push({stringValue: val});
     }
 
     // Set the payload by giving the row values.
@@ -62,10 +63,22 @@ async function main(
       .then(responses => {
         console.log(responses);
         console.log(`Prediction results:`);
-
-        for (const result of responses[0].payload) {
-          console.log(`Predicted class name: ${result.displayName}`);
-          console.log(`Predicted class score: ${result.classification.score}`);
+        const payload = responses[0].payload;
+        if (payload.length === 1) {
+          console.log(
+            `Regression result: ${math.round(
+              payload[0].tables.value.numberValue,
+              3
+            )}`
+          );
+        } else {
+          for (const result of payload) {
+            console.log(
+              `Classification label: ${
+                result.tables.value.stringValue
+              } Classification score: ${math.round(result.tables.score, 3)}`
+            );
+          }
         }
       })
       .catch(err => {
