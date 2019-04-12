@@ -15,9 +15,7 @@
 
 `use strict`;
 
-async function main(
-  projectId = 'YOUR_PROJECT_ID'
-) {
+async function main(projectId = 'YOUR_PROJECT_ID') {
   // [START automl_translation_create_dataset]
   const automl = require(`@google-cloud/automl`);
 
