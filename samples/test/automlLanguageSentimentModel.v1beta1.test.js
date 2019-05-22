@@ -36,6 +36,9 @@ const undeployModelId = 'TST5013860858145102878';
 
 const exec = async cmd => (await execa.shell(cmd)).stdout;
 
+console.info('PROJECT_ID >>>');
+console.info(process.env.PROJECT_ID);
+
 describe.skip('Language Sentiment ModelAPI', () => {
   it(`should create  a model`, async () => {
     // Create model
