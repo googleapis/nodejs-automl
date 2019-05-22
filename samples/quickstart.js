@@ -15,7 +15,6 @@
 
 'use strict';
 
-// [START automl_quickstart]
 async function main(
   projectId,
   computeRegion,
@@ -23,6 +22,7 @@ async function main(
   filePath,
   scoreThreshold
 ) {
+  // [START automl_quickstart]
   const automl = require('@google-cloud/automl');
   const fs = require('fs');
 
@@ -66,8 +66,8 @@ async function main(
     console.log(`Predicted class name: ${result.displayName}`);
     console.log(`Predicted class score: ${result.classification.score}`);
   });
+  // [END automl_quickstart]
 }
-// [END automl_quickstart]
 main(...process.argv.slice(2)).catch(err => {
   console.error(err);
   process.exitCode = 1;

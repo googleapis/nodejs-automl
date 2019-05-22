@@ -55,13 +55,6 @@ npm install @google-cloud/automl
 ### Using the client library
 
 ```javascript
-async function main(
-  projectId,
-  computeRegion,
-  modelId,
-  filePath,
-  scoreThreshold
-) {
   const automl = require('@google-cloud/automl');
   const fs = require('fs');
 
@@ -105,7 +98,6 @@ async function main(
     console.log(`Predicted class name: ${result.displayName}`);
     console.log(`Predicted class score: ${result.classification.score}`);
   });
-}
 
 ```
 
