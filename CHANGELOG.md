@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/automl?activeTab=versions
 
+### [1.1.2](https://www.github.com/googleapis/nodejs-automl/compare/v1.1.1...v1.1.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mathjs to v6 ([#195](https://www.github.com/googleapis/nodejs-automl/issues/195)) ([47364ab](https://www.github.com/googleapis/nodejs-automl/commit/47364ab))
+
 ### [1.1.1](https://www.github.com/googleapis/nodejs-automl/compare/v1.1.0...v1.1.1) (2019-06-06)
 
 
