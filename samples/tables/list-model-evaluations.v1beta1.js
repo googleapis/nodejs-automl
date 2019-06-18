@@ -97,7 +97,9 @@ async function main(
                 )} %`
               );
               console.log(
-                `\t\tModel false positive rate: ${confidenceMetricsEntry.falsePositiveRate}`
+                `\t\tModel false positive rate: ${
+                  confidenceMetricsEntry.falsePositiveRate
+                }`
               );
               console.log(
                 `\t\tModel f1 score: ${math.round(
@@ -118,7 +120,9 @@ async function main(
                 )} %`
               );
               console.log(
-                `\t\tModel false positive rate@1: ${confidenceMetricsEntry.falsePositiveRateAt1}`
+                `\t\tModel false positive rate@1: ${
+                  confidenceMetricsEntry.falsePositiveRateAt1
+                }`
               );
               console.log(
                 `\t\tModel f1 score@1: ${math.round(
@@ -127,16 +131,24 @@ async function main(
                 )} %`
               );
               console.log(
-                `\t\tModel true positive count: ${confidenceMetricsEntry.truePositiveCount}`
+                `\t\tModel true positive count: ${
+                  confidenceMetricsEntry.truePositiveCount
+                }`
               );
               console.log(
-                `\t\tModel false positive count: ${confidenceMetricsEntry.falsePositiveCount}`
+                `\t\tModel false positive count: ${
+                  confidenceMetricsEntry.falsePositiveCount
+                }`
               );
               console.log(
-                `\t\tModel false negative count: ${confidenceMetricsEntry.falseNegativeCount}`
+                `\t\tModel false negative count: ${
+                  confidenceMetricsEntry.falseNegativeCount
+                }`
               );
               console.log(
-                `\t\tModel true negative count: ${confidenceMetricsEntry.trueNegativeCount}`
+                `\t\tModel true negative count: ${
+                  confidenceMetricsEntry.trueNegativeCount
+                }`
               );
               console.log(`\n`);
             }
@@ -147,13 +159,19 @@ async function main(
         } else if (regressionMetrics) {
           console.log(`Table regression evaluation metrics:`);
           console.log(
-            `\tModel root mean squared error: ${regressionMetrics.rootMeanSquaredError}`
+            `\tModel root mean squared error: ${
+              regressionMetrics.rootMeanSquaredError
+            }`
           );
           console.log(
-            `\tModel mean absolute error: ${regressionMetrics.meanAbsoluteError}`
+            `\tModel mean absolute error: ${
+              regressionMetrics.meanAbsoluteError
+            }`
           );
           console.log(
-            `\tModel mean absolute percentage error: ${regressionMetrics.meanAbsolutePercentageError}`
+            `\tModel mean absolute percentage error: ${
+              regressionMetrics.meanAbsolutePercentageError
+            }`
           );
           console.log(`\tModel rSquared: ${regressionMetrics.rSquared}`);
         }

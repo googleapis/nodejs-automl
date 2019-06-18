@@ -64,7 +64,9 @@ async function main(
       }
       if (responses[0].metadata.sentiment_score) {
         console.log(
-          `\tNormalized sentiment score: ${responses[0].metadata.sentiment_score}`
+          `\tNormalized sentiment score: ${
+            responses[0].metadata.sentiment_score
+          }`
         );
       }
     })
