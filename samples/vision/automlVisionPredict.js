@@ -62,15 +62,18 @@ async function predict(
   const payload = {};
   payload.image = {imageBytes: content};
 
+  let response = null;
+
   // params is additional domain-specific parameters.
   // currently there is no additional parameters supported.
   (async () => {
-    const [response] = await client.predict({
+    [response] = await client.predict({
       name: modelFullId,
       payload: payload,
       params: params,
-    })
+    });
   })();
+
   console.log(`Prediction results:`);
   response.payload.forEach(result => {
     console.log(`Predicted class name: ${result.displayName}`);

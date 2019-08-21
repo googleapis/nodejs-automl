@@ -321,12 +321,14 @@ async function displayEvaluation(projectId, computeRegion, modelId, filter) {
   // Get the full path of the model.
   const modelFullId = client.modelPath(projectId, computeRegion, modelId);
 
+  let response = null;
+
   // List all the model evaluations in the model by applying filter.
   (async () => {
-    const [response] = await client.listModelEvaluations({
+    [response] = await client.listModelEvaluations({
       parent: modelFullId,
       filter: filter,
-    })
+    });
   })();
 
   response.forEach(async element => {
@@ -343,10 +345,12 @@ async function displayEvaluation(projectId, computeRegion, modelId, filter) {
         modelEvaluationId
       );
 
+      let modelEvaluation = null;
+
       (async () => {
-        const [modelEvaluation] = await client.getModelEvaluation({
+        [modelEvaluation] = await client.getModelEvaluation({
           name: modelEvaluationFullId,
-        })
+        });
       })();
       const classMetrics = modelEvaluation.classificationEvaluationMetrics;
       const confidenceMetricsEntries = classMetrics.confidenceMetricsEntry;
