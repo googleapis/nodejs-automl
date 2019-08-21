@@ -64,11 +64,13 @@ async function predict(
 
   // params is additional domain-specific parameters.
   // currently there is no additional parameters supported.
-  const [response] = await client.predict({
-    name: modelFullId,
-    payload: payload,
-    params: params,
-  });
+  (async () => {
+    const [response] = await client.predict({
+      name: modelFullId,
+      payload: payload,
+      params: params,
+    })
+  })();
   console.log(`Prediction results:`);
   response.payload.forEach(result => {
     console.log(`Predicted class name: ${result.displayName}`);
