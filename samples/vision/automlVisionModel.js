@@ -322,10 +322,12 @@ async function displayEvaluation(projectId, computeRegion, modelId, filter) {
   const modelFullId = client.modelPath(projectId, computeRegion, modelId);
 
   // List all the model evaluations in the model by applying filter.
-  const [response] = await client.listModelEvaluations({
-    parent: modelFullId,
-    filter: filter,
-  });
+  (async () => {
+    const [response] = await client.listModelEvaluations({
+      parent: modelFullId,
+      filter: filter,
+    })
+  })();
 
   response.forEach(async element => {
     // There is evaluation for each class in a model and for overall model.
@@ -341,9 +343,11 @@ async function displayEvaluation(projectId, computeRegion, modelId, filter) {
         modelEvaluationId
       );
 
-      const [modelEvaluation] = await client.getModelEvaluation({
-        name: modelEvaluationFullId,
-      });
+      (async () => {
+        const [modelEvaluation] = await client.getModelEvaluation({
+          name: modelEvaluationFullId,
+        })
+      })();
       const classMetrics = modelEvaluation.classificationEvaluationMetrics;
       const confidenceMetricsEntries = classMetrics.confidenceMetricsEntry;
 
