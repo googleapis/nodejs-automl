@@ -320,7 +320,7 @@ async function displayEvaluation(projectId, computeRegion, modelId, filter) {
   // Get the full path of the model.
   const modelFullId = client.modelPath(projectId, computeRegion, modelId);
 
-  let response = null;
+  let response;
 
   // List all the model evaluations in the model by applying filter.
   (async () => {
