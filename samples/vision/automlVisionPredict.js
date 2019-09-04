@@ -22,13 +22,7 @@
 
 'use strict';
 
-sync function predict(
-  projectId,
-  computeRegion,
-  modelId,
-  filePath,
-  scoreThreshold
-) {
+function predict(projectId, computeRegion, modelId, filePath, scoreThreshold) {
   // [START automl_vision_predict]
   async function automlVisionPredict() {
     const automl = require('@google-cloud/automl').v1beta1;
@@ -76,7 +70,7 @@ sync function predict(
     });
   }
 
-  automlVisionPredict();
+  automlVisionPredict().catch(console.error);
   // [END automl_vision_predict]
 }
 
