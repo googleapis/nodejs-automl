@@ -61,7 +61,7 @@ async function predict(
   const payload = {};
   payload.image = {imageBytes: content};
 
-  let response = null;
+  let response;
 
   // params is additional domain-specific parameters.
   // currently there is no additional parameters supported.
