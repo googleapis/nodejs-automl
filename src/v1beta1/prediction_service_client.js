@@ -14,6 +14,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const gapicConfig = require('./prediction_service_client_config.json');
 const gax = require('google-gax');
 const path = require('path');
@@ -120,6 +121,28 @@ class PredictionServiceClient {
       'protos',
       'protos.json'
     );
+
+    console.log('dirname: ' + __dirname);
+    console.log(`nodejsProtoPath: ${nodejsProtoPath}`);
+
+    for (const fullPath of [
+      __dirname,
+      path.join(__dirname, '..'),
+      path.join(__dirname, '..', '..'),
+      path.join(__dirname, '..', '..', 'protos'),
+    ]) {
+      if (!fs.existsSync(fullPath)) {
+        console.log(`Does not exist: ${fullPath}`);
+        continue;
+      }
+      try {
+        const dir = fs.readdirSync(fullPath);
+        console.log(`${fullPath}: ${dir}`);
+      } catch (err) {
+        console.log(`${fullPath}: got error: ${err}`);
+      }
+    }
+
     const protos = gaxGrpc.loadProto(
       opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
     );
