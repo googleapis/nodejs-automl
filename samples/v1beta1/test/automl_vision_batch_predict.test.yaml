@@ -1,0 +1,76 @@
+##
+# This test requires the following Environment Variables to run and pass:
+#
+# GOOGLE_PROJECT_ID                       Your Google Cloud Project ID
+#
+# AUTOML_VISION_MODEL_ID                  ID of Vision classification model (e.g. ICM134567890123).
+#                                         Recommend model be trained by following the Quickstart:
+#                                         > https://cloud.google.com/vision/automl/docs/quickstart
+#
+# AUTOML_VISION_BATCH_PREDICT_INPUT_URI   GCS URI to CSV file to be used as input for BatchPredict.
+#                                         CSV file must include 1 GCS URI per line of an image to
+#                                         use for prediction. (Note: special GCS permissions below)
+#
+# AUTOML_VISION_BATCH_PREDICT_OUTPUT_URI  GCS URI for where to write prediction results. Results are
+#                                         saved as JSONL files and will be written to this URI's
+#                                         bucket. (Note: special GCS permissions below)
+#
+# Cloud Storage URIs:                     The following service account needs read/write access to
+#                                         the bucket used for the INPUT/OUTPUT URIs, respectively.
+#                                         > service-1040915296137@gcp-sa-automl.iam.gserviceaccount.com
+#
+#                                         Note: Ideally, the INPUT URI would come from the canonical
+#                                               cloud-samples-data bucket used for sample tests, but
+#                                               these special IAM permissions are required making
+#                                               that tricky. As such, this test requires these very
+#                                               specific URIs for testing BatchPredict.
+##
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Batch Predict (AutoML Vision)
+
+    setup:
+    - env: {variable: project_id, name: GOOGLE_PROJECT_ID}
+    - env: {variable: model_id, name: AUTOML_VISION_MODEL_ID}
+    - env: {variable: input_uri, name: AUTOML_VISION_BATCH_PREDICT_INPUT_URI}
+    - env: {variable: output_uri, name: AUTOML_VISION_BATCH_PREDICT_OUTPUT_URI}
+    - uuid: output_prefix
+    - code: full_output_uri = f"{output_uri.strip('/')}/{output_prefix}"
+
+    teardown:
+    - shell: [gsutil, rm, -r, full_output_uri]
+
+    cases:
+    - name: automl_vision_batch_predict (no arguments)
+      spec:
+      # Verify that no files have been written to the output URI (yet)
+      - shell: [gsutil, ls, full_output_uri]
+      - assert_failure:
+        - "Expected GCS output folder for BatchPredict results not to exist yet"
+        - full_output_uri
+
+      # Call (and wait for) BatchPredict - Note: this may take up to 30 minutes
+      - call:
+          sample: automl_vision_batch_predict
+          params:
+            project: {variable: project_id}
+            model: {variable: model_id}
+            input_uri: {variable: input_uri}
+            output_uri: {variable: full_output_uri}
+      - assert_contains:
+        - literal: "results saved"
+
+      # Verify that files have now been written to the output URI successfully
+      - shell: [gsutil, ls, full_output_uri]
+      - assert_success:
+        - "Expected GCS output folder for BatchPredict results to exist"
+        - full_output_uri
+
+      # Verify that JSONL files were saved to the output URI successfully
+      - code: path_to_jsonl_files = f"{full_output_uri}/*/*.jsonl"
+      - shell: [gsutil, ls, path_to_jsonl_files]
+      - assert_success:
+        - "Expected GCS output folder for BatchPredict to contain JSONL files"
+        - path_to_jsonl_files

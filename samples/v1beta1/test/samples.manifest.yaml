@@ -1,0 +1,11 @@
+type: manifest/samples
+schema_version: 3
+base: &common
+  env: 'nodejs'
+  bin: 'node'
+  chdir: '{@manifest_dir}/../..'
+  basepath: '.'
+samples:
+- <<: *common
+  path: '{basepath}/v1beta1/automl_vision_batch_predict.js'
+  sample: 'automl_vision_batch_predict'
