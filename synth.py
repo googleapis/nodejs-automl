@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.DEBUG)
 gapic = gcp.GAPICGenerator()
 versions = ['v1beta1']
 for version in versions:
-    library = gapic.node_library('automl', version)
+    library = gapic.node_library('automl', version, include_samples=True)
     s.copy(library, excludes=['src/index.js', 'README.md', 'package.json'])
 
 common_templates = gcp.CommonTemplates()
