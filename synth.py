@@ -20,10 +20,10 @@ import subprocess
 logging.basicConfig(level=logging.DEBUG)
 
 gapic = gcp.GAPICGenerator()
-versions = ['v1', 'v1beta1']
+versions = ['v1beta1', 'v1']
 for version in versions:
     library = gapic.node_library('automl', version)
-    s.copy(library, excludes=['README.md', 'package.json'])
+    s.copy(library, excludes=['src/index.js', 'README.md', 'package.json'])
 
 common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library()
@@ -42,3 +42,4 @@ s.replace('**/doc/google/protobuf/doc_timestamp.js',
 # Node.js specific cleanup
 subprocess.run(['npm', 'install'])
 subprocess.run(['npm', 'run', 'fix'])
+subprocess.run(['npx', 'compileProtos', 'src'])
