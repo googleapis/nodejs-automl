@@ -49,11 +49,18 @@ function main(
     const [response] = await client.createDataset(request);
 
     console.log(`Dataset name: ${response.name}`);
-    console.log(`Dataset id: ${response.name.split('/')[response.name.split('/').length - 1].split('\n')[0]}`)
+    console.log(`
+      Dataset id: ${
+        response.name
+          .split('/')
+          [response.name.split('/').length - 1].split('\n')[0]
+      }`);
     console.log(`Dataset display name: ${response.displayName}`);
     console.log(`Translation dataset metadata:`);
-    console.log(`\tSource language code: ${response.translationDatasetMetadata.sourceLanguageCode}`);
-    console.log(`\tTarget language code: ${response.translationDatasetMetadata.targetLanguageCode}`);
+    console.log(`
+      \tSource language code: ${response.translationDatasetMetadata.sourceLanguageCode}`);
+    console.log(`
+      \tTarget language code: ${response.translationDatasetMetadata.targetLanguageCode}`);
     console.log(`Dataset create time`);
     console.log(`\tseconds ${response.createTime.seconds}`);
     console.log(`\tnanos ${response.createTime.nanos / 1e9}`);

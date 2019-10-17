@@ -15,9 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID') {
   // [START automl_list_operation_status]
   /**
    * TODO(developer): Uncomment these variables before running the sample.

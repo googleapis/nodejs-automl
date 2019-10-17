@@ -15,10 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID',
-  modelId = 'YOUR_MODEL_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID', modelId = 'YOUR_MODEL_ID') {
   // [START automl_delete_model]
   /**
    * TODO(developer): Uncomment these variables before running the sample.

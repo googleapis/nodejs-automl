@@ -15,10 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID',
-  modelId = 'YOUR_MODEL_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID', modelId = 'YOUR_MODEL_ID') {
   // [START automl_list_model_evaluations]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -49,8 +46,12 @@ function main(
       console.log(`Model create time`);
       console.log(`\tseconds ${evaluation.createTime.seconds}`);
       console.log(`\tnanos ${evaluation.createTime.nanos / 1e9}`);
-      console.log(`Evaluation example count: ${evaluation.evaluatedExampleCount}`);
-      console.log(`Model evaluation metrics: ${evaluation.translationEvaluationMetrics}`);
+      console.log(
+        `Evaluation example count: ${evaluation.evaluatedExampleCount}`
+      );
+      console.log(
+        `Model evaluation metrics: ${evaluation.translationEvaluationMetrics}`
+      );
     }
   }
 

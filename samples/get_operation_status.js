@@ -37,7 +37,7 @@ function main(
     };
 
     const [response] = await client.operationsClient.getOperation(request);
-    
+
     console.log(`Name: ${response.name}`);
     console.log(`Operation details:`);
     console.log(`${response}`);

@@ -15,10 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID',
-  datasetId = 'YOUR_DATASET_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID', datasetId = 'YOUR_DATASET_ID') {
   // [START automl_delete_dataset]
   /**
    * TODO(developer): Uncomment these variables before running the sample.

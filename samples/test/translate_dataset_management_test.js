@@ -37,34 +37,47 @@ describe('Automl Translate Dataset Tests', () => {
 
   it('should create, import, and delete a dataset', async () => {
     const projectId = await client.getProjectId();
-    const displayName = `test_${uuid.v4().replace(/-/g, '_').substring(0, 26)}`;
+    const displayName = `test_${uuid
+      .v4()
+      .replace(/-/g, '_')
+      .substring(0, 26)}`;
 
     // create
-    const create_output = execSync(`node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${displayName}`);
+    const create_output = execSync(
+      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${displayName}`
+    );
     assert.match(create_output, /Dataset id:/);
-    
+
     const datasetId = create_output.split('Dataset id: ')[1].split('\n')[0];
 
     // import'
     const data = `gs://${projectId}-automl-translate/en-ja-short.csv`;
-    const import_output = execSync(`node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${datasetId} ${data}`);
+    const import_output = execSync(
+      `node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${datasetId} ${data}`
+    );
     assert.match(import_output, /Dataset imported/);
 
     // delete
-    const delete_output = execSync(`node ${DELETE_DATASET_REGION_TAG}.js ${projectId} ${datasetId}`);
+    const delete_output = execSync(
+      `node ${DELETE_DATASET_REGION_TAG}.js ${projectId} ${datasetId}`
+    );
     assert.match(delete_output, /Dataset deleted/);
   });
 
   it('should list datasets', async () => {
     const projectId = await client.getProjectId();
-    const list_output = execSync(`node ${LIST_DATASET_REGION_TAG}.js ${projectId}`)
+    const list_output = execSync(
+      `node ${LIST_DATASET_REGION_TAG}.js ${projectId}`
+    );
 
     assert.match(list_output, /Dataset id/);
   });
 
   it('should get a dataset', async () => {
     const projectId = await client.getProjectId();
-    const get_output = execSync(`node ${GET_DATASET_REGION_TAG}.js ${projectId} ${DATASET_ID}`)
+    const get_output = execSync(
+      `node ${GET_DATASET_REGION_TAG}.js ${projectId} ${DATASET_ID}`
+    );
 
     assert.match(get_output, /Dataset id/);
   });
@@ -72,8 +85,10 @@ describe('Automl Translate Dataset Tests', () => {
   it('should export a datset', async () => {
     const projectId = await client.getProjectId();
     const bucketName = `${projectId}-automl-translate`;
-    const prefix = 'TEST_EXPORT_OUTPUT'
-    const export_output = execSync(`node ${EXPORT_DATASET_REGION_TAG}.js ${projectId} ${DATASET_ID} gs://${bucketName}/${prefix}/`)
+    const prefix = 'TEST_EXPORT_OUTPUT';
+    const export_output = execSync(
+      `node ${EXPORT_DATASET_REGION_TAG}.js ${projectId} ${DATASET_ID} gs://${bucketName}/${prefix}/`
+    );
 
     assert.match(export_output, /Dataset exported/);
 
@@ -82,9 +97,14 @@ describe('Automl Translate Dataset Tests', () => {
     const options = {
       prefix: prefix,
     };
-    const [files] = await storageClient.bucket(`gs://${bucketName}`).getFiles(options);
+    const [files] = await storageClient
+      .bucket(`gs://${bucketName}`)
+      .getFiles(options);
     files.forEach(file => {
-      storageClient.bucket(`gs://${bucketName}`).file(file.name).delete();
+      storageClient
+        .bucket(`gs://${bucketName}`)
+        .file(file.name)
+        .delete();
     });
   });
 });

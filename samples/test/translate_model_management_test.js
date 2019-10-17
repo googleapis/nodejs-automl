@@ -19,12 +19,10 @@ const {assert} = require('chai');
 const {AutoMlClient} = require('@google-cloud/automl');
 
 const cp = require('child_process');
-const uuid = require('uuid');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const DATASET_ID = 'TRL8522556519449886720';
-const MODEL_ID = 'TRL1218052175389786112';
+// const DATASET_ID = 'TRL8522556519449886720';
 const LIST_MODEL_REGION_TAG = 'list_models';
 const GET_MODEL_REGION_TAG = 'get_model';
 const LIST_MODEL_EVALUATION_REGION_TAG = 'list_model_evaluations';
@@ -32,8 +30,8 @@ const GET_MODEL_EVALUATION_REGION_TAG = 'get_model_evaluation';
 const LIST_OPERATION_STATUS_REGION_TAG = 'list_operation_status';
 const GET_OPERATION_STATUS_REGION_TAG = 'get_operation_status';
 
-const CREATE_MODEL_REGION_TAG = 'translate_create_model';
-const DELETE_MODEL_REGION_TAG = 'delete_model';
+// const CREATE_MODEL_REGION_TAG = 'translate_create_model';
+// const DELETE_MODEL_REGION_TAG = 'delete_model';
 
 describe('Automl Translate Model Tests', () => {
   const client = new AutoMlClient();
@@ -42,32 +40,46 @@ describe('Automl Translate Model Tests', () => {
     const projectId = await client.getProjectId();
 
     // list models
-    const list_model_output = execSync(`node ${LIST_MODEL_REGION_TAG}.js ${projectId}`);
+    const list_model_output = execSync(
+      `node ${LIST_MODEL_REGION_TAG}.js ${projectId}`
+    );
     assert.match(list_model_output, /Model id:/);
     const modelId = list_model_output.split('Model id: ')[1].split('\n')[0];
 
     // get model
-    const get_model_output = execSync(`node ${GET_MODEL_REGION_TAG}.js ${projectId} ${modelId}`);
+    const get_model_output = execSync(
+      `node ${GET_MODEL_REGION_TAG}.js ${projectId} ${modelId}`
+    );
     assert.match(get_model_output, /Model id/);
 
     // list model evaluations
-    const list_model_eval_output = execSync(`node ${LIST_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${modelId}`);
+    const list_model_eval_output = execSync(
+      `node ${LIST_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${modelId}`
+    );
     assert.match(list_model_eval_output, /Model evaluation name/);
-    const modelEvaluationId = list_model_eval_output.split(`${modelId}/modelEvaluations/`)[1].split('\n')[0];
+    const modelEvaluationId = list_model_eval_output
+      .split(`${modelId}/modelEvaluations/`)[1]
+      .split('\n')[0];
 
     // get model evaluation
-    const get_model_eval_output = execSync(`node ${GET_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${modelId} ${modelEvaluationId}`);
+    const get_model_eval_output = execSync(
+      `node ${GET_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${modelId} ${modelEvaluationId}`
+    );
     assert.match(get_model_eval_output, /Model evaluation name/);
   });
 
   it('should list / get operation status', async () => {
     const projectId = await client.getProjectId();
-    
-    const list_output = execSync(`node ${LIST_OPERATION_STATUS_REGION_TAG}.js ${projectId}`)
+
+    const list_output = execSync(
+      `node ${LIST_OPERATION_STATUS_REGION_TAG}.js ${projectId}`
+    );
     assert.match(list_output, /Operation details/);
     const operation_id = list_output.split('Name: ')[1].split('\n')[0];
 
-    const get_output = execSync(`node ${GET_OPERATION_STATUS_REGION_TAG}.js ${operation_id}`)
+    const get_output = execSync(
+      `node ${GET_OPERATION_STATUS_REGION_TAG}.js ${operation_id}`
+    );
     assert.match(get_output, /Operation details/);
   });
 

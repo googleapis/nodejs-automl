@@ -15,10 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID',
-  modelId = 'YOUR_MODEL_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID', modelId = 'YOUR_MODEL_ID') {
   // [START automl_get_model]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -39,9 +36,13 @@ function main(
     };
 
     const [response] = await client.getModel(request);
-    
+
     console.log(`Model name: ${response.name}`);
-    console.log(`Model id: ${response.name.split('/')[response.name.split('/').length - 1]}`);
+    console.log(
+      `Model id: ${
+        response.name.split('/')[response.name.split('/').length - 1]
+      }`
+    );
     console.log(`Model display name: ${response.displayName}`);
     console.log(`Model create time`);
     console.log(`\tseconds ${response.createTime.seconds}`);

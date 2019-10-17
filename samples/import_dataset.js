@@ -40,7 +40,7 @@ function main(
       name: client.datasetPath(projectId, 'us-central1', datasetId),
       inputConfig: {
         gcsSource: {
-          inputUris: path.split(',')
+          inputUris: path.split(','),
         },
       },
     };

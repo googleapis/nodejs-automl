@@ -19,7 +19,6 @@ const {assert} = require('chai');
 const {AutoMlClient} = require('@google-cloud/automl');
 
 const cp = require('child_process');
-const uuid = require('uuid');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
@@ -31,8 +30,10 @@ describe('Automl Translate Predict Tests', () => {
 
   it('should predict', async () => {
     const projectId = await client.getProjectId();
-    
-    const list_output = execSync(`node ${PREDICT_REGION_TAG}.js ${projectId} ${MODEL_ID} resources/input.txt`)
+
+    const list_output = execSync(
+      `node ${PREDICT_REGION_TAG}.js ${projectId} ${MODEL_ID} resources/input.txt`
+    );
     assert.match(list_output, /Translated content:/);
   });
 });

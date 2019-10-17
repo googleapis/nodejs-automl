@@ -37,11 +37,16 @@ function main(
   async function getModelEvaluation() {
     // Construct request
     const request = {
-      name: client.modelEvaluationPath(projectId, 'us-central1', modelId, modelEvaluationId),
+      name: client.modelEvaluationPath(
+        projectId,
+        'us-central1',
+        modelId,
+        modelEvaluationId
+      ),
     };
 
     const [response] = await client.getModelEvaluation(request);
-    
+
     console.log(`Model evaluation name: ${response.name}`);
     console.log(`Model annotation spec id: ${response.annotationSpecId}`);
     console.log(`Model display name: ${response.displayName}`);
@@ -49,7 +54,9 @@ function main(
     console.log(`\tseconds ${response.createTime.seconds}`);
     console.log(`\tnanos ${response.createTime.nanos / 1e9}`);
     console.log(`Evaluation example count: ${response.evaluatedExampleCount}`);
-    console.log(`Model evaluation metrics: ${response.translationEvaluationMetrics}`);
+    console.log(
+      `Model evaluation metrics: ${response.translationEvaluationMetrics}`
+    );
   }
 
   getModelEvaluation();

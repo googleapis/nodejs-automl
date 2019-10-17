@@ -15,9 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID') {
   // [START automl_list_models]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -42,7 +40,8 @@ function main(
     console.log(`List of models:`);
     for (const model of response) {
       console.log(`Model name: ${model.name}`);
-      console.log(`Model id: ${model.name.split('/')[model.name.split('/').length - 1]}`);
+      console.log(`
+        Model id: ${model.name.split('/')[model.name.split('/').length - 1]}`);
       console.log(`Model display name: ${model.displayName}`);
       console.log(`Model create time`);
       console.log(`\tseconds ${model.createTime.seconds}`);

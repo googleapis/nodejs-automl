@@ -15,9 +15,7 @@
 
 'use strict';
 
-function main(
-  projectId = 'YOUR_PROJECT_ID'
-) {
+function main(projectId = 'YOUR_PROJECT_ID') {
   // [START automl_translate_list_datasets]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -42,12 +40,20 @@ function main(
     console.log(`List of datasets:`);
     for (const dataset of response) {
       console.log(`Dataset name: ${dataset.name}`);
-      console.log(`Dataset id: ${dataset.name.split('/')[dataset.name.split('/').length - 1]}`);
+      console.log(
+        `Dataset id: ${
+          dataset.name.split('/')[dataset.name.split('/').length - 1]
+        }`
+      );
       console.log(`Dataset display name: ${dataset.displayName}`);
-      if (dataset.translationDatasetMetadata != undefined) {
+      if (dataset.translationDatasetMetadata !== undefined) {
         console.log(`Translation dataset metadata:`);
-        console.log(`\tSource language code: ${dataset.translationDatasetMetadata.sourceLanguageCode}`);
-        console.log(`\tTarget language code: ${dataset.translationDatasetMetadata.targetLanguageCode}`);
+        console.log(
+          `\tSource language code: ${dataset.translationDatasetMetadata.sourceLanguageCode}`
+        );
+        console.log(
+          `\tTarget language code: ${dataset.translationDatasetMetadata.targetLanguageCode}`
+        );
       }
       console.log(`Dataset create time`);
       console.log(`\tseconds ${dataset.createTime.seconds}`);
