@@ -29,6 +29,7 @@ const LIST_MODEL_EVALUATION_REGION_TAG = 'list_model_evaluations';
 const GET_MODEL_EVALUATION_REGION_TAG = 'get_model_evaluation';
 const LIST_OPERATION_STATUS_REGION_TAG = 'list_operation_status';
 const GET_OPERATION_STATUS_REGION_TAG = 'get_operation_status';
+const LOCATION = 'us-central1';
 
 // const CREATE_MODEL_REGION_TAG = 'translate_create_model';
 // const DELETE_MODEL_REGION_TAG = 'delete_model';
@@ -48,13 +49,13 @@ describe('Automl Translate Model Tests', () => {
 
     // get model
     const get_model_output = execSync(
-      `node ${GET_MODEL_REGION_TAG}.js ${projectId} ${modelId}`
+      `node ${GET_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${modelId}`
     );
     assert.match(get_model_output, /Model id/);
 
     // list model evaluations
     const list_model_eval_output = execSync(
-      `node ${LIST_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${modelId}`
+      `node ${LIST_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${LOCATION} ${modelId}`
     );
     assert.match(list_model_eval_output, /Model evaluation name/);
     const modelEvaluationId = list_model_eval_output
@@ -63,7 +64,7 @@ describe('Automl Translate Model Tests', () => {
 
     // get model evaluation
     const get_model_eval_output = execSync(
-      `node ${GET_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${modelId} ${modelEvaluationId}`
+      `node ${GET_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${LOCATION} ${modelId} ${modelEvaluationId}`
     );
     assert.match(get_model_eval_output, /Model evaluation name/);
   });
@@ -72,7 +73,7 @@ describe('Automl Translate Model Tests', () => {
     const projectId = await client.getProjectId();
 
     const list_output = execSync(
-      `node ${LIST_OPERATION_STATUS_REGION_TAG}.js ${projectId}`
+      `node ${LIST_OPERATION_STATUS_REGION_TAG}.js ${projectId} ${LOCATION} `
     );
     assert.match(list_output, /Operation details/);
     const operation_id = list_output.split('Name: ')[1].split('\n')[0];
@@ -85,7 +86,7 @@ describe('Automl Translate Model Tests', () => {
 
   // it('should create a model', async () => {
   //   const projectId = await client.getProjectId();
-  //   const create_output = execSync(`node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${DATASET_ID} translation_test_create_model`)
+  //   const create_output = execSync(`node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} translation_test_create_model`)
 
   //   assert.match(create_output, /Training started/);
 
@@ -98,7 +99,7 @@ describe('Automl Translate Model Tests', () => {
   //   // nonexistent model and confirm that the model was not found, but other
   //   // elements of the request were valid.
   //   const projectId = await client.getProjectId();
-  //   const delete_output = execSync(`node ${DELETE_MODEL_REGION_TAG}.js ${projectId} TRL0000000000000000000`)
+  //   const delete_output = execSync(`node ${DELETE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} TRL0000000000000000000`)
 
   //   assert.match(delete_output, /NOT_FOUND/);
   //   assert.match(delete_output, /The model does not exist./);

@@ -24,6 +24,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const MODEL_ID = 'TRL1218052175389786112';
 const PREDICT_REGION_TAG = 'translate_predict';
+const LOCATION = 'us-central1';
 
 describe('Automl Translate Predict Tests', () => {
   const client = new AutoMlClient();
@@ -32,7 +33,7 @@ describe('Automl Translate Predict Tests', () => {
     const projectId = await client.getProjectId();
 
     const list_output = execSync(
-      `node ${PREDICT_REGION_TAG}.js ${projectId} ${MODEL_ID} resources/input.txt`
+      `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} resources/input.txt`
     );
     assert.match(list_output, /Translated content:/);
   });

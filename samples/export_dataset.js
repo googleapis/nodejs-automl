@@ -17,6 +17,7 @@
 
 function main(
   projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
   datasetId = 'YOUR_DATASET_ID',
   gcsUri = 'gs://BUCKET_ID/path_to_export/'
 ) {
@@ -25,6 +26,7 @@ function main(
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
   // const datasetId = 'YOUR_DATASET_ID';
   // const gcsUri = 'gs://BUCKET_ID/path_to_export/';
 
@@ -37,7 +39,7 @@ function main(
   async function exportDataset() {
     // Construct request
     const request = {
-      name: client.datasetPath(projectId, 'us-central1', datasetId),
+      name: client.datasetPath(projectId, location, datasetId),
       outputConfig: {
         gcsDestination: {
           outputUriPrefix: gcsUri,

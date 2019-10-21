@@ -19,16 +19,16 @@
   },
   "dependencies": {
     "@google-cloud/automl": "^1.7.0",
-    "@google-cloud/storage": "^3.5.0",
     "chai": "^4.2.0",
     "csv": "^5.1.1",
     "execa": "^3.0.0",
     "mathjs": "^6.0.0",
     "package.json": "^2.0.1",
-    "uuid": "^3.3.3",
     "yargs": "^14.0.0"
   },
   "devDependencies": {
-    "mocha": "^6.0.1"
+    "@google-cloud/storage": "^3.5.0",
+    "mocha": "^6.0.1",
+    "uuid": "^3.3.3"
   }
 }

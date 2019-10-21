@@ -17,6 +17,7 @@
 
 function main(
   projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
   modelId = 'YOUR_MODEL_ID',
   filePath = 'path_to_local_file.txt'
 ) {
@@ -25,6 +26,7 @@ function main(
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
   // const modelId = 'YOUR_MODEL_ID';
   // const filePath = 'path_to_local_file.txt';
 
@@ -41,7 +43,7 @@ function main(
   async function predict() {
     // Construct request
     const request = {
-      name: client.modelPath(projectId, 'us-central1', modelId),
+      name: client.modelPath(projectId, location, modelId),
       payload: {
         textSnippet: {
           content: content,

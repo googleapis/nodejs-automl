@@ -15,12 +15,17 @@
 
 'use strict';
 
-function main(projectId = 'YOUR_PROJECT_ID', modelId = 'YOUR_MODEL_ID') {
+function main(
+  projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
+  modelId = 'YOUR_MODEL_ID'
+) {
   // [START automl_delete_model]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
   // const modelId = 'YOUR_MODEL_ID';
 
   // Imports the Google Cloud AutoML library
@@ -32,7 +37,7 @@ function main(projectId = 'YOUR_PROJECT_ID', modelId = 'YOUR_MODEL_ID') {
   async function deleteModel() {
     // Construct request
     const request = {
-      name: client.modelPath(projectId, 'us-central1', modelId),
+      name: client.modelPath(projectId, location, modelId),
     };
 
     const [response] = await client.deleteModel(request);

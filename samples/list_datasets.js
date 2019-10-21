@@ -15,12 +15,13 @@
 
 'use strict';
 
-function main(projectId = 'YOUR_PROJECT_ID') {
+function main(projectId = 'YOUR_PROJECT_ID', location = 'us-central1') {
   // [START automl_translate_list_datasets]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
 
   // Imports the Google Cloud AutoML library
   const {AutoMlClient} = require(`@google-cloud/automl`);
@@ -31,7 +32,7 @@ function main(projectId = 'YOUR_PROJECT_ID') {
   async function listDatasets() {
     // Construct request
     const request = {
-      parent: client.locationPath(projectId, 'us-central1'),
+      parent: client.locationPath(projectId, location),
       filter: 'translation_dataset_metadata:*',
     };
 

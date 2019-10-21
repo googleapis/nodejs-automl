@@ -17,6 +17,7 @@
 
 function main(
   projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
   modelId = 'YOUR_MODEL_ID',
   modelEvaluationId = 'YOUR_MODEL_EVALUATION_ID'
 ) {
@@ -25,6 +26,7 @@ function main(
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
   // const modelId = 'YOUR_MODEL_ID';
   // const modelEvaluationId = 'YOUR_MODEL_EVALUATION_ID';
 
@@ -39,7 +41,7 @@ function main(
     const request = {
       name: client.modelEvaluationPath(
         projectId,
-        'us-central1',
+        location,
         modelId,
         modelEvaluationId
       ),

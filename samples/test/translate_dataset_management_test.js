@@ -31,6 +31,7 @@ const LIST_DATASET_REGION_TAG = 'list_datasets';
 const GET_DATASET_REGION_TAG = 'get_dataset';
 const DATASET_ID = 'TRL8522556519449886720';
 const EXPORT_DATASET_REGION_TAG = 'export_dataset';
+const LOCATION = 'us-central1';
 
 describe('Automl Translate Dataset Tests', () => {
   const client = new AutoMlClient();
@@ -44,7 +45,7 @@ describe('Automl Translate Dataset Tests', () => {
 
     // create
     const create_output = execSync(
-      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${displayName}`
+      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${displayName}`
     );
     assert.match(create_output, /Dataset id:/);
 
@@ -53,13 +54,13 @@ describe('Automl Translate Dataset Tests', () => {
     // import'
     const data = `gs://${projectId}-automl-translate/en-ja-short.csv`;
     const import_output = execSync(
-      `node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${datasetId} ${data}`
+      `node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId} ${data}`
     );
     assert.match(import_output, /Dataset imported/);
 
     // delete
     const delete_output = execSync(
-      `node ${DELETE_DATASET_REGION_TAG}.js ${projectId} ${datasetId}`
+      `node ${DELETE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId}`
     );
     assert.match(delete_output, /Dataset deleted/);
   });
@@ -67,7 +68,7 @@ describe('Automl Translate Dataset Tests', () => {
   it('should list datasets', async () => {
     const projectId = await client.getProjectId();
     const list_output = execSync(
-      `node ${LIST_DATASET_REGION_TAG}.js ${projectId}`
+      `node ${LIST_DATASET_REGION_TAG}.js ${projectId} ${LOCATION}`
     );
 
     assert.match(list_output, /Dataset id/);
@@ -76,7 +77,7 @@ describe('Automl Translate Dataset Tests', () => {
   it('should get a dataset', async () => {
     const projectId = await client.getProjectId();
     const get_output = execSync(
-      `node ${GET_DATASET_REGION_TAG}.js ${projectId} ${DATASET_ID}`
+      `node ${GET_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID}`
     );
 
     assert.match(get_output, /Dataset id/);
@@ -87,7 +88,7 @@ describe('Automl Translate Dataset Tests', () => {
     const bucketName = `${projectId}-automl-translate`;
     const prefix = 'TEST_EXPORT_OUTPUT';
     const export_output = execSync(
-      `node ${EXPORT_DATASET_REGION_TAG}.js ${projectId} ${DATASET_ID} gs://${bucketName}/${prefix}/`
+      `node ${EXPORT_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} gs://${bucketName}/${prefix}/`
     );
 
     assert.match(export_output, /Dataset exported/);

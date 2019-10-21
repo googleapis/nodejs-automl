@@ -17,6 +17,7 @@
 
 function main(
   projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
   datasetId = 'YOUR_DATASET_ID',
   displayName = 'YOUR_DISPLAY_NAME'
 ) {
@@ -25,6 +26,7 @@ function main(
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
   // const dataset_id = 'YOUR_DATASET_ID';
   // const displayName = 'YOUR_DISPLAY_NAME';
 
@@ -37,7 +39,7 @@ function main(
   async function createModel() {
     // Construct request
     const request = {
-      parent: client.locationPath(projectId, 'us-central1'),
+      parent: client.locationPath(projectId, location),
       model: {
         displayName: displayName,
         datasetId: datasetId,

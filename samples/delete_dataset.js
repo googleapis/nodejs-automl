@@ -15,12 +15,17 @@
 
 'use strict';
 
-function main(projectId = 'YOUR_PROJECT_ID', datasetId = 'YOUR_DATASET_ID') {
+function main(
+  projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
+  datasetId = 'YOUR_DATASET_ID'
+) {
   // [START automl_delete_dataset]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
   // const datasetId = 'YOUR_DATASET_ID';
 
   // Imports the Google Cloud AutoML library
@@ -32,7 +37,7 @@ function main(projectId = 'YOUR_PROJECT_ID', datasetId = 'YOUR_DATASET_ID') {
   async function deleteDataset() {
     // Construct request
     const request = {
-      name: client.datasetPath(projectId, 'us-central1', datasetId),
+      name: client.datasetPath(projectId, location, datasetId),
     };
 
     const [operation] = await client.deleteDataset(request);
