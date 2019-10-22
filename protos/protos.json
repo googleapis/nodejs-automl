@@ -8,8 +8,8 @@
               "nested": {
                 "v1": {
                   "options": {
-                    "go_package": "google.golang.org/genproto/googleapis/cloud/automl/v1;automl",
                     "csharp_namespace": "Google.Cloud.AutoML.V1",
+                    "go_package": "google.golang.org/genproto/googleapis/cloud/automl/v1;automl",
                     "java_multiple_files": true,
                     "java_outer_classname": "PredictionServiceProto",
                     "java_package": "com.google.cloud.automl.v1",
@@ -76,6 +76,13 @@
                             "(google.api.http).body": "*"
                           }
                         },
+                        "GetAnnotationSpec": {
+                          "requestType": "GetAnnotationSpecRequest",
+                          "responseType": "google.cloud.automl.v1.AnnotationSpec",
+                          "options": {
+                            "(google.api.http).get": "/v1/{name=projects/*/locations/*/datasets/*/annotationSpecs/*}"
+                          }
+                        },
                         "CreateModel": {
                           "requestType": "CreateModelRequest",
                           "responseType": "google.longrunning.Operation",
@@ -111,6 +118,30 @@
                           "options": {
                             "(google.api.http).patch": "/v1/{model.name=projects/*/locations/*/models/*}",
                             "(google.api.http).body": "model"
+                          }
+                        },
+                        "DeployModel": {
+                          "requestType": "DeployModelRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v1/{name=projects/*/locations/*/models/*}:deploy",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "UndeployModel": {
+                          "requestType": "UndeployModelRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v1/{name=projects/*/locations/*/models/*}:undeploy",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "ExportModel": {
+                          "requestType": "ExportModelRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v1/{name=projects/*/locations/*/models/*}:export",
+                            "(google.api.http).body": "*"
                           }
                         },
                         "GetModelEvaluation": {
@@ -226,6 +257,14 @@
                         }
                       }
                     },
+                    "GetAnnotationSpecRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
                     "CreateModelRequest": {
                       "fields": {
                         "parent": {
@@ -299,6 +338,50 @@
                         }
                       }
                     },
+                    "DeployModelRequest": {
+                      "oneofs": {
+                        "modelDeploymentMetadata": {
+                          "oneof": [
+                            "imageObjectDetectionModelDeploymentMetadata",
+                            "imageClassificationModelDeploymentMetadata"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "imageObjectDetectionModelDeploymentMetadata": {
+                          "type": "ImageObjectDetectionModelDeploymentMetadata",
+                          "id": 2
+                        },
+                        "imageClassificationModelDeploymentMetadata": {
+                          "type": "ImageClassificationModelDeploymentMetadata",
+                          "id": 4
+                        },
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "UndeployModelRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "ExportModelRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "outputConfig": {
+                          "type": "ModelExportOutputConfig",
+                          "id": 3
+                        }
+                      }
+                    },
                     "GetModelEvaluationRequest": {
                       "fields": {
                         "name": {
@@ -344,7 +427,11 @@
                       "oneofs": {
                         "detail": {
                           "oneof": [
-                            "translation"
+                            "translation",
+                            "classification",
+                            "imageObjectDetection",
+                            "textExtraction",
+                            "textSentiment"
                           ]
                         }
                       },
@@ -352,6 +439,370 @@
                         "translation": {
                           "type": "TranslationAnnotation",
                           "id": 2
+                        },
+                        "classification": {
+                          "type": "ClassificationAnnotation",
+                          "id": 3
+                        },
+                        "imageObjectDetection": {
+                          "type": "ImageObjectDetectionAnnotation",
+                          "id": 4
+                        },
+                        "textExtraction": {
+                          "type": "TextExtractionAnnotation",
+                          "id": 6
+                        },
+                        "textSentiment": {
+                          "type": "TextSentimentAnnotation",
+                          "id": 7
+                        },
+                        "annotationSpecId": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "ClassificationType": {
+                      "values": {
+                        "CLASSIFICATION_TYPE_UNSPECIFIED": 0,
+                        "MULTICLASS": 1,
+                        "MULTILABEL": 2
+                      }
+                    },
+                    "ClassificationAnnotation": {
+                      "fields": {
+                        "score": {
+                          "type": "float",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "ClassificationEvaluationMetrics": {
+                      "fields": {
+                        "auPrc": {
+                          "type": "float",
+                          "id": 1
+                        },
+                        "auRoc": {
+                          "type": "float",
+                          "id": 6
+                        },
+                        "logLoss": {
+                          "type": "float",
+                          "id": 7
+                        },
+                        "confidenceMetricsEntry": {
+                          "rule": "repeated",
+                          "type": "ConfidenceMetricsEntry",
+                          "id": 3
+                        },
+                        "confusionMatrix": {
+                          "type": "ConfusionMatrix",
+                          "id": 4
+                        },
+                        "annotationSpecId": {
+                          "rule": "repeated",
+                          "type": "string",
+                          "id": 5
+                        }
+                      },
+                      "nested": {
+                        "ConfidenceMetricsEntry": {
+                          "fields": {
+                            "confidenceThreshold": {
+                              "type": "float",
+                              "id": 1
+                            },
+                            "positionThreshold": {
+                              "type": "int32",
+                              "id": 14
+                            },
+                            "recall": {
+                              "type": "float",
+                              "id": 2
+                            },
+                            "precision": {
+                              "type": "float",
+                              "id": 3
+                            },
+                            "falsePositiveRate": {
+                              "type": "float",
+                              "id": 8
+                            },
+                            "f1Score": {
+                              "type": "float",
+                              "id": 4
+                            },
+                            "recallAt1": {
+                              "type": "float",
+                              "id": 5
+                            },
+                            "precisionAt1": {
+                              "type": "float",
+                              "id": 6
+                            },
+                            "falsePositiveRateAt1": {
+                              "type": "float",
+                              "id": 9
+                            },
+                            "f1ScoreAt1": {
+                              "type": "float",
+                              "id": 7
+                            },
+                            "truePositiveCount": {
+                              "type": "int64",
+                              "id": 10
+                            },
+                            "falsePositiveCount": {
+                              "type": "int64",
+                              "id": 11
+                            },
+                            "falseNegativeCount": {
+                              "type": "int64",
+                              "id": 12
+                            },
+                            "trueNegativeCount": {
+                              "type": "int64",
+                              "id": 13
+                            }
+                          }
+                        },
+                        "ConfusionMatrix": {
+                          "fields": {
+                            "annotationSpecId": {
+                              "rule": "repeated",
+                              "type": "string",
+                              "id": 1
+                            },
+                            "displayName": {
+                              "rule": "repeated",
+                              "type": "string",
+                              "id": 3
+                            },
+                            "row": {
+                              "rule": "repeated",
+                              "type": "Row",
+                              "id": 2
+                            }
+                          },
+                          "nested": {
+                            "Row": {
+                              "fields": {
+                                "exampleCount": {
+                                  "rule": "repeated",
+                                  "type": "int32",
+                                  "id": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "ImageObjectDetectionAnnotation": {
+                      "fields": {
+                        "boundingBox": {
+                          "type": "BoundingPoly",
+                          "id": 1
+                        },
+                        "score": {
+                          "type": "float",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "BoundingBoxMetricsEntry": {
+                      "fields": {
+                        "iouThreshold": {
+                          "type": "float",
+                          "id": 1
+                        },
+                        "meanAveragePrecision": {
+                          "type": "float",
+                          "id": 2
+                        },
+                        "confidenceMetricsEntries": {
+                          "rule": "repeated",
+                          "type": "ConfidenceMetricsEntry",
+                          "id": 3
+                        }
+                      },
+                      "nested": {
+                        "ConfidenceMetricsEntry": {
+                          "fields": {
+                            "confidenceThreshold": {
+                              "type": "float",
+                              "id": 1
+                            },
+                            "recall": {
+                              "type": "float",
+                              "id": 2
+                            },
+                            "precision": {
+                              "type": "float",
+                              "id": 3
+                            },
+                            "f1Score": {
+                              "type": "float",
+                              "id": 4
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "ImageObjectDetectionEvaluationMetrics": {
+                      "fields": {
+                        "evaluatedBoundingBoxCount": {
+                          "type": "int32",
+                          "id": 1
+                        },
+                        "boundingBoxMetricsEntries": {
+                          "rule": "repeated",
+                          "type": "BoundingBoxMetricsEntry",
+                          "id": 2
+                        },
+                        "boundingBoxMeanAveragePrecision": {
+                          "type": "float",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "NormalizedVertex": {
+                      "fields": {
+                        "x": {
+                          "type": "float",
+                          "id": 1
+                        },
+                        "y": {
+                          "type": "float",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "BoundingPoly": {
+                      "fields": {
+                        "normalizedVertices": {
+                          "rule": "repeated",
+                          "type": "NormalizedVertex",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "TextExtractionAnnotation": {
+                      "oneofs": {
+                        "annotation": {
+                          "oneof": [
+                            "textSegment"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "textSegment": {
+                          "type": "TextSegment",
+                          "id": 3
+                        },
+                        "score": {
+                          "type": "float",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "TextExtractionEvaluationMetrics": {
+                      "fields": {
+                        "auPrc": {
+                          "type": "float",
+                          "id": 1
+                        },
+                        "confidenceMetricsEntries": {
+                          "rule": "repeated",
+                          "type": "ConfidenceMetricsEntry",
+                          "id": 2
+                        }
+                      },
+                      "nested": {
+                        "ConfidenceMetricsEntry": {
+                          "fields": {
+                            "confidenceThreshold": {
+                              "type": "float",
+                              "id": 1
+                            },
+                            "recall": {
+                              "type": "float",
+                              "id": 3
+                            },
+                            "precision": {
+                              "type": "float",
+                              "id": 4
+                            },
+                            "f1Score": {
+                              "type": "float",
+                              "id": 5
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "TextSegment": {
+                      "fields": {
+                        "content": {
+                          "type": "string",
+                          "id": 3
+                        },
+                        "startOffset": {
+                          "type": "int64",
+                          "id": 1
+                        },
+                        "endOffset": {
+                          "type": "int64",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "TextSentimentAnnotation": {
+                      "fields": {
+                        "sentiment": {
+                          "type": "int32",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "TextSentimentEvaluationMetrics": {
+                      "fields": {
+                        "precision": {
+                          "type": "float",
+                          "id": 1
+                        },
+                        "recall": {
+                          "type": "float",
+                          "id": 2
+                        },
+                        "f1Score": {
+                          "type": "float",
+                          "id": 3
+                        },
+                        "meanAbsoluteError": {
+                          "type": "float",
+                          "id": 4
+                        },
+                        "meanSquaredError": {
+                          "type": "float",
+                          "id": 5
+                        },
+                        "linearKappa": {
+                          "type": "float",
+                          "id": 6
+                        },
+                        "quadraticKappa": {
+                          "type": "float",
+                          "id": 7
+                        },
+                        "confusionMatrix": {
+                          "type": "ClassificationEvaluationMetrics.ConfusionMatrix",
+                          "id": 8
                         }
                       }
                     },
@@ -359,11 +810,17 @@
                       "fields": {
                         "sourceLanguageCode": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "targetLanguageCode": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -403,6 +860,30 @@
                         }
                       }
                     },
+                    "Image": {
+                      "oneofs": {
+                        "data": {
+                          "oneof": [
+                            "imageBytes",
+                            "imageInputConfig"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "imageBytes": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "imageInputConfig": {
+                          "type": "ImageInputConfig",
+                          "id": 7
+                        },
+                        "thumbnailUri": {
+                          "type": "string",
+                          "id": 4
+                        }
+                      }
+                    },
                     "TextSnippet": {
                       "fields": {
                         "content": {
@@ -419,18 +900,117 @@
                         }
                       }
                     },
+                    "DocumentDimensions": {
+                      "fields": {
+                        "unit": {
+                          "type": "DocumentDimensionUnit",
+                          "id": 1
+                        },
+                        "width": {
+                          "type": "float",
+                          "id": 2
+                        },
+                        "height": {
+                          "type": "float",
+                          "id": 3
+                        }
+                      },
+                      "nested": {
+                        "DocumentDimensionUnit": {
+                          "values": {
+                            "DOCUMENT_DIMENSION_UNIT_UNSPECIFIED": 0,
+                            "INCH": 1,
+                            "CENTIMETER": 2,
+                            "POINT": 3
+                          }
+                        }
+                      }
+                    },
+                    "Document": {
+                      "fields": {
+                        "inputConfig": {
+                          "type": "DocumentInputConfig",
+                          "id": 1
+                        },
+                        "documentText": {
+                          "type": "TextSnippet",
+                          "id": 2
+                        },
+                        "layout": {
+                          "rule": "repeated",
+                          "type": "Layout",
+                          "id": 3
+                        },
+                        "documentDimensions": {
+                          "type": "DocumentDimensions",
+                          "id": 4
+                        },
+                        "pageCount": {
+                          "type": "int32",
+                          "id": 5
+                        }
+                      },
+                      "nested": {
+                        "Layout": {
+                          "fields": {
+                            "textSegment": {
+                              "type": "TextSegment",
+                              "id": 1
+                            },
+                            "pageNumber": {
+                              "type": "int32",
+                              "id": 2
+                            },
+                            "boundingPoly": {
+                              "type": "BoundingPoly",
+                              "id": 3
+                            },
+                            "textSegmentType": {
+                              "type": "TextSegmentType",
+                              "id": 4
+                            }
+                          },
+                          "nested": {
+                            "TextSegmentType": {
+                              "values": {
+                                "TEXT_SEGMENT_TYPE_UNSPECIFIED": 0,
+                                "TOKEN": 1,
+                                "PARAGRAPH": 2,
+                                "FORM_FIELD": 3,
+                                "FORM_FIELD_NAME": 4,
+                                "FORM_FIELD_CONTENTS": 5,
+                                "TABLE": 6,
+                                "TABLE_HEADER": 7,
+                                "TABLE_ROW": 8,
+                                "TABLE_CELL": 9
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
                     "ExamplePayload": {
                       "oneofs": {
                         "payload": {
                           "oneof": [
-                            "textSnippet"
+                            "image",
+                            "textSnippet",
+                            "document"
                           ]
                         }
                       },
                       "fields": {
+                        "image": {
+                          "type": "Image",
+                          "id": 1
+                        },
                         "textSnippet": {
                           "type": "TextSnippet",
                           "id": 2
+                        },
+                        "document": {
+                          "type": "Document",
+                          "id": 4
                         }
                       }
                     },
@@ -454,6 +1034,40 @@
                         }
                       }
                     },
+                    "BatchPredictInputConfig": {
+                      "oneofs": {
+                        "source": {
+                          "oneof": [
+                            "gcsSource"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "gcsSource": {
+                          "type": "GcsSource",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "ImageInputConfig": {
+                      "fields": {
+                        "gcsSource": {
+                          "type": "GcsSource",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "DocumentInputConfig": {
+                      "fields": {
+                        "gcsSource": {
+                          "type": "GcsSource",
+                          "id": 1
+                        }
+                      }
+                    },
                     "OutputConfig": {
                       "oneofs": {
                         "destination": {
@@ -465,7 +1079,55 @@
                       "fields": {
                         "gcsDestination": {
                           "type": "GcsDestination",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "BatchPredictOutputConfig": {
+                      "oneofs": {
+                        "destination": {
+                          "oneof": [
+                            "gcsDestination"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "gcsDestination": {
+                          "type": "GcsDestination",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "ModelExportOutputConfig": {
+                      "oneofs": {
+                        "destination": {
+                          "oneof": [
+                            "gcsDestination"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "gcsDestination": {
+                          "type": "GcsDestination",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "modelFormat": {
+                          "type": "string",
+                          "id": 4
+                        },
+                        "params": {
+                          "keyType": "string",
+                          "type": "string",
+                          "id": 2
                         }
                       }
                     },
@@ -474,7 +1136,10 @@
                         "inputUris": {
                           "rule": "repeated",
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -482,7 +1147,26 @@
                       "fields": {
                         "outputUriPrefix": {
                           "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "AnnotationSpec": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
                           "id": 1
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "exampleCount": {
+                          "type": "int32",
+                          "id": 9
                         }
                       }
                     },
@@ -490,7 +1174,12 @@
                       "oneofs": {
                         "datasetMetadata": {
                           "oneof": [
-                            "translationDatasetMetadata"
+                            "translationDatasetMetadata",
+                            "imageClassificationDatasetMetadata",
+                            "textClassificationDatasetMetadata",
+                            "imageObjectDetectionDatasetMetadata",
+                            "textExtractionDatasetMetadata",
+                            "textSentimentDatasetMetadata"
                           ]
                         }
                       },
@@ -498,6 +1187,26 @@
                         "translationDatasetMetadata": {
                           "type": "TranslationDatasetMetadata",
                           "id": 23
+                        },
+                        "imageClassificationDatasetMetadata": {
+                          "type": "ImageClassificationDatasetMetadata",
+                          "id": 24
+                        },
+                        "textClassificationDatasetMetadata": {
+                          "type": "TextClassificationDatasetMetadata",
+                          "id": 25
+                        },
+                        "imageObjectDetectionDatasetMetadata": {
+                          "type": "ImageObjectDetectionDatasetMetadata",
+                          "id": 26
+                        },
+                        "textExtractionDatasetMetadata": {
+                          "type": "TextExtractionDatasetMetadata",
+                          "id": 28
+                        },
+                        "textSentimentDatasetMetadata": {
+                          "type": "TextSentimentDatasetMetadata",
+                          "id": 30
                         },
                         "name": {
                           "type": "string",
@@ -530,11 +1239,140 @@
                         }
                       }
                     },
+                    "ImageClassificationDatasetMetadata": {
+                      "fields": {
+                        "classificationType": {
+                          "type": "ClassificationType",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "ImageObjectDetectionDatasetMetadata": {
+                      "fields": {}
+                    },
+                    "ImageClassificationModelMetadata": {
+                      "fields": {
+                        "baseModelId": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "trainBudgetMilliNodeHours": {
+                          "type": "int64",
+                          "id": 16
+                        },
+                        "trainCostMilliNodeHours": {
+                          "type": "int64",
+                          "id": 17
+                        },
+                        "stopReason": {
+                          "type": "string",
+                          "id": 5
+                        },
+                        "modelType": {
+                          "type": "string",
+                          "id": 7
+                        },
+                        "nodeQps": {
+                          "type": "double",
+                          "id": 13
+                        },
+                        "nodeCount": {
+                          "type": "int64",
+                          "id": 14
+                        }
+                      }
+                    },
+                    "ImageObjectDetectionModelMetadata": {
+                      "fields": {
+                        "modelType": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "nodeCount": {
+                          "type": "int64",
+                          "id": 3
+                        },
+                        "nodeQps": {
+                          "type": "double",
+                          "id": 4
+                        },
+                        "stopReason": {
+                          "type": "string",
+                          "id": 5
+                        },
+                        "trainBudgetMilliNodeHours": {
+                          "type": "int64",
+                          "id": 6
+                        },
+                        "trainCostMilliNodeHours": {
+                          "type": "int64",
+                          "id": 7
+                        }
+                      }
+                    },
+                    "ImageClassificationModelDeploymentMetadata": {
+                      "fields": {
+                        "nodeCount": {
+                          "type": "int64",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "ImageObjectDetectionModelDeploymentMetadata": {
+                      "fields": {
+                        "nodeCount": {
+                          "type": "int64",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "TextClassificationDatasetMetadata": {
+                      "fields": {
+                        "classificationType": {
+                          "type": "ClassificationType",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "TextClassificationModelMetadata": {
+                      "fields": {
+                        "classificationType": {
+                          "type": "ClassificationType",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "TextExtractionDatasetMetadata": {
+                      "fields": {}
+                    },
+                    "TextExtractionModelMetadata": {
+                      "fields": {}
+                    },
+                    "TextSentimentDatasetMetadata": {
+                      "fields": {
+                        "sentimentMax": {
+                          "type": "int32",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "TextSentimentModelMetadata": {
+                      "fields": {}
+                    },
                     "Model": {
+                      "options": {
+                        "(google.api.resource).type": "automl.googleapis.com/Model",
+                        "(google.api.resource).pattern": "projects/{project_id}/locations/{location_id}/models/{model_id}"
+                      },
                       "oneofs": {
                         "modelMetadata": {
                           "oneof": [
-                            "translationModelMetadata"
+                            "translationModelMetadata",
+                            "imageClassificationModelMetadata",
+                            "textClassificationModelMetadata",
+                            "imageObjectDetectionModelMetadata",
+                            "textExtractionModelMetadata",
+                            "textSentimentModelMetadata"
                           ]
                         }
                       },
@@ -542,6 +1380,26 @@
                         "translationModelMetadata": {
                           "type": "TranslationModelMetadata",
                           "id": 15
+                        },
+                        "imageClassificationModelMetadata": {
+                          "type": "ImageClassificationModelMetadata",
+                          "id": 13
+                        },
+                        "textClassificationModelMetadata": {
+                          "type": "TextClassificationModelMetadata",
+                          "id": 14
+                        },
+                        "imageObjectDetectionModelMetadata": {
+                          "type": "ImageObjectDetectionModelMetadata",
+                          "id": 20
+                        },
+                        "textExtractionModelMetadata": {
+                          "type": "TextExtractionModelMetadata",
+                          "id": 19
+                        },
+                        "textSentimentModelMetadata": {
+                          "type": "TextSentimentModelMetadata",
+                          "id": 22
                         },
                         "name": {
                           "type": "string",
@@ -567,6 +1425,10 @@
                           "type": "DeploymentState",
                           "id": 8
                         },
+                        "etag": {
+                          "type": "string",
+                          "id": 10
+                        },
                         "labels": {
                           "keyType": "string",
                           "type": "string",
@@ -587,14 +1449,34 @@
                       "oneofs": {
                         "metrics": {
                           "oneof": [
-                            "translationEvaluationMetrics"
+                            "classificationEvaluationMetrics",
+                            "translationEvaluationMetrics",
+                            "imageObjectDetectionEvaluationMetrics",
+                            "textSentimentEvaluationMetrics",
+                            "textExtractionEvaluationMetrics"
                           ]
                         }
                       },
                       "fields": {
+                        "classificationEvaluationMetrics": {
+                          "type": "ClassificationEvaluationMetrics",
+                          "id": 8
+                        },
                         "translationEvaluationMetrics": {
                           "type": "TranslationEvaluationMetrics",
                           "id": 9
+                        },
+                        "imageObjectDetectionEvaluationMetrics": {
+                          "type": "ImageObjectDetectionEvaluationMetrics",
+                          "id": 12
+                        },
+                        "textSentimentEvaluationMetrics": {
+                          "type": "TextSentimentEvaluationMetrics",
+                          "id": 11
+                        },
+                        "textExtractionEvaluationMetrics": {
+                          "type": "TextExtractionEvaluationMetrics",
+                          "id": 13
                         },
                         "name": {
                           "type": "string",
@@ -603,6 +1485,10 @@
                         "annotationSpecId": {
                           "type": "string",
                           "id": 2
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "id": 15
                         },
                         "createTime": {
                           "type": "google.protobuf.Timestamp",
@@ -613,49 +1499,6 @@
                           "id": 6
                         }
                       }
-                    },
-                    "OperationMetadata": {
-                      "oneofs": {
-                        "details": {
-                          "oneof": [
-                            "deleteDetails",
-                            "createModelDetails"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "deleteDetails": {
-                          "type": "DeleteOperationMetadata",
-                          "id": 8
-                        },
-                        "createModelDetails": {
-                          "type": "CreateModelOperationMetadata",
-                          "id": 10
-                        },
-                        "progressPercent": {
-                          "type": "int32",
-                          "id": 13
-                        },
-                        "partialFailures": {
-                          "rule": "repeated",
-                          "type": "google.rpc.Status",
-                          "id": 2
-                        },
-                        "createTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        },
-                        "updateTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 4
-                        }
-                      }
-                    },
-                    "DeleteOperationMetadata": {
-                      "fields": {}
-                    },
-                    "CreateModelOperationMetadata": {
-                      "fields": {}
                     },
                     "PredictionService": {
                       "options": {
@@ -668,6 +1511,14 @@
                           "responseType": "PredictResponse",
                           "options": {
                             "(google.api.http).post": "/v1/{name=projects/*/locations/*/models/*}:predict",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "BatchPredict": {
+                          "requestType": "BatchPredictRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v1/{name=projects/*/locations/*/models/*}:batchPredict",
                             "(google.api.http).body": "*"
                           }
                         }
@@ -697,10 +1548,44 @@
                           "type": "AnnotationPayload",
                           "id": 1
                         },
+                        "preprocessedInput": {
+                          "type": "ExamplePayload",
+                          "id": 3
+                        },
                         "metadata": {
                           "keyType": "string",
                           "type": "string",
                           "id": 2
+                        }
+                      }
+                    },
+                    "BatchPredictRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "inputConfig": {
+                          "type": "BatchPredictInputConfig",
+                          "id": 3
+                        },
+                        "outputConfig": {
+                          "type": "BatchPredictOutputConfig",
+                          "id": 4
+                        },
+                        "params": {
+                          "keyType": "string",
+                          "type": "string",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "BatchPredictResult": {
+                      "fields": {
+                        "metadata": {
+                          "keyType": "string",
+                          "type": "string",
+                          "id": 1
                         }
                       }
                     }
@@ -1678,7 +2563,23 @@
                       }
                     },
                     "TablesModelMetadata": {
+                      "oneofs": {
+                        "additionalOptimizationObjectiveConfig": {
+                          "oneof": [
+                            "optimizationObjectiveRecallValue",
+                            "optimizationObjectivePrecisionValue"
+                          ]
+                        }
+                      },
                       "fields": {
+                        "optimizationObjectiveRecallValue": {
+                          "type": "float",
+                          "id": 17
+                        },
+                        "optimizationObjectivePrecisionValue": {
+                          "type": "float",
+                          "id": 18
+                        },
                         "targetColumnSpec": {
                           "type": "ColumnSpec",
                           "id": 2
@@ -2687,6 +3588,14 @@
                         "modelType": {
                           "type": "string",
                           "id": 7
+                        },
+                        "nodeQps": {
+                          "type": "double",
+                          "id": 13
+                        },
+                        "nodeCount": {
+                          "type": "int64",
+                          "id": 14
                         }
                       }
                     },
@@ -2743,7 +3652,12 @@
                       }
                     },
                     "TextClassificationModelMetadata": {
-                      "fields": {}
+                      "fields": {
+                        "classificationType": {
+                          "type": "ClassificationType",
+                          "id": 3
+                        }
+                      }
                     },
                     "TextExtractionDatasetMetadata": {
                       "fields": {}
@@ -3270,7 +4184,7 @@
           "options": {
             "go_package": "google.golang.org/genproto/googleapis/api/annotations;annotations",
             "java_multiple_files": true,
-            "java_outer_classname": "ClientProto",
+            "java_outer_classname": "FieldBehaviorProto",
             "java_package": "com.google.api",
             "objc_class_prefix": "GAPI",
             "cc_enable_arenas": true
@@ -3378,6 +4292,74 @@
               "type": "string",
               "id": 1050,
               "extend": "google.protobuf.ServiceOptions"
+            },
+            "resourceReference": {
+              "type": "google.api.ResourceReference",
+              "id": 1055,
+              "extend": "google.protobuf.FieldOptions"
+            },
+            "resource": {
+              "type": "google.api.ResourceDescriptor",
+              "id": 1053,
+              "extend": "google.protobuf.MessageOptions"
+            },
+            "ResourceDescriptor": {
+              "fields": {
+                "type": {
+                  "type": "string",
+                  "id": 1
+                },
+                "pattern": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 2
+                },
+                "nameField": {
+                  "type": "string",
+                  "id": 3
+                },
+                "history": {
+                  "type": "History",
+                  "id": 4
+                }
+              },
+              "nested": {
+                "History": {
+                  "values": {
+                    "HISTORY_UNSPECIFIED": 0,
+                    "ORIGINALLY_SINGLE_PATTERN": 1,
+                    "FUTURE_MULTI_PATTERN": 2
+                  }
+                }
+              }
+            },
+            "ResourceReference": {
+              "fields": {
+                "type": {
+                  "type": "string",
+                  "id": 1
+                },
+                "childType": {
+                  "type": "string",
+                  "id": 2
+                }
+              }
+            },
+            "fieldBehavior": {
+              "rule": "repeated",
+              "type": "google.api.FieldBehavior",
+              "id": 1052,
+              "extend": "google.protobuf.FieldOptions"
+            },
+            "FieldBehavior": {
+              "values": {
+                "FIELD_BEHAVIOR_UNSPECIFIED": 0,
+                "OPTIONAL": 1,
+                "REQUIRED": 2,
+                "OUTPUT_ONLY": 3,
+                "INPUT_ONLY": 4,
+                "IMMUTABLE": 5
+              }
             }
           }
         },
@@ -4272,18 +5254,6 @@
                 }
               }
             },
-            "Any": {
-              "fields": {
-                "type_url": {
-                  "type": "string",
-                  "id": 1
-                },
-                "value": {
-                  "type": "bytes",
-                  "id": 2
-                }
-              }
-            },
             "Duration": {
               "fields": {
                 "seconds": {
@@ -4292,6 +5262,18 @@
                 },
                 "nanos": {
                   "type": "int32",
+                  "id": 2
+                }
+              }
+            },
+            "Any": {
+              "fields": {
+                "type_url": {
+                  "type": "string",
+                  "id": 1
+                },
+                "value": {
+                  "type": "bytes",
                   "id": 2
                 }
               }
@@ -4380,34 +5362,6 @@
                   "rule": "repeated",
                   "type": "string",
                   "id": 1
-                }
-              }
-            }
-          }
-        },
-        "rpc": {
-          "options": {
-            "go_package": "google.golang.org/genproto/googleapis/rpc/status;status",
-            "java_multiple_files": true,
-            "java_outer_classname": "StatusProto",
-            "java_package": "com.google.rpc",
-            "objc_class_prefix": "RPC"
-          },
-          "nested": {
-            "Status": {
-              "fields": {
-                "code": {
-                  "type": "int32",
-                  "id": 1
-                },
-                "message": {
-                  "type": "string",
-                  "id": 2
-                },
-                "details": {
-                  "rule": "repeated",
-                  "type": "google.protobuf.Any",
-                  "id": 3
                 }
               }
             }
@@ -4576,6 +5530,34 @@
                 "metadataType": {
                   "type": "string",
                   "id": 2
+                }
+              }
+            }
+          }
+        },
+        "rpc": {
+          "options": {
+            "go_package": "google.golang.org/genproto/googleapis/rpc/status;status",
+            "java_multiple_files": true,
+            "java_outer_classname": "StatusProto",
+            "java_package": "com.google.rpc",
+            "objc_class_prefix": "RPC"
+          },
+          "nested": {
+            "Status": {
+              "fields": {
+                "code": {
+                  "type": "int32",
+                  "id": 1
+                },
+                "message": {
+                  "type": "string",
+                  "id": 2
+                },
+                "details": {
+                  "rule": "repeated",
+                  "type": "google.protobuf.Any",
+                  "id": 3
                 }
               }
             }
