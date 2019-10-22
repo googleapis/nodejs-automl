@@ -31,7 +31,7 @@ function main(
   // const modelEvaluationId = 'YOUR_MODEL_EVALUATION_ID';
 
   // Imports the Google Cloud AutoML library
-  const {AutoMlClient} = require(`@google-cloud/automl`);
+  const {AutoMlClient} = require(`@google-cloud/automl`).v1;
 
   // Instantiates a client
   const client = new AutoMlClient();

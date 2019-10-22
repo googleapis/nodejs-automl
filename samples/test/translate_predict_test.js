@@ -16,7 +16,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const {AutoMlClient} = require('@google-cloud/automl');
+const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
 

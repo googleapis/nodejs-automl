@@ -29,7 +29,7 @@ function main(
   // const displayName = 'YOUR_DISPLAY_NAME';
 
   // Imports the Google Cloud AutoML library
-  const {AutoMlClient} = require(`@google-cloud/automl`);
+  const {AutoMlClient} = require(`@google-cloud/automl`).v1;
 
   // Instantiates a client
   const client = new AutoMlClient();
@@ -48,7 +48,10 @@ function main(
     };
 
     // Create dataset
-    const [response] = await client.createDataset(request);
+    const [operation] = await client.createDataset(request);
+
+    // Wait for operation to complete.
+    const [response] = await operation.promise();
 
     console.log(`Dataset name: ${response.name}`);
     console.log(`
@@ -57,15 +60,6 @@ function main(
           .split('/')
           [response.name.split('/').length - 1].split('\n')[0]
       }`);
-    console.log(`Dataset display name: ${response.displayName}`);
-    console.log(`Translation dataset metadata:`);
-    console.log(`
-      \tSource language code: ${response.translationDatasetMetadata.sourceLanguageCode}`);
-    console.log(`
-      \tTarget language code: ${response.translationDatasetMetadata.targetLanguageCode}`);
-    console.log(`Dataset create time`);
-    console.log(`\tseconds ${response.createTime.seconds}`);
-    console.log(`\tnanos ${response.createTime.nanos / 1e9}`);
   }
 
   createDataset();

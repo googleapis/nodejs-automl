@@ -31,7 +31,7 @@ function main(
   // const filePath = 'path_to_local_file.txt';
 
   // Imports the Google Cloud AutoML library
-  const {PredictionServiceClient} = require(`@google-cloud/automl`);
+  const {PredictionServiceClient} = require(`@google-cloud/automl`).v1;
   const fs = require(`fs`);
 
   // Instantiates a client

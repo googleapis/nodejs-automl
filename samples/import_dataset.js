@@ -31,7 +31,7 @@ function main(
   // const path = 'gs://BUCKET_ID/path_to_training_data.csv';
 
   // Imports the Google Cloud AutoML library
-  const {AutoMlClient} = require(`@google-cloud/automl`);
+  const {AutoMlClient} = require(`@google-cloud/automl`).v1;
 
   // Instantiates a client
   const client = new AutoMlClient();

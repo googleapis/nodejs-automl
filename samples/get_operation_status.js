@@ -25,7 +25,7 @@ function main(
   // const operationFullId = 'projects/[projectId]/locations/us-central1/operations/[operationId]';
 
   // Imports the Google Cloud AutoML library
-  const {AutoMlClient} = require(`@google-cloud/automl`);
+  const {AutoMlClient} = require(`@google-cloud/automl`).v1;
 
   // Instantiates a client
   const client = new AutoMlClient();
