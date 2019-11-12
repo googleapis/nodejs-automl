@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/automl?activeTab=versions
 
+### [1.8.1](https://www.github.com/googleapis/nodejs-automl/compare/v1.8.0...v1.8.1) (2019-11-12)
+
+
+### Bug Fixes
+
+* **docs:** snippets are now replaced in jsdoc comments ([#267](https://www.github.com/googleapis/nodejs-automl/issues/267)) ([5179b3c](https://www.github.com/googleapis/nodejs-automl/commit/5179b3c3991189d537794f43a0696838611be525))
+
 ## [1.8.0](https://www.github.com/googleapis/nodejs-automl/compare/v1.7.3...v1.8.0) (2019-10-31)
 
 
