@@ -864,8 +864,7 @@
                       "oneofs": {
                         "data": {
                           "oneof": [
-                            "imageBytes",
-                            "imageInputConfig"
+                            "imageBytes"
                           ]
                         }
                       },
@@ -873,10 +872,6 @@
                         "imageBytes": {
                           "type": "bytes",
                           "id": 1
-                        },
-                        "imageInputConfig": {
-                          "type": "ImageInputConfig",
-                          "id": 7
                         },
                         "thumbnailUri": {
                           "type": "string",
@@ -1049,14 +1044,6 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
-                        }
-                      }
-                    },
-                    "ImageInputConfig": {
-                      "fields": {
-                        "gcsSource": {
-                          "type": "GcsSource",
-                          "id": 1
                         }
                       }
                     },

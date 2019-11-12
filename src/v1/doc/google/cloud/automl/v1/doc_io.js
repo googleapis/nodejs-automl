@@ -621,23 +621,6 @@ const BatchPredictInputConfig = {
 };
 
 /**
- * Input configuration of an Document.
- *
- * @property {Object} gcsSource
- *   The Google Cloud Storage location of the document file. Only a single path
- *   should be given.
- *
- *   This object should have the same structure as [GcsSource]{@link google.cloud.automl.v1.GcsSource}
- *
- * @typedef ImageInputConfig
- * @memberof google.cloud.automl.v1
- * @see [google.cloud.automl.v1.ImageInputConfig definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/cloud/automl/v1/io.proto}
- */
-const ImageInputConfig = {
-  // This is for documentation. Actual contents will be loaded by gRPC.
-};
-
-/**
  * Input configuration of a Document.
  *
  * @property {Object} gcsSource

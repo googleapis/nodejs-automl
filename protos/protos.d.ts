@@ -1,3 +1,18 @@
+// Copyright 2019 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import * as Long from "long";
 import * as $protobuf from "protobufjs";
 /** Namespace google. */
 export namespace google {
@@ -4761,9 +4776,6 @@ export namespace google {
                     /** Image imageBytes */
                     imageBytes?: (Uint8Array|null);
 
-                    /** Image imageInputConfig */
-                    imageInputConfig?: (google.cloud.automl.v1.IImageInputConfig|null);
-
                     /** Image thumbnailUri */
                     thumbnailUri?: (string|null);
                 }
@@ -4780,14 +4792,11 @@ export namespace google {
                     /** Image imageBytes. */
                     public imageBytes: Uint8Array;
 
-                    /** Image imageInputConfig. */
-                    public imageInputConfig?: (google.cloud.automl.v1.IImageInputConfig|null);
-
                     /** Image thumbnailUri. */
                     public thumbnailUri: string;
 
                     /** Image data. */
-                    public data?: ("imageBytes"|"imageInputConfig");
+                    public data?: "imageBytes";
 
                     /**
                      * Creates a new Image instance using the specified properties.
@@ -5609,96 +5618,6 @@ export namespace google {
 
                     /**
                      * Converts this BatchPredictInputConfig to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-                }
-
-                /** Properties of an ImageInputConfig. */
-                interface IImageInputConfig {
-
-                    /** ImageInputConfig gcsSource */
-                    gcsSource?: (google.cloud.automl.v1.IGcsSource|null);
-                }
-
-                /** Represents an ImageInputConfig. */
-                class ImageInputConfig implements IImageInputConfig {
-
-                    /**
-                     * Constructs a new ImageInputConfig.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.cloud.automl.v1.IImageInputConfig);
-
-                    /** ImageInputConfig gcsSource. */
-                    public gcsSource?: (google.cloud.automl.v1.IGcsSource|null);
-
-                    /**
-                     * Creates a new ImageInputConfig instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns ImageInputConfig instance
-                     */
-                    public static create(properties?: google.cloud.automl.v1.IImageInputConfig): google.cloud.automl.v1.ImageInputConfig;
-
-                    /**
-                     * Encodes the specified ImageInputConfig message. Does not implicitly {@link google.cloud.automl.v1.ImageInputConfig.verify|verify} messages.
-                     * @param message ImageInputConfig message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.cloud.automl.v1.IImageInputConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified ImageInputConfig message, length delimited. Does not implicitly {@link google.cloud.automl.v1.ImageInputConfig.verify|verify} messages.
-                     * @param message ImageInputConfig message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.cloud.automl.v1.IImageInputConfig, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes an ImageInputConfig message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns ImageInputConfig
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.cloud.automl.v1.ImageInputConfig;
-
-                    /**
-                     * Decodes an ImageInputConfig message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns ImageInputConfig
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.cloud.automl.v1.ImageInputConfig;
-
-                    /**
-                     * Verifies an ImageInputConfig message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates an ImageInputConfig message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns ImageInputConfig
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.cloud.automl.v1.ImageInputConfig;
-
-                    /**
-                     * Creates a plain object from an ImageInputConfig message. Also converts values to other types if specified.
-                     * @param message ImageInputConfig
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.cloud.automl.v1.ImageInputConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this ImageInputConfig to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
