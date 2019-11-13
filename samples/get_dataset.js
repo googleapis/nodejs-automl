@@ -20,7 +20,12 @@ function main(
   location = 'us-central1',
   datasetId = 'YOUR_DATASET_ID'
 ) {
+  // [START automl_language_entity_extraction_get_dataset]
+  // [START automl_language_sentiment_analysis_get_dataset]
+  // [START automl_language_text_classification_get_dataset]
   // [START automl_translate_get_dataset]
+  // [START automl_vision_classification_get_dataset]
+  // [START automl_vision_object_detection_get_dataset]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
@@ -49,18 +54,57 @@ function main(
       }`
     );
     console.log(`Dataset display name: ${response.displayName}`);
-    console.log(`Translation dataset metadata:`);
-    console.log(`
-      \tSource language code: ${response.translationDatasetMetadata.sourceLanguageCode}`);
-    console.log(`
-      \tTarget language code: ${response.translationDatasetMetadata.targetLanguageCode}`);
     console.log(`Dataset create time`);
     console.log(`\tseconds ${response.createTime.seconds}`);
     console.log(`\tnanos ${response.createTime.nanos / 1e9}`);
+    // [END automl_language_sentiment_analysis_get_dataset]
+    // [END automl_language_text_classification_get_dataset]
+    // [END automl_translate_get_dataset]
+    // [END automl_vision_classification_get_dataset]
+    // [END automl_vision_object_detection_get_dataset]
+    console.log(`Text extraction dataset metadata: ${response.textExtractionDatasetMetadata}`);
+    // [END automl_language_entity_extraction_get_dataset]
+
+    // [START automl_language_sentiment_analysis_get_dataset]
+    console.log(`Text sentiment dataset metadata: ${response.textSentimentDatasetMetadata}`);
+    // [END automl_language_sentiment_analysis_get_dataset]
+
+    // [START automl_language_text_classification_get_dataset]
+    console.log(`Text classification dataset metadata: ${response.textClassificationDatasetMetadata}`);
+    // [END automl_language_text_classification_get_dataset]
+
+    // [START automl_translate_get_dataset]
+    if (dataset.translationDatasetMetadata !== undefined) {
+      console.log(`Translation dataset metadata:`);
+      console.log(
+        `\tSource language code: ${dataset.translationDatasetMetadata.sourceLanguageCode}`
+      );
+      console.log(
+        `\tTarget language code: ${dataset.translationDatasetMetadata.targetLanguageCode}`
+      );
+    }
+    // [END automl_translate_get_dataset]
+
+    // [START automl_vision_classification_get_dataset]
+    console.log(`Image classification dataset metadata: ${response.imageClassificationDatasetMetadata}`);
+    // [END automl_vision_classification_get_dataset]
+
+    // [START automl_vision_object_detection_get_dataset]
+    console.log(`Image object detection dataset metatdata: ${response.imageObjectDetectionDatasetMetatdata}`);
+    // [START automl_language_entity_extraction_get_dataset]
+    // [START automl_language_sentiment_analysis_get_dataset]
+    // [START automl_language_text_classification_get_dataset]
+    // [START automl_translate_get_dataset]
+    // [START automl_vision_classification_get_dataset]
   }
 
   getDataset();
+  // [END automl_language_entity_extraction_get_dataset]
+  // [END automl_language_sentiment_analysis_get_dataset]
+  // [END automl_language_text_classification_get_dataset]
   // [END automl_translate_get_dataset]
+  // [END automl_vision_classification_get_dataset]
+  // [END automl_vision_object_detection_get_dataset]
 }
 
 main(...process.argv.slice(2));
