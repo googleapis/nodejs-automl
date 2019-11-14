@@ -16,10 +16,9 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Natural Language Sentiment Analysis "Dataset API" sample.*/
-
 const cmdDataset = 'node automlNaturalLanguageSentimentDataset.js';
 
 // TODO(developer): Before running the test cases,
@@ -34,12 +33,12 @@ const sentimentMax = 4;
 const datasetId = 'TST1814315223123098195';
 const importDataCsv = 'gs://' + projectId + '-lcm/automl-sentiment/train.csv';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe.skip('Language Sentiment DatasetAPI', () => {
   it(`should create, import and delete a dataset`, async () => {
     // Create dataset
-    let output = await exec(
+    let output = exec(
       `${cmdDataset} create-dataset "${datasetName}" "${sentimentMax}"`
     );
     const parsedOut = output.split('\n');
@@ -47,34 +46,29 @@ describe.skip('Language Sentiment DatasetAPI', () => {
     assert.match(output, /Dataset display name:/);
 
     // Import Data
-    output = await exec(
+    output = exec(
       `${cmdDataset} import-data "${outputDatasetId}" "${importDataCsv}"`
     );
     assert.match(output, /Processing import.../);
 
     // Delete dataset
-    output = await exec(`${cmdDataset} delete-dataset "${outputDatasetId}"`);
+    output = exec(`${cmdDataset} delete-dataset "${outputDatasetId}"`);
     assert.match(output, /Dataset delete details:/);
   });
 
   it(`should list datasets`, async () => {
-    // List datasets
-    const output = await exec(`${cmdDataset} list-datasets "${filter}"`);
+    const output = exec(`${cmdDataset} list-datasets "${filter}"`);
     assert.match(output, /List of datasets:/);
   });
 
   it(`should get preexisting dataset`, async () => {
-    // Get dataset
-    const output = await exec(`${cmdDataset} get-dataset "${datasetId}"`);
+    const output = exec(`${cmdDataset} get-dataset "${datasetId}"`);
     assert.match(output, /Dataset display name:/);
   });
 
   it(`should export dataset`, async () => {
-    // Export data
     const outputUri = 'gs://' + bucket + '/' + datasetId;
-    const output = await exec(
-      `${cmdDataset} export-data ${datasetId} ${outputUri}`
-    );
+    const output = exec(`${cmdDataset} export-data ${datasetId} ${outputUri}`);
     assert.match(output, /Processing export.../);
   });
 });

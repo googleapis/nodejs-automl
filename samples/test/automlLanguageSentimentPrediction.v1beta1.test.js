@@ -16,7 +16,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Natural Language Sentiment Analysis "Prediction API"
  * sample.
@@ -32,12 +32,12 @@ const computeRegion = process.env.REGION_NAME;
 const modelId = 'TST237689009065453820';
 const filePath = './resource/sentimentInput.txt';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe.skip('Language Sentiment PredictionAPI', () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'test.txt' in resources folder
-    const output = await exec(
+    const output = exec(
       `${cmdPredict} predict "${projectId}" "${computeRegion}" "${modelId}" "${filePath}"`
     );
     assert.match(output, /Predicted sentiment label:/);

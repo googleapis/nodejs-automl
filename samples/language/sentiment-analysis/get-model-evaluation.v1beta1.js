@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -21,9 +21,9 @@ async function main(
   modelEvaluationId = 'MODEL_EVALUATION_ID'
 ) {
   // [START automl_natural_language_sentiment_get_model_evaluation]
-  const automl = require(`@google-cloud/automl`);
-  const math = require(`mathjs`);
-  const util = require(`util`);
+  const automl = require('@google-cloud/automl');
+  const math = require('mathjs');
+  const util = require('util');
   const client = new automl.v1beta1.AutoMlClient();
 
   /**

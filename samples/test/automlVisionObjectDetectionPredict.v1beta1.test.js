@@ -16,7 +16,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Vision Object Detection "Prediction API" sample. */
 
@@ -27,12 +27,12 @@ const computeRegion = 'us-central1';
 const modelId = '';
 const filePath = './resource/songbird.jpg';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe.skip('Vision Object Detection PredictionAPI', () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'salad.jpg' in resource folder
-    const output = await exec(
+    const output = exec(
       `node vision/object-detection/predict.v1beta1.js "${projectId}" "${computeRegion}" "${modelId}" "${filePath}"`
     );
     assert.match(output, /Prediction results:/);

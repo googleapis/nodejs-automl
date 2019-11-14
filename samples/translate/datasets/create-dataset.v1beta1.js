@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 
 async function main(projectId = 'YOUR_PROJECT_ID') {
   // [START automl_translation_create_dataset]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
 
   const client = new automl.AutoMlClient();
   const computeRegion = 'us-central1';

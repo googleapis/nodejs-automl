@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -21,7 +21,7 @@ async function main(
   displayName = 'DISPLAY_NAME'
 ) {
   // [START automl_tables_update_dataset]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
 
   const client = new automl.v1beta1.AutoMlClient();
 

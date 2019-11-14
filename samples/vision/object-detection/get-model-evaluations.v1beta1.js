@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -37,7 +37,7 @@ function main(
   // Instantiates a client
   const automlClient = new AutoMlClient();
 
-  const math = require(`mathjs`);
+  const math = require('mathjs');
 
   async function getModelEvaluations() {
     // Get the full path of the model evaluation.

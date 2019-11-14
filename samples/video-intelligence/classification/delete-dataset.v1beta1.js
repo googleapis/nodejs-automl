@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
   datasetId = 'YOUR_DATASET_ID'
 ) {
   // [START automl_video_intelligence_classification_delete_dataset]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
   const client = new automl.v1beta1.AutoMlClient();
 
   /**

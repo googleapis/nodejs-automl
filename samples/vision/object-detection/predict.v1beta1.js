@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -41,7 +41,7 @@ function main(
   // Instantiates a client
   const predictionServiceClient = new PredictionServiceClient();
 
-  const fs = require(`fs`);
+  const fs = require('fs');
 
   async function predict() {
     // Get the full path of the model.

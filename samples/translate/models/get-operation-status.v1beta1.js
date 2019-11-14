@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 
 async function main(operationFullId = 'YOUR_OPERATION_ID') {
   // [START automl_translation_get_operation_status]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
 
   const client = new automl.AutoMlClient();
 

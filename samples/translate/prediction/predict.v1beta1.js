@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 
 async function main(
   projectId = 'YOUR_PROJECT_ID',
@@ -23,8 +23,8 @@ async function main(
   translationAllowFallback = false
 ) {
   // [START automl_translation_predict]
-  const automl = require(`@google-cloud/automl`);
-  const fs = require(`fs`);
+  const automl = require('@google-cloud/automl');
+  const fs = require('fs');
 
   // Create client for prediction service.
   const client = new automl.PredictionServiceClient();

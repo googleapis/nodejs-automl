@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -21,8 +21,8 @@ async function main(
   filter = 'FILTER_EXPRESSION'
 ) {
   // [START automl_video_intelligence_classification_display_evaluation]
-  const automl = require(`@google-cloud/automl`);
-  const math = require(`mathjs`);
+  const automl = require('@google-cloud/automl');
+  const math = require('mathjs');
   const client = new automl.v1beta1.AutoMlClient();
 
   /**

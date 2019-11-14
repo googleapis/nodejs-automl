@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -22,7 +22,7 @@ async function main(
   outputUriPrefix = 'GCS_DIRECTORY_PATH'
 ) {
   // [START automl_video_intelligence_classification_predict]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
 
   // Create client for prediction service.
   const client = new automl.v1beta1.PredictionServiceClient();

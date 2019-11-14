@@ -16,7 +16,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Video Intelligence Classification "Model API" sample. */
 
@@ -31,12 +31,12 @@ const filter = 'videoClassificationModelMetadata:*';
 const datasetId = 'VCN1653190499151904768';
 const testModelName = 'test_video_model';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe.skip(`Video Intelligence ModelAPI`, () => {
   it(`should create a model`, async () => {
     // Create model
-    let output = await exec(
+    let output = exec(
       `${cmdModel} create-model "${datasetId}" "${testModelName}"`
     );
     const operationName = output
@@ -45,47 +45,47 @@ describe.skip(`Video Intelligence ModelAPI`, () => {
       .trim();
     assert.match(output, /Training started.../);
 
-    output = await exec(`${cmdModel} get-operation-status "${operationName}"`);
+    output = exec(`${cmdModel} get-operation-status "${operationName}"`);
     assert.match(output, /Operation details:/);
   });
 
   it(`should list models, get and delete a model. list, get and display model
     evaluations from preexisting models`, async () => {
     // List models
-    let output = await exec(`${cmdModel} list-models "${filter}"`);
+    let output = exec(`${cmdModel} list-models "${filter}"`);
     const parsedOut = output.split('\n');
     const ouputModelId = parsedOut[3].split(':')[1].trim();
     assert.match(output, /List of models:/);
 
     // Get model
-    output = await exec(`${cmdModel} get-model "${ouputModelId}"`);
+    output = exec(`${cmdModel} get-model "${ouputModelId}"`);
     assert.match(output, /Model name:/);
 
     // List model evaluations
-    output = await exec(`${cmdModel} list-model-evaluations "${ouputModelId}"`);
+    output = exec(`${cmdModel} list-model-evaluations "${ouputModelId}"`);
     const parsedModelEvaluation = output.split('\n');
     const modelEvaluationId = parsedModelEvaluation[3].split(':')[1].trim();
     assert.match(output, /Model evaluation Id:/);
 
     // Get model evaluation
-    output = await exec(
+    output = exec(
       `${cmdModel} get-model-evaluation "${ouputModelId}" ` +
         `"${modelEvaluationId}"`
     );
     assert.match(output, /Model evaluation Id:/);
 
     // Display evaluation
-    output = await exec(`${cmdModel} display-evaluation "${ouputModelId}"`);
+    output = exec(`${cmdModel} display-evaluation "${ouputModelId}"`);
     assert.match(output, /Model Evaluation ID:/);
 
     // Delete model
-    output = await exec(`${cmdModel} delete-model "${ouputModelId}"`);
+    output = exec(`${cmdModel} delete-model "${ouputModelId}"`);
     assert.match(output, /Model delete details:/);
   });
 
   it(`should list and get operation status`, async () => {
     // List operation status
-    let output = await exec(`${cmdModel} list-operations-status`);
+    let output = exec(`${cmdModel} list-operations-status`);
     const operationFullId = output
       .split('\n')[3]
       .split(':')[1]
@@ -94,9 +94,7 @@ describe.skip(`Video Intelligence ModelAPI`, () => {
 
     // Get operation status
     // Poll operation status, here confirming that operation is not complete yet
-    output = await exec(
-      `${cmdModel} get-operation-status "${operationFullId}"`
-    );
+    output = exec(`${cmdModel} get-operation-status "${operationFullId}"`);
     assert.match(output, /Operation details:/);
   });
 });

@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
   filter = 'YOUR_FILTER_EXPRESSION'
 ) {
   // [START automl_natural_language_entity_list_operations_status]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
   const client = new automl.v1beta1.AutoMlClient();
 
   /**

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -21,8 +21,8 @@ async function main(
   filePath = 'LOCAL_FILE_PATH'
 ) {
   // [START automl_natural_language_sentiment_predict]
-  const automl = require(`@google-cloud/automl`);
-  const fs = require(`fs`);
+  const automl = require('@google-cloud/automl');
+  const fs = require('fs');
 
   // Create client for prediction service.
   const client = new automl.v1beta1.PredictionServiceClient();

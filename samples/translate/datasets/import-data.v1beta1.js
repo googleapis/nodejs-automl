@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 
 async function main(
   projectId = 'YOUR_PROJECT_ID',
@@ -22,7 +22,7 @@ async function main(
   path = 'YOUR_PATH'
 ) {
   // [START automl_translation_import_data]
-  const automl = require(`@google-cloud/automl`);
+  const automl = require('@google-cloud/automl');
 
   const client = new automl.AutoMlClient();
 

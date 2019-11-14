@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
+
 async function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -21,9 +22,9 @@ async function main(
   filePath = 'FILE_PATH'
 ) {
   // [START automl_tables_predict]
-  const automl = require(`@google-cloud/automl`);
-  const fs = require(`fs`);
-  const csv = require(`csv`);
+  const automl = require('@google-cloud/automl');
+  const fs = require('fs');
+  const csv = require('csv');
 
   // Create client for prediction service.
   const client = new automl.v1beta1.PredictionServiceClient();

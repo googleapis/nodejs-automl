@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 function main(operationFullId = 'OPERATION_FULL_ID') {
   // [START automl_vision_object_detection_get_operation_status]
   /**

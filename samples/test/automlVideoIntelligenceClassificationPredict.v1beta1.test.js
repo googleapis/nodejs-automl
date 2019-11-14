@@ -16,7 +16,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Video Intelligence Classification "Prediction API" sample.
  */
@@ -32,12 +32,12 @@ const modelId = 'VCN5018751611309129728';
 const inputUri = 'gs://video-intelligence/input-csv/annotateVideo.csv';
 const outputUriPrefix = 'gs://video-intelligence/';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe.skip(`Video Intelligence PredictionAPI`, () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'annotate_video.csv' from gcs inputUri
-    const output = await exec(
+    const output = exec(
       `${cmdPredict} predict "${modelId}" "${inputUri}" "${outputUriPrefix}"`
     );
     assert.match(output, /Operation name:/);

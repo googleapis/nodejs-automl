@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -33,7 +33,7 @@ function main(
 
   // Instantiates a client
   const automlClient = new AutoMlClient();
-  const util = require(`util`);
+  const util = require('util');
   async function getDataset() {
     // Get the full path of the dataset.
     const datasetFullId = automlClient.datasetPath(

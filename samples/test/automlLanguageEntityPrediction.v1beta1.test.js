@@ -16,7 +16,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Natural Language Entity Extraction "Prediction API" sample.
  */
@@ -31,14 +31,12 @@ const cmdPredict = 'node automlNaturalLanguageEntityPrediction.js';
 const modelId = 'TEN5215784095006588928';
 const filePath = './resource/entityInput.txt';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe.skip(`Language Entity PredictionAPI`, () => {
   it(`should run prediction from preexisting model`, async () => {
     // Run prediction on 'entityInput.txt' in resource folder
-    const output = await exec(
-      `${cmdPredict} predict "${modelId}" "${filePath}"`
-    );
+    const output = exec(`${cmdPredict} predict "${modelId}" "${filePath}"`);
     assert.match(output, /Predicted text extract entity type:/);
   });
 });

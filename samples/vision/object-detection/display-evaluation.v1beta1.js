@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-`use strict`;
+'use strict';
 function main(
   projectId = 'YOUR_PROJECT_ID',
   computeRegion = 'YOUR_REGION_NAME',
@@ -31,7 +31,7 @@ function main(
   // const filter = '[FILTER_EXPRESSIONS]'
   // e.g., "imageObjectDetectionModelMetadata:*";
 
-  const math = require(`mathjs`);
+  const math = require('mathjs');
   //Imports the Google Cloud Automl library
   const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
