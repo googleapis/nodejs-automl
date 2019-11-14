@@ -44,7 +44,7 @@ describe('Automl Vision Object Detection Dataset Tests', () => {
       .substring(0, 26)}`;
 
     // create
-    const create_output = execSync(
+    const create_output = await execSync(
       `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${displayName}`
     );
     assert.match(create_output, /Dataset id:/);
@@ -53,13 +53,13 @@ describe('Automl Vision Object Detection Dataset Tests', () => {
 
     // import'
     const data = `gs://cloud-ml-data/img/openimage/csv/salads_ml_use.csv`;
-    const import_output = execSync(
+    const import_output = await execSync(
       `node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId} ${data}`
     );
     assert.match(import_output, /Dataset imported/);
 
     // delete
-    const delete_output = execSync(
+    const delete_output = await execSync(
       `node ${DELETE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId}`
     );
     assert.match(delete_output, /Dataset deleted/);

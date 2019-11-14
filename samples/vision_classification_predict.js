@@ -52,7 +52,7 @@ function main(
         },
       },
       params: {
-        'scoreThreshold': '0.8',
+        scoreThreshold: '0.8',
       },
     };
 
@@ -60,7 +60,9 @@ function main(
 
     for (const annotationPayload of response.payload) {
       console.log(`Predicted class name: ${annotationPayload.displayName}`);
-      console.log(`Predicted class score: ${annotationPayload.classification.score}`);
+      console.log(
+        `Predicted class score: ${annotationPayload.classification.score}`
+      );
     }
   }
 

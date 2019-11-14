@@ -33,7 +33,8 @@ describe('Automl Natural Language Entity Extraction Predict Tests', () => {
 
   it('should predict', async () => {
     const projectId = await client.getProjectId();
-    const content = '\'Constitutional mutations in the WT1 gene in patients with Denys-Drash syndrome.\'';
+    const content =
+      "'Constitutional mutations in the WT1 gene in patients with Denys-Drash syndrome.'";
 
     const predictOutput = execSync(
       `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${content}`
@@ -47,11 +48,13 @@ describe('Automl Natural Language Entity Extraction Predict Tests', () => {
     const prefix = 'TEST_BATCH_PREDICT';
     const outputUri = `gs://${projectId}-lcm/${prefix}/`;
 
-
     const batchPredictOutput = execSync(
       `node ${BATCH_PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${inputUri} ${outputUri}`
     );
-    assert.match(batchPredictOutput, /Batch Prediction results saved to Cloud Storage bucket/);
+    assert.match(
+      batchPredictOutput,
+      /Batch Prediction results saved to Cloud Storage bucket/
+    );
 
     // Delete created files
     const storageClient = new Storage();

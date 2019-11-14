@@ -38,7 +38,7 @@ function main(
   const client = new PredictionServiceClient();
 
   // Read the file content for translation.
-  const content = fs.readFileSync(filePath, `utf8`);
+  const content = fs.readFileSync(filePath);
 
   async function predict() {
     // Construct request
@@ -52,7 +52,7 @@ function main(
         },
       },
       params: {
-        'scoreThreshold': '0.8',
+        score_threshold: '0.8',
       },
     };
 
@@ -60,9 +60,12 @@ function main(
 
     for (const annotationPayload of response.payload) {
       console.log(`Predicted class name: ${annotationPayload.displayName}`);
-      console.log(`Predicted class score: ${annotationPayload.imageObjectDetection.score}`);
+      console.log(
+        `Predicted class score: ${annotationPayload.imageObjectDetection.score}`
+      );
       console.log(`Normalized vertices:`);
-      for (const vertex of response.imageObjectDetection.boundingBox.Vertices) {
+      for (const vertex of annotationPayload.imageObjectDetection.boundingBox
+        .normalizedVertices) {
         console.log(`\tX: ${vertex.x}, Y: ${vertex.y}`);
       }
     }

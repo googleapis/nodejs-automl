@@ -43,7 +43,7 @@ function main(
       payload: {
         textSnippet: {
           content: content,
-          mimeType: 'text/plain',  // Types: 'test/plain', 'text/html'
+          mimeType: 'text/plain', // Types: 'test/plain', 'text/html'
         },
       },
     };
@@ -51,7 +51,9 @@ function main(
     const [response] = await client.predict(request);
 
     for (const annotationPayload of response.payload) {
-      console.log(`Text Extract Entity Types: ${annotationPayload.displayName}`);
+      console.log(
+        `Text Extract Entity Types: ${annotationPayload.displayName}`
+      );
       console.log(`Text Score: ${annotationPayload.textExtraction.score}`);
       const textSegment = annotationPayload.textExtraction.textSegment;
       console.log(`Text Extract Entity Content: ${textSegment.content}`);

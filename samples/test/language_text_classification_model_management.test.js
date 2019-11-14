@@ -22,7 +22,7 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const MODEL_ID = 'TODO';
+const MODEL_ID = 'TCN7483069430457434112';
 const DEPLOY_MODEL_REGION_TAG = 'deploy_model';
 const UNDEPLOY_MODEL_REGION_TAG = 'undeploy_model';
 const LOCATION = 'us-central1';

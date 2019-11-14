@@ -22,7 +22,7 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const MODEL_ID = 'TODO';
+const MODEL_ID = 'TCN7483069430457434112';
 const PREDICT_REGION_TAG = 'language_text_classification_predict';
 const LOCATION = 'us-central1';
 
@@ -31,7 +31,7 @@ describe('Automl Natural Language Text Classification Predict Tests', () => {
 
   it('should predict', async () => {
     const projectId = await client.getProjectId();
-    const content = 'Fruit and nut flavour';
+    const content = "'Fruit and nut flavour'";
 
     const predictOutput = execSync(
       `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${content}`

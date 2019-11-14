@@ -53,8 +53,8 @@ function main(
         },
       },
       params: {
-        'score_threshold': '0.8',  // # [0.0-1.0] Only produce results higher than this value
-      }
+        score_threshold: '0.8', // # [0.0-1.0] Only produce results higher than this value
+      },
     };
 
     const [operation] = await client.batchPredict(request);
@@ -62,7 +62,9 @@ function main(
     console.log(`Waiting for operation to complete...`);
     // Wait for operation to complete.
     const [response] = await operation.promise();
-    console.log(`Batch Prediction results saved to Cloud Storage bucket. ${response}`);
+    console.log(
+      `Batch Prediction results saved to Cloud Storage bucket. ${response}`
+    );
   }
 
   batchPredict();

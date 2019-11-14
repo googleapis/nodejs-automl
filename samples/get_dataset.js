@@ -62,15 +62,21 @@ function main(
     // [END automl_translate_get_dataset]
     // [END automl_vision_classification_get_dataset]
     // [END automl_vision_object_detection_get_dataset]
-    console.log(`Text extraction dataset metadata: ${response.textExtractionDatasetMetadata}`);
+    console.log(
+      `Text extraction dataset metadata: ${response.textExtractionDatasetMetadata}`
+    );
     // [END automl_language_entity_extraction_get_dataset]
 
     // [START automl_language_sentiment_analysis_get_dataset]
-    console.log(`Text sentiment dataset metadata: ${response.textSentimentDatasetMetadata}`);
+    console.log(
+      `Text sentiment dataset metadata: ${response.textSentimentDatasetMetadata}`
+    );
     // [END automl_language_sentiment_analysis_get_dataset]
 
     // [START automl_language_text_classification_get_dataset]
-    console.log(`Text classification dataset metadata: ${response.textClassificationDatasetMetadata}`);
+    console.log(
+      `Text classification dataset metadata: ${response.textClassificationDatasetMetadata}`
+    );
     // [END automl_language_text_classification_get_dataset]
 
     // [START automl_translate_get_dataset]
@@ -86,11 +92,15 @@ function main(
     // [END automl_translate_get_dataset]
 
     // [START automl_vision_classification_get_dataset]
-    console.log(`Image classification dataset metadata: ${response.imageClassificationDatasetMetadata}`);
+    console.log(
+      `Image classification dataset metadata: ${response.imageClassificationDatasetMetadata}`
+    );
     // [END automl_vision_classification_get_dataset]
 
     // [START automl_vision_object_detection_get_dataset]
-    console.log(`Image object detection dataset metatdata: ${response.imageObjectDetectionDatasetMetatdata}`);
+    console.log(
+      `Image object detection dataset metatdata: ${response.imageObjectDetectionDatasetMetatdata}`
+    );
     // [START automl_language_entity_extraction_get_dataset]
     // [START automl_language_sentiment_analysis_get_dataset]
     // [START automl_language_text_classification_get_dataset]

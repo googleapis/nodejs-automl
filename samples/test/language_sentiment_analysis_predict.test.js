@@ -22,7 +22,7 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const MODEL_ID = 'TODO';
+const MODEL_ID = 'TST3171435737203605504';
 const PREDICT_REGION_TAG = 'language_sentiment_analysis_predict';
 const LOCATION = 'us-central1';
 
@@ -31,11 +31,11 @@ describe('Automl Natural Language Sentiment Analysis Predict Tests', () => {
 
   it('should predict', async () => {
     const projectId = await client.getProjectId();
-    const content = 'Hopefully this Claritin kicks in soon';
+    const content = "'Hopefully this Claritin kicks in soon'";
 
     const predictOutput = execSync(
       `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${content}`
     );
-    assert.match(predictOutput, /Text Extract Entity Types/);
+    assert.match(predictOutput, /Predicted sentiment score/);
   });
 });

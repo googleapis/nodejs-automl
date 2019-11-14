@@ -45,7 +45,7 @@ function main(
       dataset: {
         displayName: displayName,
         imageClassificationDatasetMetadata: {
-          classificationType: 'MULTILABEL', 
+          classificationType: 'MULTILABEL',
         },
       },
     };

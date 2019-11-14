@@ -43,7 +43,7 @@ function main(
       payload: {
         textSnippet: {
           content: content,
-          mimeType: 'text/plain',  // Types: 'test/plain', 'text/html'
+          mimeType: 'text/plain', // Types: 'test/plain', 'text/html'
         },
       },
     };
@@ -52,7 +52,9 @@ function main(
 
     for (const annotationPayload of response.payload) {
       console.log(`Predicted class name: ${annotationPayload.displayName}`);
-      console.log(`Predicted sentiment score: ${annotationPayload.textSentiment.sentiment}`);
+      console.log(
+        `Predicted sentiment score: ${annotationPayload.textSentiment.sentiment}`
+      );
     }
   }
 
