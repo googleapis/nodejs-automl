@@ -44,6 +44,7 @@ describe('Tables PredictionAPI', () => {
       `${cmdPredict} predict "${modelId}" "${filePath}"`
     );
     assert.match(output, /Prediction results:/);
+    assert.match(output, /Features of top importance:/);
   });
 
   it.skip(`should perform batch prediction using GCS as source and
