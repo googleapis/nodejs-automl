@@ -40,7 +40,10 @@ function main(
       name: client.modelPath(projectId, location, modelId),
     };
 
-    const [response] = await client.undeployModel(request);
+    const [operation] = await client.undeployModel(request);
+
+    // Wait for operation to complete.
+    const [response] = await operation.promise();
     console.log(`Model undeployment finished. ${response}`);
   }
 

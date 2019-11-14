@@ -19,7 +19,7 @@ function main(
   projectId = 'YOUR_PROJECT_ID',
   location = 'us-central1',
   modelId = 'YOUR_MODEL_ID',
-  content = 'text to predict'
+  filePath = 'path_to_local_file.jpg'
 ) {
   // [START automl_vision_classification_predict]
   /**
@@ -28,7 +28,7 @@ function main(
   // const projectId = 'YOUR_PROJECT_ID';
   // const location = 'us-central1';
   // const modelId = 'YOUR_MODEL_ID';
-  // const filePath = 'path_to_local_file.jpg'
+  // const filePath = 'path_to_local_file.jpg';
 
   // Imports the Google Cloud AutoML library
   const {PredictionServiceClient} = require(`@google-cloud/automl`).v1;

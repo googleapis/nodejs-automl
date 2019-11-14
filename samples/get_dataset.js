@@ -74,13 +74,13 @@ function main(
     // [END automl_language_text_classification_get_dataset]
 
     // [START automl_translate_get_dataset]
-    if (dataset.translationDatasetMetadata !== undefined) {
+    if (response.translationDatasetMetadata !== undefined) {
       console.log(`Translation dataset metadata:`);
       console.log(
-        `\tSource language code: ${dataset.translationDatasetMetadata.sourceLanguageCode}`
+        `\tSource language code: ${response.translationDatasetMetadata.sourceLanguageCode}`
       );
       console.log(
-        `\tTarget language code: ${dataset.translationDatasetMetadata.targetLanguageCode}`
+        `\tTarget language code: ${response.translationDatasetMetadata.targetLanguageCode}`
       );
     }
     // [END automl_translate_get_dataset]

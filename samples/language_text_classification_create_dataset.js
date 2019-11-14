@@ -40,7 +40,9 @@ function main(
       parent: client.locationPath(projectId, location),
       dataset: {
         displayName: displayName,
-        textClassificationDatasetMetadata: {},
+        textClassificationDatasetMetadata: {
+          classificationType: 'MULTICLASS',
+        },
       },
     };
 

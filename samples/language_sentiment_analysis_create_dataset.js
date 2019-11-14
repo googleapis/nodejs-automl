@@ -40,7 +40,9 @@ function main(
       parent: client.locationPath(projectId, location),
       dataset: {
         displayName: displayName,
-        textSentimentDatasetMetadata: {},
+        textSentimentDatasetMetadata: {
+          sentimentMax: 4, // Possible max sentiment score: 1-10
+        },
       },
     };
 
