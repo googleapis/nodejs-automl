@@ -20,68 +20,15 @@ const {AutoMlClient} = require('@google-cloud/automl').v1;
 const {Storage} = require('@google-cloud/storage');
 
 const cp = require('child_process');
-const uuid = require('uuid');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const CREATE_DATASET_REGION_TAG = 'translate_create_dataset';
-const IMPORT_DATASET_REGION_TAG = 'import_dataset';
-const DELETE_DATASET_REGION_TAG = 'delete_dataset';
-const LIST_DATASET_REGION_TAG = 'list_datasets';
-const GET_DATASET_REGION_TAG = 'get_dataset';
 const DATASET_ID = 'TRL8522556519449886720';
 const EXPORT_DATASET_REGION_TAG = 'export_dataset';
 const LOCATION = 'us-central1';
 
 describe('Automl Translate Dataset Tests', () => {
   const client = new AutoMlClient();
-
-  it('should create, import, and delete a dataset', async () => {
-    const projectId = await client.getProjectId();
-    const displayName = `test_${uuid
-      .v4()
-      .replace(/-/g, '_')
-      .substring(0, 26)}`;
-
-    // create
-    const create_output = execSync(
-      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${displayName}`
-    );
-    assert.match(create_output, /Dataset id:/);
-
-    const datasetId = create_output.split('Dataset id: ')[1].split('\n')[0];
-
-    // import'
-    const data = `gs://${projectId}-automl-translate/en-ja-short.csv`;
-    const import_output = execSync(
-      `node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId} ${data}`
-    );
-    assert.match(import_output, /Dataset imported/);
-
-    // delete
-    const delete_output = execSync(
-      `node ${DELETE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId}`
-    );
-    assert.match(delete_output, /Dataset deleted/);
-  });
-
-  it('should list datasets', async () => {
-    const projectId = await client.getProjectId();
-    const list_output = execSync(
-      `node ${LIST_DATASET_REGION_TAG}.js ${projectId} ${LOCATION}`
-    );
-
-    assert.match(list_output, /Dataset id/);
-  });
-
-  it('should get a dataset', async () => {
-    const projectId = await client.getProjectId();
-    const get_output = execSync(
-      `node ${GET_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID}`
-    );
-
-    assert.match(get_output, /Dataset id/);
-  });
 
   it('should export a datset', async () => {
     const projectId = await client.getProjectId();
