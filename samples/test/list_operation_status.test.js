@@ -25,7 +25,6 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const LIST_OPERATION_STATUS_REGION_TAG = 'list_operation_status';
 const LOCATION = 'us-central1';
 
-
 describe('Automl List Operation Status Tests', () => {
   const client = new AutoMlClient();
 

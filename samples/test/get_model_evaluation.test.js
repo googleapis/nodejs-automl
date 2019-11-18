@@ -27,7 +27,6 @@ const LOCATION = 'us-central1';
 const MODEL_ID = 'TRL1218052175389786112';
 const MODEL_EVALUATION_ID = '6800627877826816909';
 
-
 describe('Automl Translate Model Tests', () => {
   const client = new AutoMlClient();
 

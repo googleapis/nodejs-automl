@@ -28,7 +28,7 @@ const LOCATION = 'us-central1';
 
 describe('Automl Import Dataset Test', () => {
   const client = new AutoMlClient();
-  var datasetId;
+  let datasetId;
 
   before('should create a dataset', async () => {
     const projectId = await client.getProjectId();
@@ -48,7 +48,9 @@ describe('Automl Import Dataset Test', () => {
     };
     const [operation] = await client.createDataset(request);
     const [response] = await operation.promise();
-    datasetId = response.name.split('/')[response.name.split('/').length - 1].split('\n')[0];
+    datasetId = response.name
+      .split('/')
+      [response.name.split('/').length - 1].split('\n')[0];
   });
 
   it('should create, import, and delete a dataset', async () => {
@@ -66,7 +68,6 @@ describe('Automl Import Dataset Test', () => {
       name: client.datasetPath(projectId, LOCATION, datasetId),
     };
     const [operation] = await client.deleteDataset(request);
-    const [response] = await operation.promise();
+    await operation.promise();
   });
-
 });

@@ -28,7 +28,7 @@ const LOCATION = 'us-central1';
 
 describe('Automl Translate Create Dataset Test', () => {
   const client = new AutoMlClient();
-  var datasetId;
+  let datasetId;
 
   it('should create a dataset', async () => {
     const projectId = await client.getProjectId();
@@ -44,8 +44,6 @@ describe('Automl Translate Create Dataset Test', () => {
     assert.match(create_output, /Dataset id:/);
 
     datasetId = create_output.split('Dataset id: ')[1].split('\n')[0];
-
-    
   });
 
   after('delete created dataset', async () => {
@@ -54,6 +52,6 @@ describe('Automl Translate Create Dataset Test', () => {
       name: client.datasetPath(projectId, LOCATION, datasetId),
     };
     const [operation] = await client.deleteDataset(request);
-    const [response] = await operation.promise();
+    await operation.promise();
   });
 });

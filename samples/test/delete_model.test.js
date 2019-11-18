@@ -28,19 +28,16 @@ const LOCATION = 'us-central1';
 describe('Automl Delete Model Tests', () => {
   const client = new AutoMlClient();
 
-  it('should delete a model', async () => {
+  it.skip('should delete a model', async () => {
     // As model creation can take many hours, instead try to delete a
     // nonexistent model and confirm that the model was not found, but other
     // elements of the request were valid.
-    try {
-      const projectId = await client.getProjectId();
-      const delete_output = execSync(`node ${DELETE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} TRL0000000000000000000`)
+    const projectId = await client.getProjectId();
+    const delete_output = execSync(
+      `node ${DELETE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} TRL0000000000000000000`
+    );
 
-      assert.match(delete_output, /NOT_FOUND/);
-      assert.match(delete_output, /The model does not exist./);
-    } catch(e) {
-      assert.match(e, /NOT_FOUND/);
-      assert.match(e, /The model does not exist./);
-    }
+    assert.match(delete_output, /NOT_FOUND/);
+    assert.match(delete_output, /The model does not exist./);
   });
 });

@@ -31,11 +31,10 @@ describe('Automl Get Model Tests', () => {
 
   it('should get a model', async () => {
     const projectId = await client.getProjectId();
-   
+
     const get_model_output = execSync(
       `node ${GET_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
     );
     assert.match(get_model_output, /Model id/);
   });
-
 });

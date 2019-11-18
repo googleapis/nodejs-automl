@@ -25,7 +25,6 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const LIST_MODEL_REGION_TAG = 'list_models';
 const LOCATION = 'us-central1';
 
-
 describe('Automl List Model Tests', () => {
   const client = new AutoMlClient();
 
@@ -34,7 +33,7 @@ describe('Automl List Model Tests', () => {
 
     // list models
     const list_model_output = execSync(
-      `node ${LIST_MODEL_REGION_TAG}.js ${projectId}`
+      `node ${LIST_MODEL_REGION_TAG}.js ${projectId} ${LOCATION}`
     );
     assert.match(list_model_output, /Model id:/);
   });

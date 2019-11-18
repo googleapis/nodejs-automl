@@ -28,19 +28,22 @@ const DATASET_ID = 'TRL8522556519449886720';
 
 describe('Automl Translate Create Model Tests', () => {
   const client = new AutoMlClient();
-  var operationId
+  let operationId;
 
   it('should create a model', async () => {
     const projectId = await client.getProjectId();
-    const create_output = execSync(`node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} translation_test_create_model`)
-
+    const create_output = execSync(
+      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} translation_test_create_model`
+    );
 
     assert.match(create_output, /Training started/);
 
-    operationId = create_output.split('Training operation name: ')[1].split('\n')[0];
+    operationId = create_output
+      .split('Training operation name: ')[1]
+      .split('\n')[0];
   });
 
   after('canel model training', async () => {
-    client.operationsClient.cancelOperation(operationId);
+    await client.operationsClient.cancelOperation({name: operationId});
   });
 });

@@ -24,7 +24,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const LIST_MODEL_EVALUATION_REGION_TAG = 'list_model_evaluations';
 const LOCATION = 'us-central1';
-
+const MODEL_ID = 'TRL1218052175389786112';
 
 describe('Automl List Model Evaluation Tests', () => {
   const client = new AutoMlClient();
@@ -33,9 +33,8 @@ describe('Automl List Model Evaluation Tests', () => {
     const projectId = await client.getProjectId();
     // list model evaluations
     const list_model_eval_output = execSync(
-      `node ${LIST_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${LOCATION} ${modelId}`
+      `node ${LIST_MODEL_EVALUATION_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
     );
     assert.match(list_model_eval_output, /Model evaluation name/);
   });
-
 });

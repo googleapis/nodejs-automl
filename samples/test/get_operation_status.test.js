@@ -37,5 +37,4 @@ describe('Automl Get Operation Status Tests', () => {
     );
     assert.match(get_output, /Operation details/);
   });
-
 });
