@@ -20,7 +20,12 @@ function main(
   location = 'us-central1',
   modelId = 'YOUR_MODEL_ID'
 ) {
-  // [START automl_list_model_evaluations]
+  // [START automl_language_entity_extraction_list_model_evaluations]
+  // [START automl_language_sentiment_analysis_list_model_evaluations]
+  // [START automl_language_text_classification_list_model_evaluations]
+  // [START automl_translate_list_model_evaluations]
+  // [START automl_vision_classification_list_model_evaluations]
+  // [START automl_vision_object_detection_list_model_evaluations]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
@@ -54,14 +59,55 @@ function main(
       console.log(
         `Evaluation example count: ${evaluation.evaluatedExampleCount}`
       );
+      // [END automl_language_sentiment_analysis_list_model_evaluations]
+      // [END automl_language_text_classification_list_model_evaluations]
+      // [END automl_translate_list_model_evaluations]
+      // [END automl_vision_classification_list_model_evaluations]
+      // [END automl_vision_object_detection_list_model_evaluations]
       console.log(
-        `Model evaluation metrics: ${evaluation.translationEvaluationMetrics}`
+        `Entity extraction model evaluation metrics: ${evaluation.textExtractionEvaluationMetrics}`
       );
+      // [END automl_language_entity_extraction_list_model_evaluations]
+
+      // [START automl_language_sentiment_analysis_list_model_evaluations]
+      console.log(
+        `Sentiment analysis model evaluation metrics: ${evaluation.textSentimentEvaluationMetrics}`
+      );
+      // [END automl_language_sentiment_analysis_list_model_evaluations]
+
+      // [START automl_language_text_classification_list_model_evaluations]
+      // [START automl_vision_classification_list_model_evaluations]
+      console.log(
+        `Classification model evaluation metrics: ${evaluation.classificationEvaluationMetrics}`
+      );
+      // [END automl_language_text_classification_list_model_evaluations]
+      // [END automl_vision_classification_list_model_evaluations]
+
+      // [START automl_translate_list_model_evaluations]
+      console.log(
+        `Translation model evaluation metrics: ${evaluation.translationEvaluationMetrics}`
+      );
+      // [END automl_translate_list_model_evaluations]
+
+      // [START automl_vision_object_detection_list_model_evaluations]
+      console.log(
+        `Object detection model evaluation metrics: ${evaluation.imageObjectDetectionEvaluationMetrics}`
+      );
+      // [START automl_language_entity_extraction_list_model_evaluations]
+      // [START automl_language_sentiment_analysis_list_model_evaluations]
+      // [START automl_language_text_classification_list_model_evaluations]
+      // [START automl_translate_list_model_evaluations]
+      // [START automl_vision_classification_list_model_evaluations]
     }
   }
 
   listModelEvaluations();
-  // [END automl_list_model_evaluations]
+  // [END automl_language_entity_extraction_list_model_evaluations]
+  // [END automl_language_sentiment_analysis_list_model_evaluations]
+  // [END automl_language_text_classification_list_model_evaluations]
+  // [END automl_translate_list_model_evaluations]
+  // [END automl_vision_classification_list_model_evaluations]
+  // [END automl_vision_object_detection_list_model_evaluations]
 }
 
 main(...process.argv.slice(2));
