@@ -14,6 +14,9 @@
       "**/*.test.js"
     ]
   },
+  "files": [
+    "!test/"
+  ],
   "scripts": {
     "test": "mocha --timeout 600000"
   },
@@ -23,7 +26,6 @@
     "csv": "^5.1.1",
     "execa": "^3.0.0",
     "mathjs": "^6.0.0",
-    "package.json": "^2.0.1",
     "yargs": "^14.0.0"
   },
   "devDependencies": {

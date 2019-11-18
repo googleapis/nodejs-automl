@@ -16,13 +16,17 @@
 'use strict';
 
 function main(
-  operationFullId = 'projects/[projectId]/locations/us-central1/operations/[operationId]'
+  projectId = 'YOUR_PROJECT_ID',
+  location = 'us-central1',
+  operationId = 'YOUR_OPERATION_ID'
 ) {
   // [START automl_get_operation_status]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
-  // const operationFullId = 'projects/[projectId]/locations/us-central1/operations/[operationId]';
+  // const projectId = 'YOUR_PROJECT_ID';
+  // const location = 'us-central1';
+  // const operationId = 'YOUR_OPERATION_ID';
 
   // Imports the Google Cloud AutoML library
   const {AutoMlClient} = require(`@google-cloud/automl`).v1;
@@ -33,7 +37,7 @@ function main(
   async function getOperationStatus() {
     // Construct request
     const request = {
-      name: operationFullId,
+      name: `projects/${projectId}/locations/${location}/operations/${operationId}`,
     };
 
     const [response] = await client.operationsClient.getOperation(request);

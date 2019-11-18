@@ -76,10 +76,10 @@ describe('Automl Translate Model Tests', () => {
       `node ${LIST_OPERATION_STATUS_REGION_TAG}.js ${projectId} ${LOCATION} `
     );
     assert.match(list_output, /Operation details/);
-    const operation_id = list_output.split('Name: ')[1].split('\n')[0];
+    const operation_id = list_output.split('/operations/')[1].split('\n')[0];
 
     const get_output = execSync(
-      `node ${GET_OPERATION_STATUS_REGION_TAG}.js ${operation_id}`
+      `node ${GET_OPERATION_STATUS_REGION_TAG}.js ${projectId} ${LOCATION} ${operation_id}`
     );
     assert.match(get_output, /Operation details/);
   });
