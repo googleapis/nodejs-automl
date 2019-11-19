@@ -43,7 +43,7 @@ describe('Automl Translate Create Model Tests', () => {
       .split('\n')[0];
   });
 
-  after('canel model training', async () => {
+  after('cancel model training', async () => {
     await client.operationsClient.cancelOperation({name: operationId});
   });
 });
