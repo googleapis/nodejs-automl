@@ -29,18 +29,22 @@ const LOCATION = 'us-central1';
 
 describe('Automl Translate Dataset Tests', () => {
   const client = new AutoMlClient();
+  const prefix = 'TEST_EXPORT_OUTPUT';
 
   it('should export a datset', async () => {
     const projectId = await client.getProjectId();
     const bucketName = `${projectId}-automl-translate`;
-    const prefix = 'TEST_EXPORT_OUTPUT';
     const export_output = execSync(
       `node ${EXPORT_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} gs://${bucketName}/${prefix}/`
     );
 
     assert.match(export_output, /Dataset exported/);
+  });
 
-    // Delete created files
+  after('delete created files', async () => {
+    const projectId = await client.getProjectId();
+    const bucketName = `${projectId}-automl-translate`;
+
     const storageClient = new Storage();
     const options = {
       prefix: prefix,
