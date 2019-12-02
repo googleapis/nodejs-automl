@@ -25,7 +25,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const MODEL_ID = 'TEN2238627664384491520';
 const PREDICT_REGION_TAG = 'language_entity_extraction_predict';
-const BATCH_PREDICT_REGION_TAG = 'language_batch_predict';
+const BATCH_PREDICT_REGION_TAG = 'batch_predict';
 const LOCATION = 'us-central1';
 
 describe('Automl Natural Language Entity Extraction Predict Tests', () => {

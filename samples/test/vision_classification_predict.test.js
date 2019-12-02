@@ -25,7 +25,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const MODEL_ID = 'ICN5317963909599068160';
 const PREDICT_REGION_TAG = 'vision_classification_predict';
-const BATCH_PREDICT_REGION_TAG = 'vision_batch_predict';
+const BATCH_PREDICT_REGION_TAG = 'batch_predict';
 const LOCATION = 'us-central1';
 
 describe('Automl Vision Classification Predict Tests', () => {
