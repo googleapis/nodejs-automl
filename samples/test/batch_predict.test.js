@@ -47,9 +47,6 @@ describe('Automl Batch Predict Test', () => {
 
   after('delete created files', async () => {
     const projectId = await client.getProjectId();
-    const inputUri = `gs://${projectId}-lcm/entity_extraction/input.jsonl`;
-    const outputUri = `gs://${projectId}-lcm/${PREFIX}/`;
-
     const storageClient = new Storage();
     const options = {
       PREFIX: PREFIX,
