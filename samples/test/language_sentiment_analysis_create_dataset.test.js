@@ -17,27 +17,41 @@
 
 const {assert} = require('chai');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
-const {Storage} = require('@google-cloud/storage');
 
 const cp = require('child_process');
+const uuid = require('uuid');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const PREDICT_REGION_TAG = 'language_entity_extraction_predict';
+const CREATE_DATASET_REGION_TAG = 'language_sentiment_analysis_create_dataset';
 const LOCATION = 'us-central1';
-const MODEL_ID = 'TEN2238627664384491520';
 
-describe('Automl Natural Language Entity Extraction Predict Test', () => {
+describe('Automl Natural Language Sentiment Analysis Create Dataset Test', () => {
   const client = new AutoMlClient();
+  let datasetId;
 
-  it('should predict', async () => {
+  it('should create a dataset', async () => {
     const projectId = await client.getProjectId();
-    const content =
-      "'Constitutional mutations in the WT1 gene in patients with Denys-Drash syndrome.'";
+    const displayName = `test_${uuid
+      .v4()
+      .replace(/-/g, '_')
+      .substring(0, 26)}`;
 
-    const predictOutput = execSync(
-      `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${content}`
+    // create
+    const create_output = execSync(
+      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${displayName}`
     );
-    assert.match(predictOutput, /Text Extract Entity Types/);
+    assert.match(create_output, /Dataset id:/);
+
+    datasetId = create_output.split('Dataset id: ')[1].split('\n')[0];
+  });
+
+  after('delete created dataset', async () => {
+    const projectId = await client.getProjectId();
+    const request = {
+      name: client.datasetPath(projectId, LOCATION, datasetId),
+    };
+    const [operation] = await client.deleteDataset(request);
+    await operation.promise();
   });
 });

@@ -17,27 +17,33 @@
 
 const {assert} = require('chai');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
-const {Storage} = require('@google-cloud/storage');
 
 const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const PREDICT_REGION_TAG = 'language_entity_extraction_predict';
+const CREATE_MODEL_REGION_TAG = 'vision_object_detection_create_model';
 const LOCATION = 'us-central1';
-const MODEL_ID = 'TEN2238627664384491520';
+const DATASET_ID = 'IOD4700715673951666176';
 
-describe('Automl Natural Language Entity Extraction Predict Test', () => {
+describe('Automl Vision Object Detection Create Model Test', () => {
   const client = new AutoMlClient();
+  let operationId;
 
-  it('should predict', async () => {
+  it('should create a model', async () => {
     const projectId = await client.getProjectId();
-    const content =
-      "'Constitutional mutations in the WT1 gene in patients with Denys-Drash syndrome.'";
-
-    const predictOutput = execSync(
-      `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${content}`
+    const create_output = execSync(
+      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} vision_object_detection_test_create_model`
     );
-    assert.match(predictOutput, /Text Extract Entity Types/);
+
+    assert.match(create_output, /Training started/);
+
+    operationId = create_output
+      .split('Training operation name: ')[1]
+      .split('\n')[0];
+  });
+
+  after('cancel model training', async () => {
+    await client.operationsClient.cancelOperation({name: operationId});
   });
 });

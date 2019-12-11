@@ -19,28 +19,39 @@ const {assert} = require('chai');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
+const uuid = require('uuid');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const MODEL_ID = 'TEN2238627664384491520';
-const DEPLOY_MODEL_REGION_TAG = 'deploy_model';
-const UNDEPLOY_MODEL_REGION_TAG = 'undeploy_model';
+const CREATE_DATASET_REGION_TAG = 'language_text_classification_create_dataset';
 const LOCATION = 'us-central1';
 
-describe('Automl Natural Language Entity Extraction Model Tests', () => {
+describe('Automl Natural Language Text Classification Create Dataset Test', () => {
   const client = new AutoMlClient();
+  let datasetId;
 
-  it('should deploy and undeploy the model', async () => {
+  it('should create a dataset', async () => {
     const projectId = await client.getProjectId();
+    const displayName = `test_${uuid
+      .v4()
+      .replace(/-/g, '_')
+      .substring(0, 26)}`;
 
-    const undeploy_output = execSync(
-      `node ${UNDEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
+    // create
+    const create_output = execSync(
+      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${displayName}`
     );
-    assert.match(undeploy_output, /Model undeployment finished/);
+    assert.match(create_output, /Dataset id:/);
 
-    const deploy_output = execSync(
-      `node ${DEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
-    );
-    assert.match(deploy_output, /Model deployment finished/);
+    datasetId = create_output.split('Dataset id: ')[1].split('\n')[0];
+  });
+
+  after('delete created dataset', async () => {
+    const projectId = await client.getProjectId();
+    const request = {
+      name: client.datasetPath(projectId, LOCATION, datasetId),
+    };
+    const [operation] = await client.deleteDataset(request);
+    await operation.promise();
   });
 });

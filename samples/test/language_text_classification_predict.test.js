@@ -26,7 +26,7 @@ const MODEL_ID = 'TCN7483069430457434112';
 const PREDICT_REGION_TAG = 'language_text_classification_predict';
 const LOCATION = 'us-central1';
 
-describe('Automl Natural Language Text Classification Predict Tests', () => {
+describe('Automl Natural Language Text Classification Predict Test', () => {
   const client = new AutoMlClient();
 
   it('should predict', async () => {

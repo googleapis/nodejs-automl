@@ -17,7 +17,6 @@
 
 const {assert} = require('chai');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
-const {Storage} = require('@google-cloud/storage');
 
 const cp = require('child_process');
 
@@ -25,10 +24,9 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const MODEL_ID = 'ICN5317963909599068160';
 const PREDICT_REGION_TAG = 'vision_classification_predict';
-const BATCH_PREDICT_REGION_TAG = 'batch_predict';
 const LOCATION = 'us-central1';
 
-describe('Automl Vision Classification Predict Tests', () => {
+describe('Automl Vision Classification Predict Test', () => {
   const client = new AutoMlClient();
 
   it('should predict', async () => {
@@ -39,35 +37,5 @@ describe('Automl Vision Classification Predict Tests', () => {
       `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${filePath}`
     );
     assert.match(predictOutput, /Predicted class name/);
-  });
-
-  it('should batch predict', async () => {
-    const projectId = await client.getProjectId();
-    const inputUri = `gs://${projectId}-vcm/classification/batch_predict.csv`;
-    const prefix = 'TEST_BATCH_PREDICT';
-    const outputUri = `gs://${projectId}-lcm/${prefix}/`;
-
-    const batchPredictOutput = execSync(
-      `node ${BATCH_PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${inputUri} ${outputUri}`
-    );
-    assert.match(
-      batchPredictOutput,
-      /Batch Prediction results saved to Cloud Storage bucket/
-    );
-
-    // Delete created files
-    const storageClient = new Storage();
-    const options = {
-      prefix: prefix,
-    };
-    const [files] = await storageClient
-      .bucket(`gs://${projectId}-lcm`)
-      .getFiles(options);
-    files.forEach(file => {
-      storageClient
-        .bucket(`gs://${projectId}-lcm`)
-        .file(file.name)
-        .delete();
-    });
   });
 });

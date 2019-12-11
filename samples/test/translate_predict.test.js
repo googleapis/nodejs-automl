@@ -26,7 +26,7 @@ const MODEL_ID = 'TRL1218052175389786112';
 const PREDICT_REGION_TAG = 'translate_predict';
 const LOCATION = 'us-central1';
 
-describe('Automl Translate Predict Tests', () => {
+describe('Automl Translate Predict Test', () => {
   const client = new AutoMlClient();
 
   it('should predict', async () => {

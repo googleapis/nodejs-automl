@@ -22,11 +22,11 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const MODEL_ID = 'TST3171435737203605504';
 const PREDICT_REGION_TAG = 'language_sentiment_analysis_predict';
 const LOCATION = 'us-central1';
+const MODEL_ID = 'TST3171435737203605504';
 
-describe('Automl Natural Language Sentiment Analysis Predict Tests', () => {
+describe('Automl Natural Language Sentiment Analysis Predict Test', () => {
   const client = new AutoMlClient();
 
   it('should predict', async () => {

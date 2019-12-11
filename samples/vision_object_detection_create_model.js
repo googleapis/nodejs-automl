@@ -50,6 +50,7 @@ function main(
     // Don't wait for the LRO
     const operation = client.createModel(request);
     console.log(`Training started... ${operation}`);
+    console.log(`Training operation name: ${operation.name}`);
   }
 
   createModel();

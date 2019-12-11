@@ -22,25 +22,29 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const MODEL_ID = 'TST3171435737203605504';
-const DEPLOY_MODEL_REGION_TAG = 'deploy_model';
-const UNDEPLOY_MODEL_REGION_TAG = 'undeploy_model';
+const CREATE_MODEL_REGION_TAG = 'language_entity_extraction_create_model';
 const LOCATION = 'us-central1';
+const DATASET_ID = 'TEN8374527069979148288';
 
-describe('Automl Natural Language Sentiment Analysis Model Tests', () => {
+describe('Automl Natural Language Entity Extraction Create Model Test', () => {
   const client = new AutoMlClient();
+  let operationId;
 
   it('should deploy and undeploy the model', async () => {
     const projectId = await client.getProjectId();
 
-    const undeploy_output = execSync(
-      `node ${UNDEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
+    const create_output = execSync(
+      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} language_entity_extraction_test_create_model`
     );
-    assert.match(undeploy_output, /Model undeployment finished/);
 
-    const deploy_output = execSync(
-      `node ${DEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
-    );
-    assert.match(deploy_output, /Model deployment finished/);
+    assert.match(create_output, /Training started/);
+
+    operationId = create_output
+      .split('Training operation name: ')[1]
+      .split('\n')[0];
+  });
+
+  after('cancel model training', async () => {
+    await client.operationsClient.cancelOperation({name: operationId});
   });
 });

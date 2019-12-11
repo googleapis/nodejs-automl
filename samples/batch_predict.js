@@ -19,7 +19,7 @@ function main(
   projectId = 'YOUR_PROJECT_ID',
   location = 'us-central1',
   modelId = 'YOUR_MODEL_ID',
-  inputUri = 'gs://YOUR_BUCKET_ID/path_to_your_input_file.jsonl',
+  inputUri = 'gs://YOUR_BUCKET_ID/path_to_your_input_csv_or_jsonl',
   outputUri = 'gs://YOUR_BUCKET_ID/path_to_save_results/'
 ) {
   // [START automl_batch_predict]
