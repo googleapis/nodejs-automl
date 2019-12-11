@@ -33,7 +33,7 @@ describe('Automl Natural Language Sentiment Analysis Create Model Test', () => {
   it('should create a model', async () => {
     const projectId = await client.getProjectId();
     const create_output = execSync(
-      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} language_sentiment_analysis_test_create_model`
+      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} sentiment_test_create_model`
     );
 
     assert.match(create_output, /Training started/);

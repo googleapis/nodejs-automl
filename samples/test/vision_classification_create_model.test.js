@@ -33,7 +33,7 @@ describe('Automl Vision Classification Create Model Tests', () => {
   it('should create a model', async () => {
     const projectId = await client.getProjectId();
     const create_output = execSync(
-      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} vision_classification_test_create_model`
+      `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} classification_test_create_model`
     );
 
     assert.match(create_output, /Training started/);
