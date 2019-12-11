@@ -3,6 +3,3 @@ rules:
   no-warning-comments: off
 env:
   mocha: true
-rules:
-  node/no-unpublished-require: off
-  no-warning-comments: off
