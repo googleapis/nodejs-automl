@@ -58,7 +58,7 @@ function main(
     for (const annotationPayload of response.payload) {
       console.log(`Predicted class name: ${annotationPayload.displayName}`);
       console.log(
-        `Predicted class score: ${annotationPayload. classification.score}`
+        `Predicted class score: ${annotationPayload.classification.score}`
       );
     }
   }
