@@ -44,7 +44,7 @@ function main(
         displayName: displayName,
         datasetId: datasetId,
         imageClassificationModelMetadata: {
-          train_budget_milli_node_hours: 24000,
+          trainBudgetMilliNodeHours: 24000,
         },
       },
     };
