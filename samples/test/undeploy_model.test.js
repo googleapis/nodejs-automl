@@ -24,7 +24,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const UNDEPLOY_MODEL_REGION_TAG = 'undeploy_model';
 const LOCATION = 'us-central1';
-const MODEL_ID = 'TEN2238627664384491520';
+const MODEL_ID = 'TCN7483069430457434112';
 
 describe('Automl Undeploy Model Test', () => {
   const client = new AutoMlClient();
@@ -36,7 +36,7 @@ describe('Automl Undeploy Model Test', () => {
     };
 
     const [response] = await client.getModel(request);
-    if (response.deploymentState == 'UNDEPLOYED') {
+    if (response.deploymentState === 'UNDEPLOYED') {
       const request = {
         name: client.modelPath(projectId, LOCATION, MODEL_ID),
       };
@@ -44,7 +44,7 @@ describe('Automl Undeploy Model Test', () => {
       const [operation] = await client.deployModel(request);
 
       // Wait for operation to complete.
-      const [response] = await operation.promise();
+      await operation.promise();
     }
   });
 

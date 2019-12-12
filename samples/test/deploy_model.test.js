@@ -36,7 +36,7 @@ describe('Automl Deploy Model Test', () => {
     };
 
     const [response] = await client.getModel(request);
-    if (response.deploymentState == 'DEPLOYED') {
+    if (response.deploymentState === 'DEPLOYED') {
       const request = {
         name: client.modelPath(projectId, LOCATION, MODEL_ID),
       };
@@ -44,7 +44,7 @@ describe('Automl Deploy Model Test', () => {
       const [operation] = await client.undeployModel(request);
 
       // Wait for operation to complete.
-      const [response] = await operation.promise();
+      await operation.promise();
     }
   });
 
