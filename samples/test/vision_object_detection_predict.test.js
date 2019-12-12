@@ -29,6 +29,25 @@ const LOCATION = 'us-central1';
 describe('Automl Vision Object Detection Predict Test', () => {
   const client = new AutoMlClient();
 
+  before('should verify the model is deployed', async () => {
+    const projectId = await client.getProjectId();
+    const request = {
+      name: client.modelPath(projectId, LOCATION, MODEL_ID),
+    };
+
+    const [response] = await client.getModel(request);
+    if (response.deploymentState === 'DEPLOYED') {
+      const request = {
+        name: client.modelPath(projectId, LOCATION, MODEL_ID),
+      };
+
+      const [operation] = await client.deployModel(request);
+
+      // Wait for operation to complete.
+      await operation.promise();
+    }
+  });
+
   it('should predict', async () => {
     const projectId = await client.getProjectId();
     const filePath = 'resources/salad.jpg';

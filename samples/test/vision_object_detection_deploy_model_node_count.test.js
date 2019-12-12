@@ -22,7 +22,8 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const DEPLOY_MODEL_REGION_TAG = 'vision_object_detection_deploy_model_node_count';
+const DEPLOY_MODEL_REGION_TAG =
+  'vision_object_detection_deploy_model_node_count';
 const LOCATION = 'us-central1';
 const MODEL_ID = 'IOD1656537412546854912';
 
@@ -36,7 +37,7 @@ describe('Automl Deploy Model Test', () => {
     };
 
     const [response] = await client.getModel(request);
-    if (response.deploymentState == 'DEPLOYED') {
+    if (response.deploymentState === 'DEPLOYED') {
       const request = {
         name: client.modelPath(projectId, LOCATION, MODEL_ID),
       };
@@ -44,7 +45,7 @@ describe('Automl Deploy Model Test', () => {
       const [operation] = await client.undeployModel(request);
 
       // Wait for operation to complete.
-      const [response] = await operation.promise();
+      await operation.promise();
     }
   });
 
