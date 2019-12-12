@@ -30,7 +30,8 @@ describe('Automl Natural Language Entity Extraction Create Model Test', () => {
   const client = new AutoMlClient();
   let operationId;
 
-  it('should create a model', async () => {
+  // Natural language entity extraction models are non cancellable operations
+  it.skip('should create a model', async () => {
     const projectId = await client.getProjectId();
 
     const create_output = execSync(
@@ -44,7 +45,7 @@ describe('Automl Natural Language Entity Extraction Create Model Test', () => {
       .split('\n')[0];
   });
 
-  after('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({name: operationId});
-  });
+  // after('cancel model training', async () => {
+  //   await client.operationsClient.cancelOperation({name: operationId});
+  // });
 });

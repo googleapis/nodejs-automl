@@ -43,7 +43,9 @@ function main(
       model: {
         displayName: displayName,
         datasetId: datasetId,
-        imageClassificationModelMetadata: {},
+        imageClassificationModelMetadata: {
+          train_budget_milli_node_hours: 24000,
+        },
       },
     };
 
