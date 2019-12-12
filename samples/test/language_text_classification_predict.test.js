@@ -36,7 +36,7 @@ describe('Automl Natural Language Text Classification Predict Test', () => {
     };
 
     const [response] = await client.getModel(request);
-    if (response.deploymentState == 'UNDEPLOYED') {
+    if (response.deploymentState === 'UNDEPLOYED') {
       const request = {
         name: client.modelPath(projectId, LOCATION, MODEL_ID),
       };
@@ -44,7 +44,7 @@ describe('Automl Natural Language Text Classification Predict Test', () => {
       const [operation] = await client.deployModel(request);
 
       // Wait for operation to complete.
-      const [response] = await operation.promise();
+      await operation.promise();
     }
   });
 
