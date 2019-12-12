@@ -26,7 +26,7 @@ const DEPLOY_MODEL_REGION_TAG = 'vision_classification_deploy_model_node_count';
 const LOCATION = 'us-central1';
 const MODEL_ID = 'ICN5317963909599068160';
 
-describe('Automl Deploy Model Test', () => {
+describe('Automl Vision Classification Deploy Model Test', () => {
   const client = new AutoMlClient();
 
   before('should verify the model is not deployed', async () => {
@@ -48,7 +48,7 @@ describe('Automl Deploy Model Test', () => {
     }
   });
 
-  it('should deploy a model', async () => {
+  it('should deploy a model with a specified node count', async () => {
     const projectId = await client.getProjectId();
     const deploy_output = execSync(
       `node ${DEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
