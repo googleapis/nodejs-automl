@@ -28,7 +28,7 @@ const DATASET_ID = 'TEN8374527069979148288';
 
 describe('Automl Natural Language Entity Extraction Create Model Test', () => {
   const client = new AutoMlClient();
-  let operationId;
+  // let operationId;
 
   // Natural language entity extraction models are non cancellable operations
   it.skip('should create a model', async () => {
@@ -40,9 +40,9 @@ describe('Automl Natural Language Entity Extraction Create Model Test', () => {
 
     assert.match(create_output, /Training started/);
 
-    operationId = create_output
-      .split('Training operation name: ')[1]
-      .split('\n')[0];
+    // operationId = create_output
+    //   .split('Training operation name: ')[1]
+    //   .split('\n')[0];
   });
 
   // after('cancel model training', async () => {
