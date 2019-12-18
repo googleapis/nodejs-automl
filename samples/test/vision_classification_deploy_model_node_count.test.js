@@ -21,7 +21,7 @@ const cp = require('child_process');
 
 const fs = require('fs');
 
-const tempFile = 'temp.txt';
+const tempFile = 'vision_deploy_model_output.txt';
 const stderr_output = fs.createWriteStream(tempFile);
 const execSync = cmd =>
   cp.execSync(cmd, {encoding: 'utf-8', stdio: ['pipe', 'pipe', stderr_output]});
