@@ -23,8 +23,9 @@ const cp = require('child_process');
 const fs = require('fs');
 
 const tempFile = 'temp.txt';
-var stderr_output = fs.createWriteStream(tempFile);
-const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8', stdio: ['pipe', 'pipe', stderr_output] });
+const stderr_output = fs.createWriteStream(tempFile);
+const execSync = cmd =>
+  cp.execSync(cmd, {encoding: 'utf-8', stdio: ['pipe', 'pipe', stderr_output]});
 
 const DEPLOY_MODEL_REGION_TAG = 'vision_classification_deploy_model_node_count';
 const LOCATION = 'us-central1';
@@ -38,7 +39,7 @@ describe('Automl Vision Classification Deploy Model Test', () => {
     // nonexistent model and confirm that the model was not found, but other
     // elements of the request were valid.
     const projectId = await client.getProjectId();
-    const deploy_output = execSync(
+    execSync(
       `node ${DEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
     );
 
