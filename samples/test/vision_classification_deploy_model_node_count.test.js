@@ -20,40 +20,31 @@ const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
+const fs = require('fs');
+
+const tempFile = 'temp.txt';
+var stderr_output = fs.createWriteStream(tempFile);
+const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8', stdio: ['pipe', 'pipe', stderr_output] });
 
 const DEPLOY_MODEL_REGION_TAG = 'vision_classification_deploy_model_node_count';
 const LOCATION = 'us-central1';
-const MODEL_ID = 'ICN5317963909599068160';
+const MODEL_ID = 'ICN0000000000000000000';
 
 describe('Automl Vision Classification Deploy Model Test', () => {
   const client = new AutoMlClient();
 
-  before('should verify the model is not deployed', async () => {
-    const projectId = await client.getProjectId();
-    const request = {
-      name: client.modelPath(projectId, LOCATION, MODEL_ID),
-    };
-
-    const [response] = await client.getModel(request);
-    if (response.deploymentState === 'DEPLOYED') {
-      const request = {
-        name: client.modelPath(projectId, LOCATION, MODEL_ID),
-      };
-
-      const [operation] = await client.undeployModel(request);
-
-      // Wait for operation to complete.
-      await operation.promise();
-    }
-  });
-
   it('should deploy a model with a specified node count', async () => {
+    // As model deployment can take a long time, instead try to deploy a
+    // nonexistent model and confirm that the model was not found, but other
+    // elements of the request were valid.
     const projectId = await client.getProjectId();
     const deploy_output = execSync(
       `node ${DEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
     );
 
-    assert.match(deploy_output, /Model deployment finished./);
+    const contents = fs.readFileSync(tempFile, 'utf8');
+    assert.match(contents, /NOT_FOUND/);
+    assert.match(contents, /The model does not exist./);
+    fs.unlinkSync(tempFile);
   });
 });
