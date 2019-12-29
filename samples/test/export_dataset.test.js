@@ -15,6 +15,7 @@
 'use strict';
 
 const {assert} = require('chai');
+const {describe, it} = require('mocha');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
 const {Storage} = require('@google-cloud/storage');
 
