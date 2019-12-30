@@ -16,7 +16,7 @@
 
 const automl = require('../src');
 const assert = require('assert');
-const {describe, it} = require('mocha');
+const {describe, it, before} = require('mocha');
 
 const client = new automl.AutoMlClient();
 const location = 'us-central1';
