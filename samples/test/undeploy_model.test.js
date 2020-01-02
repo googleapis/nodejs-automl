@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,18 +15,12 @@
 'use strict';
 
 const {assert} = require('chai');
+const {describe, it} = require('mocha');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
 
-const fs = require('fs');
-
-const tempFile = 'undeploy_model_output.txt';
-const stderr_output = fs.createWriteStream(tempFile);
-const execSync = cmd =>
-  cp.execSync(cmd, {encoding: 'utf-8', stdio: ['pipe', 'pipe', stderr_output]});
-
-const DEPLOY_MODEL_REGION_TAG = 'undeploy_model';
+const DEPLOY_MODEL_REGION_TAG = 'undeploy_model.js';
 const LOCATION = 'us-central1';
 const MODEL_ID = 'TEN0000000000000000000';
 
@@ -38,13 +32,10 @@ describe('Automl Undeploy Model Test', () => {
     // nonexistent model and confirm that the model was not found, but other
     // elements of the request were valid.
     const projectId = await client.getProjectId();
-    execSync(
-      `node ${DEPLOY_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID}`
-    );
+    const args = [DEPLOY_MODEL_REGION_TAG, projectId, LOCATION, MODEL_ID];
+    const output = cp.spawnSync('node', args, {encoding: 'utf8'});
 
-    const contents = fs.readFileSync(tempFile, 'utf8');
-    assert.match(contents, /NOT_FOUND/);
-    assert.match(contents, /The model does not exist./);
-    fs.unlinkSync(tempFile);
+    assert.match(output.stderr, /NOT_FOUND/);
+    assert.match(output.stderr, /The model does not exist./);
   });
 });
