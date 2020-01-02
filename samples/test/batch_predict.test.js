@@ -67,7 +67,7 @@ describe('Automl Batch Predict Test', () => {
     const projectId = await client.getProjectId();
     const storageClient = new Storage();
     const options = {
-      PREFIX: PREFIX,
+      prefix: PREFIX,
     };
     const [files] = await storageClient
       .bucket(`gs://${projectId}-lcm`)
