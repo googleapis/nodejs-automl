@@ -16,15 +16,25 @@
 
 const {assert} = require('chai');
 const {describe, it} = require('mocha');
-const cp = require('child_process');
+const {AutoMlClient} = require('@google-cloud/automl').v1;
 
-const projectId = process.env.GCLOUD_PROJECT;
+const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-describe('set endpoint for automl', () => {
-  it('should list all datasets in `eu`', async () => {
-    const stdout = execSync(`node beta/setEndpoint.js "${projectId}"`);
-    assert.match(stdout, /do_not_delete_eu/);
+const MODEL_ID = 'TRL1218052175389786112';
+const PREDICT_REGION_TAG = 'translate_predict';
+const LOCATION = 'us-central1';
+
+describe('Automl Translate Predict Test', () => {
+  const client = new AutoMlClient();
+
+  it('should predict', async () => {
+    const projectId = await client.getProjectId();
+
+    const list_output = execSync(
+      `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} resources/input.txt`
+    );
+    assert.match(list_output, /Translated content:/);
   });
 });

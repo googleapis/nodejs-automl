@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const {describe, it, before, after} = require('mocha');
+const {describe, it, after} = require('mocha');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
@@ -23,43 +23,27 @@ const uuid = require('uuid');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const IMPORT_DATASET_REGION_TAG = 'import_dataset';
+const CREATE_DATASET_REGION_TAG = 'translate_create_dataset';
 const LOCATION = 'us-central1';
 
-describe('Automl Import Dataset Test', () => {
+describe('Automl Translate Create Dataset Test', () => {
   const client = new AutoMlClient();
   let datasetId;
 
-  before('should create a dataset', async () => {
+  it('should create a dataset', async () => {
     const projectId = await client.getProjectId();
     const displayName = `test_${uuid
       .v4()
       .replace(/-/g, '_')
       .substring(0, 26)}`;
-    const request = {
-      parent: client.locationPath(projectId, LOCATION),
-      dataset: {
-        displayName: displayName,
-        translationDatasetMetadata: {
-          sourceLanguageCode: 'en',
-          targetLanguageCode: 'ja',
-        },
-      },
-    };
-    const [operation] = await client.createDataset(request);
-    const [response] = await operation.promise();
-    datasetId = response.name
-      .split('/')
-      [response.name.split('/').length - 1].split('\n')[0];
-  });
 
-  it('should create, import, and delete a dataset', async () => {
-    const projectId = await client.getProjectId();
-    const data = `gs://${projectId}-automl-translate/en-ja-short.csv`;
-    const import_output = execSync(
-      `node ${IMPORT_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${datasetId} ${data}`
+    // create
+    const create_output = execSync(
+      `node ${CREATE_DATASET_REGION_TAG}.js ${projectId} ${LOCATION} ${displayName}`
     );
-    assert.match(import_output, /Dataset imported/);
+    assert.match(create_output, /Dataset id:/);
+
+    datasetId = create_output.split('Dataset id: ')[1].split('\n')[0];
   });
 
   after('delete created dataset', async () => {

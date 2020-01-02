@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,11 +22,11 @@ const cp = require('child_process');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const PREDICT_REGION_TAG = 'language_entity_extraction_predict';
+const PREDICT_REGION_TAG = 'language_sentiment_analysis_predict';
 const LOCATION = 'us-central1';
-const MODEL_ID = 'TEN2238627664384491520';
+const MODEL_ID = 'TST3171435737203605504';
 
-describe('Automl Natural Language Entity Extraction Predict Test', () => {
+describe('Automl Natural Language Sentiment Analysis Predict Test', () => {
   const client = new AutoMlClient();
 
   before('should verify the model is deployed', async () => {
@@ -50,12 +50,11 @@ describe('Automl Natural Language Entity Extraction Predict Test', () => {
 
   it('should predict', async () => {
     const projectId = await client.getProjectId();
-    const content =
-      "'Constitutional mutations in the WT1 gene in patients with Denys-Drash syndrome.'";
+    const content = "'Hopefully this Claritin kicks in soon'";
 
     const predictOutput = execSync(
       `node ${PREDICT_REGION_TAG}.js ${projectId} ${LOCATION} ${MODEL_ID} ${content}`
     );
-    assert.match(predictOutput, /Text Extract Entity Types/);
+    assert.match(predictOutput, /Predicted sentiment score/);
   });
 });
