@@ -16,7 +16,8 @@
 'use strict';
 
 const {assert} = require('chai');
-const execa = require('execa');
+const {describe, it} = require('mocha');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Tables "Prediction API" sample. */
 
@@ -35,14 +36,12 @@ const gcsOutputUriPrefix = 'gs://automl-tables/output';
 const bqInputUri = 'bq://automl-tables-bg-input';
 const bqOutputUriPrefix = 'bq://automl-tables-bg-output';
 
-const exec = async cmd => (await execa.shell(cmd)).stdout;
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe('Tables PredictionAPI', () => {
   it.skip(`should perform single prediction`, async () => {
     // Run single prediction on predictTest.csv in resource folder
-    const output = await exec(
-      `${cmdPredict} predict "${modelId}" "${filePath}"`
-    );
+    const output = exec(`${cmdPredict} predict "${modelId}" "${filePath}"`);
     assert.match(output, /Prediction results:/);
     assert.match(output, /Features of top importance:/);
   });
@@ -50,7 +49,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using GCS as source and
     GCS as destination`, async () => {
     // Run batch prediction using GCS as source and GCS as destination
-    const output = await exec(
+    const output = exec(
       `${cmdPredict} predict-using-gcs-source-and-gcs-dest "${modelId}"` +
         ` "${gcsInputUri}" "${gcsOutputUriPrefix}"`
     );
@@ -60,7 +59,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using BQ as source and
     GCS as destination`, async () => {
     //  Run batch prediction using BQ as source and GCS as destination
-    const output = await exec(
+    const output = exec(
       `${cmdPredict} predict-using-bq-source-and-gcs-dest "${modelId}"` +
         ` "${bqInputUri}" "${gcsOutputUriPrefix}"`
     );
@@ -70,7 +69,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using GCS as source and
     BQ as destination`, async () => {
     // Run batch prediction using GCS as source and BQ as destination
-    const output = await exec(
+    const output = exec(
       `${cmdPredict} predict-using-gcs-source-and-bq-dest "${modelId}"` +
         ` "${gcsInputUri}" "${bqOutputUriPrefix}"`
     );
@@ -80,7 +79,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using BQ as source and
     BQ as destination`, async () => {
     // Run batch prediction using BQ as source and BQ as destination
-    const output = await exec(
+    const output = exec(
       `${cmdPredict} predict-using-bq-source-and-bq-dest "${modelId}"` +
         ` "${bqInputUri}" "${bqOutputUriPrefix}"`
     );

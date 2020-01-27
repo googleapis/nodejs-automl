@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+'use strict';
+
 const automl = require('../src');
 const assert = require('assert');
+const {describe, it, before} = require('mocha');
 
 const client = new automl.AutoMlClient();
 const location = 'us-central1';
