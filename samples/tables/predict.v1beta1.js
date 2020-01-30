@@ -75,8 +75,14 @@ async function main(
           for (const result of responses[0].payload) {
             console.log(`Predicted class name: ${result.displayName}`);
             console.log(`Predicted class score: ${result.tables.score}`);
-
+            
             // Get features of top importance
+            const featureList = result.tables.tablesModelColumnInfo.map((columnInfo) => {
+            return {
+              importance: feature.featureImportance,
+              displayName: feature.columnDisplayName
+              }
+            })
             const featureList = [];
 
             for (const feature of result.tables.tablesModelColumnInfo) {
