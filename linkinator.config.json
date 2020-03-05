@@ -5,6 +5,10 @@
     "www.googleapis.com",
     "img.shields.io",
     "https://console.cloud.google.com/cloudshell/",
-    "https://googleapis.dev/nodejs/automl/latest"
+    "https://googleapis.dev/nodejs/automl/latest",
+    "https://support.google.com/cloud/answer/6293499"
+    "https://console.cloud.google.com/project",
+    "https://console.cloud.google.com/flows/enableapi?apiid=automl.googleapis.com",
+    "https://cloud.google.com/terms/launch-stages"
   ]
 }
