@@ -1,12 +1,9 @@
 {
   "recurse": true,
-  "silent": true,
   "concurrency": 10,
   "skip": [
     "https://codecov.io/gh/googleapis/",
     "www.googleapis.com",
-    "img.shields.io",
-    "https://googleapis.dev/nodejs/automl/latest",
-    "https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-automl"
+    "img.shields.io"
   ]
 }
