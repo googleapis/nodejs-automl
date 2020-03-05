@@ -22,7 +22,7 @@ const client = new automl.AutoMlClient();
 const location = 'us-central1';
 
 describe('automl system tests', () => {
-  let projectId;
+  let projectId: string;
   before(async () => {
     projectId = await client.getProjectId();
   });
