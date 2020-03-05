@@ -14,9 +14,9 @@
 
 'use strict';
 
-const automl = require('../src');
-const assert = require('assert');
-const {describe, it, before} = require('mocha');
+import * as automl from '../src';
+import * as assert from 'assert';
+import {describe, it, before} from 'mocha';
 
 const client = new automl.AutoMlClient();
 const location = 'us-central1';
