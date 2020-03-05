@@ -25,4 +25,4 @@ export {v1, v1beta1, AutoMlClient, PredictionServiceClient};
 // tslint:disable-next-line no-default-export
 export default {v1, v1beta1, AutoMlClient, PredictionServiceClient};
 import * as protos from '../protos/protos';
-export {protos}
+export {protos};
