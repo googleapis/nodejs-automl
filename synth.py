@@ -38,6 +38,8 @@ common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(source_location='build/src')
 s.copy(templates)
 
+linkinator_json="linkinator.config.json"
+s.replace(linkinator_json, '"recurse": true,', '"recurse": true,\n "concurrency": 10,\n')
 # Node.js specific cleanup
 subprocess.run(['npm', 'install'])
 subprocess.run(['npm', 'run', 'fix'])
