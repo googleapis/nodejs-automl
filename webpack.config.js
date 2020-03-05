@@ -18,7 +18,7 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     library: 'automl',
-    filename: './auto-ml.js',
+    filename: './automl.js',
   },
   node: {
     child_process: 'empty',
