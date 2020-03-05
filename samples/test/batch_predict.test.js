@@ -50,7 +50,7 @@ describe('Automl Batch Predict Test', () => {
     }
   });
 
-  it('should batch predict', async () => {
+  it('should batch predict', async (done) => {
     const projectId = await client.getProjectId();
     const inputUri = `gs://${projectId}-lcm/entity_extraction/input.jsonl`;
     const outputUri = `gs://${projectId}-lcm/${PREFIX}/`;
@@ -62,6 +62,7 @@ describe('Automl Batch Predict Test', () => {
       batchPredictOutput,
       /Batch Prediction results saved to Cloud Storage bucket/
     );
+    done();
   });
 
   after('delete created files', async () => {
