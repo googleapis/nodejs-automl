@@ -39,7 +39,7 @@ templates = common_templates.node_library(source_location='build/src')
 s.copy(templates)
 
 linkinator_json="linkinator.config.json"
-s.replace(linkinator_json, '"recurse": true,', '"recurse": true,\n "concurrency": 10,\n')
+s.replace(linkinator_json, '"recurse": true,', '"recurse": true,\n\t"concurrency": 10,')
 # Node.js specific cleanup
 subprocess.run(['npm', 'install'])
 subprocess.run(['npm', 'run', 'fix'])
