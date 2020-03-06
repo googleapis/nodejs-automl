@@ -29,6 +29,7 @@ const MODEL_ID = 'TEN2238627664384491520';
 const PREFIX = 'TEST_BATCH_PREDICT';
 
 describe('Automl Batch Predict Test', () => {
+  this.timeout(1000000);
   const client = new AutoMlClient();
 
   before('should verify the model is deployed', async () => {
@@ -50,7 +51,7 @@ describe('Automl Batch Predict Test', () => {
     }
   });
 
-  it('should batch predict', async (done) => {
+  it('should batch predict', async () => {
     const projectId = await client.getProjectId();
     const inputUri = `gs://${projectId}-lcm/entity_extraction/input.jsonl`;
     const outputUri = `gs://${projectId}-lcm/${PREFIX}/`;
@@ -62,7 +63,6 @@ describe('Automl Batch Predict Test', () => {
       batchPredictOutput,
       /Batch Prediction results saved to Cloud Storage bucket/
     );
-    done();
   });
 
   after('delete created files', async () => {
