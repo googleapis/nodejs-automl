@@ -6,5 +6,7 @@
     "setEndpoint.js",
     "https://www.tensorflow.org/js",
     "img.shields.io"
-  ]
+  ],
+  "silent": true,
+  "concurrency": 10
 }
