@@ -40,7 +40,7 @@ describe('Automl Batch Predict Test', () => {
     const args = [BATCH_PREDICT_REGION_TAG, projectId, LOCATION, MODEL_ID, inputUri, outputUri];
     const output = cp.spawnSync('node', args, {encoding: 'utf8'});
 
-    assert.match(output, /does not exist/);
+    assert.match(output.stderr, /does not exist/);
   });
 
 });
