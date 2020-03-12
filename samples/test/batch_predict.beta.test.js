@@ -42,5 +42,4 @@ describe('Automl Batch Predict Test', () => {
 
     assert.match(output.stderr, /does not exist/);
   });
-
 });
