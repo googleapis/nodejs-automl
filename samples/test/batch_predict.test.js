@@ -25,7 +25,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const BATCH_PREDICT_REGION_TAG = 'batch_predict';
 const LOCATION = 'us-central1';
-const MODEL_ID = 'TEN2238627664384491520';
+const MODEL_ID = 'TEN0000000000000000000';
 const PREFIX = 'TEST_BATCH_PREDICT';
 
 describe('Automl Batch Predict Test', () => {
