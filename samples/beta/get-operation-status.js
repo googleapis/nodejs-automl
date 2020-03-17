@@ -43,7 +43,7 @@ function main(
 
     console.log(`Name: ${response.name}`);
     console.log(`Operation details:`);
-    console.log(`${response}`);
+    console.log(response);
   }
 
   getOperationStatus();
