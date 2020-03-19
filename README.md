@@ -55,49 +55,49 @@ npm install @google-cloud/automl
 ### Using the client library
 
 ```javascript
-  const automl = require('@google-cloud/automl');
-  const fs = require('fs');
+const automl = require('@google-cloud/automl');
+const fs = require('fs');
 
-  // Create client for prediction service.
-  const client = new automl.PredictionServiceClient();
+// Create client for prediction service.
+const client = new automl.PredictionServiceClient();
 
-  /**
-   * TODO(developer): Uncomment the following line before running the sample.
-   */
-  // const projectId = `The GCLOUD_PROJECT string, e.g. "my-gcloud-project"`;
-  // const computeRegion = `region-name, e.g. "us-central1"`;
-  // const modelId = `id of the model, e.g. “ICN723541179344731436”`;
-  // const filePath = `local text file path of content to be classified, e.g. "./resources/flower.png"`;
-  // const scoreThreshold = `value between 0.0 and 1.0, e.g. "0.5"`;
+/**
+ * TODO(developer): Uncomment the following line before running the sample.
+ */
+// const projectId = `The GCLOUD_PROJECT string, e.g. "my-gcloud-project"`;
+// const computeRegion = `region-name, e.g. "us-central1"`;
+// const modelId = `id of the model, e.g. “ICN723541179344731436”`;
+// const filePath = `local text file path of content to be classified, e.g. "./resources/flower.png"`;
+// const scoreThreshold = `value between 0.0 and 1.0, e.g. "0.5"`;
 
-  // Get the full path of the model.
-  const modelFullId = client.modelPath(projectId, computeRegion, modelId);
+// Get the full path of the model.
+const modelFullId = client.modelPath(projectId, computeRegion, modelId);
 
-  // Read the file content for prediction.
-  const content = fs.readFileSync(filePath, 'base64');
+// Read the file content for prediction.
+const content = fs.readFileSync(filePath, 'base64');
 
-  const params = {};
+const params = {};
 
-  if (scoreThreshold) {
-    params.score_threshold = scoreThreshold;
-  }
+if (scoreThreshold) {
+  params.score_threshold = scoreThreshold;
+}
 
-  // Set the payload by giving the content and type of the file.
-  const payload = {};
-  payload.image = {imageBytes: content};
+// Set the payload by giving the content and type of the file.
+const payload = {};
+payload.image = {imageBytes: content};
 
-  // params is additional domain-specific parameters.
-  // currently there is no additional parameters supported.
-  const [response] = await client.predict({
-    name: modelFullId,
-    payload: payload,
-    params: params,
-  });
-  console.log(`Prediction results:`);
-  response.payload.forEach(result => {
-    console.log(`Predicted class name: ${result.displayName}`);
-    console.log(`Predicted class score: ${result.classification.score}`);
-  });
+// params is additional domain-specific parameters.
+// currently there is no additional parameters supported.
+const [response] = await client.predict({
+  name: modelFullId,
+  payload: payload,
+  params: params,
+});
+console.log(`Prediction results:`);
+response.payload.forEach(result => {
+  console.log(`Predicted class name: ${result.displayName}`);
+  console.log(`Predicted class score: ${result.classification.score}`);
+});
 
 ```
 
@@ -175,11 +175,13 @@ More Information: [Google Cloud Platform Launch Stages][launch_stages]
 
 Contributions welcome! See the [Contributing Guide](https://github.com/googleapis/nodejs-automl/blob/master/CONTRIBUTING.md).
 
-Please note that this `README.md`, the `samples/README.md`,
+Please note that this [README.md](README.md), the [samples/README.md](samples/README.md),
 and a variety of configuration files in this repository (including `.nycrc` and `tsconfig.json`)
-are generated from a central template. To edit one of these files, make an edit
-to its template in this
-[directory](https://github.com/googleapis/synthtool/tree/master/synthtool/gcp/templates/node_library).
+are generated from a central template.
+
+If you would like to make edits to one of those files
+(or if you aren't certain if the file you're changing is one, check in the template repository before making changes),
+look for the file in the [template](https://github.com/googleapis/synthtool/tree/master/synthtool/gcp/templates/node_library).
 
 ## License
 
