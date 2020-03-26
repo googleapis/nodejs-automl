@@ -18,1212 +18,1072 @@
 
 import * as protosTypes from '../protos/protos';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import { describe, it } from 'mocha';
+/* eslint-disable @typescript-eslint/no-var-requires */
 const automlModule = require('../src');
 
+
 const FAKE_STATUS_CODE = 1;
-class FakeError {
-  name: string;
-  message: string;
-  code: number;
-  constructor(n: number) {
-    this.name = 'fakeName';
-    this.message = 'fake message';
-    this.code = n;
-  }
+class FakeError{
+    name: string;
+    message: string;
+    code: number;
+    constructor(n: number){
+        this.name = 'fakeName';
+        this.message = 'fake message';
+        this.code = n;
+    }
 }
 const error = new FakeError(FAKE_STATUS_CODE);
 export interface Callback {
-  (err: FakeError | null, response?: {} | null): void;
+  (err: FakeError|null, response?: {} | null): void;
 }
 
-export class Operation {
-  constructor() {}
-  promise() {}
+export class Operation{
+    constructor(){};
+    promise() {};
 }
-function mockSimpleGrpcMethod(
-  expectedRequest: {},
-  response: {} | null,
-  error: FakeError | null
-) {
-  return (actualRequest: {}, options: {}, callback: Callback) => {
-    assert.deepStrictEqual(actualRequest, expectedRequest);
-    if (error) {
-      callback(error);
-    } else if (response) {
-      callback(null, response);
-    } else {
-      callback(null);
-    }
-  };
-}
-function mockLongRunningGrpcMethod(
-  expectedRequest: {},
-  response: {} | null,
-  error?: {} | null
-) {
-  return (request: {}) => {
-    assert.deepStrictEqual(request, expectedRequest);
-    const mockOperation = {
-      promise() {
-        return new Promise((resolve, reject) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve([response]);
-          }
-        });
-      },
+function mockSimpleGrpcMethod(expectedRequest: {}, response: {} | null, error: FakeError | null) {
+    return (actualRequest: {}, options: {}, callback: Callback) => {
+        assert.deepStrictEqual(actualRequest, expectedRequest);
+        if (error) {
+            callback(error);
+        } else if (response) {
+            callback(null, response);
+        } else {
+            callback(null);
+        }
     };
-    return Promise.resolve([mockOperation]);
-  };
+}
+function mockLongRunningGrpcMethod(expectedRequest: {}, response: {} | null, error?: {} | null) {
+    return (request: {}) => {
+        assert.deepStrictEqual(request, expectedRequest);
+        const mockOperation = {
+          promise: function() {
+            return new Promise((resolve, reject) => {
+              if (error) {
+                reject(error);
+              }
+              else {
+                resolve([response]);
+              }
+            });
+          }
+        };
+        return Promise.resolve([mockOperation]);
+    };
 }
 describe('v1.AutoMlClient', () => {
-  it('has servicePath', () => {
-    const servicePath = automlModule.v1.AutoMlClient.servicePath;
-    assert(servicePath);
-  });
-  it('has apiEndpoint', () => {
-    const apiEndpoint = automlModule.v1.AutoMlClient.apiEndpoint;
-    assert(apiEndpoint);
-  });
-  it('has port', () => {
-    const port = automlModule.v1.AutoMlClient.port;
-    assert(port);
-    assert(typeof port === 'number');
-  });
-  it('should create a client with no option', () => {
-    const client = new automlModule.v1.AutoMlClient();
-    assert(client);
-  });
-  it('should create a client with gRPC fallback', () => {
-    const client = new automlModule.v1.AutoMlClient({
-      fallback: true,
+    it('has servicePath', () => {
+        const servicePath = automlModule.v1.AutoMlClient.servicePath;
+        assert(servicePath);
     });
-    assert(client);
-  });
-  it('has initialize method and supports deferred initialization', async () => {
-    const client = new automlModule.v1.AutoMlClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has apiEndpoint', () => {
+        const apiEndpoint = automlModule.v1.AutoMlClient.apiEndpoint;
+        assert(apiEndpoint);
     });
-    assert.strictEqual(client.autoMlStub, undefined);
-    await client.initialize();
-    assert(client.autoMlStub);
-  });
-  it('has close method', () => {
-    const client = new automlModule.v1.AutoMlClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has port', () => {
+        const port = automlModule.v1.AutoMlClient.port;
+        assert(port);
+        assert(typeof port === 'number');
     });
-    client.close();
-  });
-  describe('getDataset', () => {
-    it('invokes getDataset without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getDataset = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.getDataset(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
+    it('should create a client with no option', () => {
+        const client = new automlModule.v1.AutoMlClient();
+        assert(client);
     });
+    it('should create a client with gRPC fallback', () => {
+        const client = new automlModule.v1.AutoMlClient({
+            fallback: true,
+        });
+        assert(client);
+    });
+    it('has initialize method and supports deferred initialization', async () => {
+        const client = new automlModule.v1.AutoMlClient({
+            credentials: { client_email: 'bogus', private_key: 'bogus' },
+            projectId: 'bogus',
+        });
+        assert.strictEqual(client.autoMlStub, undefined);
+        await client.initialize();
+        assert(client.autoMlStub);
+    });
+    it('has close method', () => {
+        const client = new automlModule.v1.AutoMlClient({
+            credentials: { client_email: 'bogus', private_key: 'bogus' },
+            projectId: 'bogus',
+        });
+        client.close();
+    });
+    describe('getDataset', () => {
+        it('invokes getDataset without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.getDataset = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.getDataset(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes getDataset with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getDataset = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.getDataset(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
+        it('invokes getDataset with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.getDataset = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.getDataset(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
+        });
     });
-  });
-  describe('updateDataset', () => {
-    it('invokes updateDataset without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest = {};
-      request.dataset = {};
-      request.dataset.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.updateDataset = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.updateDataset(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
+    describe('updateDataset', () => {
+        it('invokes updateDataset without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest = {};
+            request.dataset = {};
+            request.dataset.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.updateDataset = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.updateDataset(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes updateDataset with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest = {};
-      request.dataset = {};
-      request.dataset.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.updateDataset = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.updateDataset(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
+        it('invokes updateDataset with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest = {};
+            request.dataset = {};
+            request.dataset.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.updateDataset = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.updateDataset(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
+        });
     });
-  });
-  describe('getAnnotationSpec', () => {
-    it('invokes getAnnotationSpec without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getAnnotationSpec = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.getAnnotationSpec(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
+    describe('getAnnotationSpec', () => {
+        it('invokes getAnnotationSpec without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.getAnnotationSpec = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.getAnnotationSpec(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes getAnnotationSpec with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getAnnotationSpec = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.getAnnotationSpec(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
+        it('invokes getAnnotationSpec with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.getAnnotationSpec = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.getAnnotationSpec(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
+        });
     });
-  });
-  describe('getModel', () => {
-    it('invokes getModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getModel = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.getModel(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
+    describe('getModel', () => {
+        it('invokes getModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetModelRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.getModel = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.getModel(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes getModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getModel = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.getModel(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
+        it('invokes getModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetModelRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.getModel = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.getModel(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
+        });
     });
-  });
-  describe('updateModel', () => {
-    it('invokes updateModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest = {};
-      request.model = {};
-      request.model.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.updateModel = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.updateModel(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
+    describe('updateModel', () => {
+        it('invokes updateModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest = {};
+            request.model = {};
+            request.model.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.updateModel = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.updateModel(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes updateModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest = {};
-      request.model = {};
-      request.model.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.updateModel = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.updateModel(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
+        it('invokes updateModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest = {};
+            request.model = {};
+            request.model.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.updateModel = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.updateModel(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
+        });
     });
-  });
-  describe('getModelEvaluation', () => {
-    it('invokes getModelEvaluation without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getModelEvaluation = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.getModelEvaluation(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
+    describe('getModelEvaluation', () => {
+        it('invokes getModelEvaluation without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.getModelEvaluation = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.getModelEvaluation(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes getModelEvaluation with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.getModelEvaluation = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.getModelEvaluation(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
-    });
-  });
-  describe('createDataset', () => {
-    it('invokes createDataset without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.createDataset = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .createDataset(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+        it('invokes getModelEvaluation with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.getModelEvaluation = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.getModelEvaluation(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
         });
     });
+    describe('createDataset', () => {
+        it('invokes createDataset without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.createDataset = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.createDataset(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
+        });
 
-    it('invokes createDataset with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.createDataset = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .createDataset(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes createDataset with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest = {};
+            request.parent = '';
+            // Mock gRPC layer
+            client._innerApiCalls.createDataset = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.createDataset(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('deleteDataset', () => {
-    it('invokes deleteDataset without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .deleteDataset(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('deleteDataset', () => {
+        it('invokes deleteDataset without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.deleteDataset(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes deleteDataset with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .deleteDataset(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes deleteDataset with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.deleteDataset = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.deleteDataset(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('importData', () => {
-    it('invokes importData without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IImportDataRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.importData = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .importData(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('importData', () => {
+        it('invokes importData without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IImportDataRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.importData = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.importData(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes importData with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IImportDataRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.importData = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .importData(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes importData with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IImportDataRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.importData = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.importData(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('exportData', () => {
-    it('invokes exportData without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IExportDataRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.exportData = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .exportData(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('exportData', () => {
+        it('invokes exportData without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IExportDataRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.exportData = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.exportData(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes exportData with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IExportDataRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.exportData = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .exportData(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes exportData with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IExportDataRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.exportData = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.exportData(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('createModel', () => {
-    it('invokes createModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.ICreateModelRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.createModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .createModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('createModel', () => {
+        it('invokes createModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.ICreateModelRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.createModel = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.createModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes createModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.ICreateModelRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.createModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .createModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes createModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.ICreateModelRequest = {};
+            request.parent = '';
+            // Mock gRPC layer
+            client._innerApiCalls.createModel = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.createModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('deleteModel', () => {
-    it('invokes deleteModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .deleteModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('deleteModel', () => {
+        it('invokes deleteModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.deleteModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes deleteModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .deleteModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes deleteModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.deleteModel = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.deleteModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('deployModel', () => {
-    it('invokes deployModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IDeployModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.deployModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .deployModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('deployModel', () => {
+        it('invokes deployModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IDeployModelRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.deployModel = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.deployModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes deployModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IDeployModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.deployModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .deployModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes deployModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IDeployModelRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.deployModel = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.deployModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('undeployModel', () => {
-    it('invokes undeployModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.undeployModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .undeployModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('undeployModel', () => {
+        it('invokes undeployModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.undeployModel = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.undeployModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes undeployModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.undeployModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .undeployModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes undeployModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.undeployModel = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.undeployModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('exportModel', () => {
-    it('invokes exportModel without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IExportModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.exportModel = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .exportModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+    describe('exportModel', () => {
+        it('invokes exportModel without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IExportModelRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.exportModel = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.exportModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
         });
-    });
 
-    it('invokes exportModel with error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IExportModelRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.exportModel = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .exportModel(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes exportModel with error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IExportModelRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.exportModel = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.exportModel(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
-  describe('listDatasets', () => {
-    it('invokes listDatasets without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock Grpc layer
-      client._innerApiCalls.listDatasets = (
-        actualRequest: {},
-        options: {},
-        callback: Callback
-      ) => {
-        assert.deepStrictEqual(actualRequest, request);
-        callback(null, expectedResponse);
-      };
-      client.listDatasets(request, (err: FakeError, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
-  });
-  describe('listDatasetsStream', () => {
-    it('invokes listDatasetsStream without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {response: 'data'};
-      // Mock Grpc layer
-      client._innerApiCalls.listDatasets = (
-        actualRequest: {},
-        options: {},
-        callback: Callback
-      ) => {
-        assert.deepStrictEqual(actualRequest, request);
-        callback(null, expectedResponse);
-      };
-      const stream = client
-        .listDatasetsStream(request, {})
-        .on('data', (response: {}) => {
-          assert.deepStrictEqual(response, expectedResponse);
-          done();
-        })
-        .on('error', (err: FakeError) => {
-          done(err);
+    describe('listDatasets', () => {
+        it('invokes listDatasets without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock Grpc layer
+            client._innerApiCalls.listDatasets = (actualRequest: {}, options: {}, callback: Callback) => {
+                assert.deepStrictEqual(actualRequest, request);
+                callback(null, expectedResponse);
+            };
+            client.listDatasets(request, (err: FakeError, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            });
         });
-      stream.write(expectedResponse);
     });
-  });
-  describe('listModels', () => {
-    it('invokes listModels without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IListModelsRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock Grpc layer
-      client._innerApiCalls.listModels = (
-        actualRequest: {},
-        options: {},
-        callback: Callback
-      ) => {
-        assert.deepStrictEqual(actualRequest, request);
-        callback(null, expectedResponse);
-      };
-      client.listModels(request, (err: FakeError, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
-  });
-  describe('listModelsStream', () => {
-    it('invokes listModelsStream without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IListModelsRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {response: 'data'};
-      // Mock Grpc layer
-      client._innerApiCalls.listModels = (
-        actualRequest: {},
-        options: {},
-        callback: Callback
-      ) => {
-        assert.deepStrictEqual(actualRequest, request);
-        callback(null, expectedResponse);
-      };
-      const stream = client
-        .listModelsStream(request, {})
-        .on('data', (response: {}) => {
-          assert.deepStrictEqual(response, expectedResponse);
-          done();
-        })
-        .on('error', (err: FakeError) => {
-          done(err);
+    describe('listDatasetsStream', () => {
+        it('invokes listDatasetsStream without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {response: 'data'};
+            // Mock Grpc layer
+            client._innerApiCalls.listDatasets = (actualRequest: {}, options: {}, callback: Callback) => {
+                assert.deepStrictEqual(actualRequest, request);
+                callback(null, expectedResponse);
+            };
+            const stream = client.listDatasetsStream(request, {}).on('data', (response: {}) =>{
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            }).on('error', (err: FakeError) => {
+                done(err);
+            });
+            stream.write(expectedResponse);
         });
-      stream.write(expectedResponse);
     });
-  });
-  describe('listModelEvaluations', () => {
-    it('invokes listModelEvaluations without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock Grpc layer
-      client._innerApiCalls.listModelEvaluations = (
-        actualRequest: {},
-        options: {},
-        callback: Callback
-      ) => {
-        assert.deepStrictEqual(actualRequest, request);
-        callback(null, expectedResponse);
-      };
-      client.listModelEvaluations(request, (err: FakeError, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
-    });
-  });
-  describe('listModelEvaluationsStream', () => {
-    it('invokes listModelEvaluationsStream without error', done => {
-      const client = new automlModule.v1.AutoMlClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest = {};
-      request.parent = '';
-      // Mock response
-      const expectedResponse = {response: 'data'};
-      // Mock Grpc layer
-      client._innerApiCalls.listModelEvaluations = (
-        actualRequest: {},
-        options: {},
-        callback: Callback
-      ) => {
-        assert.deepStrictEqual(actualRequest, request);
-        callback(null, expectedResponse);
-      };
-      const stream = client
-        .listModelEvaluationsStream(request, {})
-        .on('data', (response: {}) => {
-          assert.deepStrictEqual(response, expectedResponse);
-          done();
-        })
-        .on('error', (err: FakeError) => {
-          done(err);
+    describe('listModels', () => {
+        it('invokes listModels without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IListModelsRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock Grpc layer
+            client._innerApiCalls.listModels = (actualRequest: {}, options: {}, callback: Callback) => {
+                assert.deepStrictEqual(actualRequest, request);
+                callback(null, expectedResponse);
+            };
+            client.listModels(request, (err: FakeError, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            });
         });
-      stream.write(expectedResponse);
     });
-  });
+    describe('listModelsStream', () => {
+        it('invokes listModelsStream without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IListModelsRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {response: 'data'};
+            // Mock Grpc layer
+            client._innerApiCalls.listModels = (actualRequest: {}, options: {}, callback: Callback) => {
+                assert.deepStrictEqual(actualRequest, request);
+                callback(null, expectedResponse);
+            };
+            const stream = client.listModelsStream(request, {}).on('data', (response: {}) =>{
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            }).on('error', (err: FakeError) => {
+                done(err);
+            });
+            stream.write(expectedResponse);
+        });
+    });
+    describe('listModelEvaluations', () => {
+        it('invokes listModelEvaluations without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock Grpc layer
+            client._innerApiCalls.listModelEvaluations = (actualRequest: {}, options: {}, callback: Callback) => {
+                assert.deepStrictEqual(actualRequest, request);
+                callback(null, expectedResponse);
+            };
+            client.listModelEvaluations(request, (err: FakeError, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            });
+        });
+    });
+    describe('listModelEvaluationsStream', () => {
+        it('invokes listModelEvaluationsStream without error', done => {
+            const client = new automlModule.v1.AutoMlClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest = {};
+            request.parent = '';
+            // Mock response
+            const expectedResponse = {response: 'data'};
+            // Mock Grpc layer
+            client._innerApiCalls.listModelEvaluations = (actualRequest: {}, options: {}, callback: Callback) => {
+                assert.deepStrictEqual(actualRequest, request);
+                callback(null, expectedResponse);
+            };
+            const stream = client.listModelEvaluationsStream(request, {}).on('data', (response: {}) =>{
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            }).on('error', (err: FakeError) => {
+                done(err);
+            });
+            stream.write(expectedResponse);
+        });
+    });
 });

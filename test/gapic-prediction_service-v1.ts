@@ -18,225 +18,206 @@
 
 import * as protosTypes from '../protos/protos';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import { describe, it } from 'mocha';
+/* eslint-disable @typescript-eslint/no-var-requires */
 const predictionserviceModule = require('../src');
 
+
 const FAKE_STATUS_CODE = 1;
-class FakeError {
-  name: string;
-  message: string;
-  code: number;
-  constructor(n: number) {
-    this.name = 'fakeName';
-    this.message = 'fake message';
-    this.code = n;
-  }
+class FakeError{
+    name: string;
+    message: string;
+    code: number;
+    constructor(n: number){
+        this.name = 'fakeName';
+        this.message = 'fake message';
+        this.code = n;
+    }
 }
 const error = new FakeError(FAKE_STATUS_CODE);
 export interface Callback {
-  (err: FakeError | null, response?: {} | null): void;
+  (err: FakeError|null, response?: {} | null): void;
 }
 
-export class Operation {
-  constructor() {}
-  promise() {}
+export class Operation{
+    constructor(){};
+    promise() {};
 }
-function mockSimpleGrpcMethod(
-  expectedRequest: {},
-  response: {} | null,
-  error: FakeError | null
-) {
-  return (actualRequest: {}, options: {}, callback: Callback) => {
-    assert.deepStrictEqual(actualRequest, expectedRequest);
-    if (error) {
-      callback(error);
-    } else if (response) {
-      callback(null, response);
-    } else {
-      callback(null);
-    }
-  };
-}
-function mockLongRunningGrpcMethod(
-  expectedRequest: {},
-  response: {} | null,
-  error?: {} | null
-) {
-  return (request: {}) => {
-    assert.deepStrictEqual(request, expectedRequest);
-    const mockOperation = {
-      promise() {
-        return new Promise((resolve, reject) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve([response]);
-          }
-        });
-      },
+function mockSimpleGrpcMethod(expectedRequest: {}, response: {} | null, error: FakeError | null) {
+    return (actualRequest: {}, options: {}, callback: Callback) => {
+        assert.deepStrictEqual(actualRequest, expectedRequest);
+        if (error) {
+            callback(error);
+        } else if (response) {
+            callback(null, response);
+        } else {
+            callback(null);
+        }
     };
-    return Promise.resolve([mockOperation]);
-  };
+}
+function mockLongRunningGrpcMethod(expectedRequest: {}, response: {} | null, error?: {} | null) {
+    return (request: {}) => {
+        assert.deepStrictEqual(request, expectedRequest);
+        const mockOperation = {
+          promise: function() {
+            return new Promise((resolve, reject) => {
+              if (error) {
+                reject(error);
+              }
+              else {
+                resolve([response]);
+              }
+            });
+          }
+        };
+        return Promise.resolve([mockOperation]);
+    };
 }
 describe('v1.PredictionServiceClient', () => {
-  it('has servicePath', () => {
-    const servicePath =
-      predictionserviceModule.v1.PredictionServiceClient.servicePath;
-    assert(servicePath);
-  });
-  it('has apiEndpoint', () => {
-    const apiEndpoint =
-      predictionserviceModule.v1.PredictionServiceClient.apiEndpoint;
-    assert(apiEndpoint);
-  });
-  it('has port', () => {
-    const port = predictionserviceModule.v1.PredictionServiceClient.port;
-    assert(port);
-    assert(typeof port === 'number');
-  });
-  it('should create a client with no option', () => {
-    const client = new predictionserviceModule.v1.PredictionServiceClient();
-    assert(client);
-  });
-  it('should create a client with gRPC fallback', () => {
-    const client = new predictionserviceModule.v1.PredictionServiceClient({
-      fallback: true,
+    it('has servicePath', () => {
+        const servicePath = predictionserviceModule.v1.PredictionServiceClient.servicePath;
+        assert(servicePath);
     });
-    assert(client);
-  });
-  it('has initialize method and supports deferred initialization', async () => {
-    const client = new predictionserviceModule.v1.PredictionServiceClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has apiEndpoint', () => {
+        const apiEndpoint = predictionserviceModule.v1.PredictionServiceClient.apiEndpoint;
+        assert(apiEndpoint);
     });
-    assert.strictEqual(client.predictionServiceStub, undefined);
-    await client.initialize();
-    assert(client.predictionServiceStub);
-  });
-  it('has close method', () => {
-    const client = new predictionserviceModule.v1.PredictionServiceClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has port', () => {
+        const port = predictionserviceModule.v1.PredictionServiceClient.port;
+        assert(port);
+        assert(typeof port === 'number');
     });
-    client.close();
-  });
-  describe('predict', () => {
-    it('invokes predict without error', done => {
-      const client = new predictionserviceModule.v1.PredictionServiceClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IPredictRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.predict = mockSimpleGrpcMethod(
-        request,
-        expectedResponse,
-        null
-      );
-      client.predict(request, (err: {}, response: {}) => {
-        assert.ifError(err);
-        assert.deepStrictEqual(response, expectedResponse);
-        done();
-      });
+    it('should create a client with no option', () => {
+        const client = new predictionserviceModule.v1.PredictionServiceClient();
+        assert(client);
     });
+    it('should create a client with gRPC fallback', () => {
+        const client = new predictionserviceModule.v1.PredictionServiceClient({
+            fallback: true,
+        });
+        assert(client);
+    });
+    it('has initialize method and supports deferred initialization', async () => {
+        const client = new predictionserviceModule.v1.PredictionServiceClient({
+            credentials: { client_email: 'bogus', private_key: 'bogus' },
+            projectId: 'bogus',
+        });
+        assert.strictEqual(client.predictionServiceStub, undefined);
+        await client.initialize();
+        assert(client.predictionServiceStub);
+    });
+    it('has close method', () => {
+        const client = new predictionserviceModule.v1.PredictionServiceClient({
+            credentials: { client_email: 'bogus', private_key: 'bogus' },
+            projectId: 'bogus',
+        });
+        client.close();
+    });
+    describe('predict', () => {
+        it('invokes predict without error', done => {
+            const client = new predictionserviceModule.v1.PredictionServiceClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IPredictRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.predict = mockSimpleGrpcMethod(
+                request,
+                expectedResponse,
+                null
+            );
+            client.predict(request, (err: {}, response: {}) => {
+                assert.ifError(err);
+                assert.deepStrictEqual(response, expectedResponse);
+                done();
+            })
+        });
 
-    it('invokes predict with error', done => {
-      const client = new predictionserviceModule.v1.PredictionServiceClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IPredictRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.predict = mockSimpleGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client.predict(request, (err: FakeError, response: {}) => {
-        assert(err instanceof FakeError);
-        assert.strictEqual(err.code, FAKE_STATUS_CODE);
-        assert(typeof response === 'undefined');
-        done();
-      });
-    });
-  });
-  describe('batchPredict', () => {
-    it('invokes batchPredict without error', done => {
-      const client = new predictionserviceModule.v1.PredictionServiceClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IBatchPredictRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.batchPredict = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
-      client
-        .batchPredict(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then((responses: [Operation]) => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch((err: {}) => {
-          done(err);
+        it('invokes predict with error', done => {
+            const client = new predictionserviceModule.v1.PredictionServiceClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IPredictRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.predict = mockSimpleGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.predict(request, (err: FakeError, response: {}) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                assert(typeof response === 'undefined');
+                done();
+            })
         });
     });
+    describe('batchPredict', () => {
+        it('invokes batchPredict without error', done => {
+            const client = new predictionserviceModule.v1.PredictionServiceClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IBatchPredictRequest = {};
+            request.name = '';
+            // Mock response
+            const expectedResponse = {};
+            // Mock gRPC layer
+            client._innerApiCalls.batchPredict = mockLongRunningGrpcMethod(
+                request,
+                expectedResponse
+            );
+            client.batchPredict(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then((responses: [Operation]) => {
+                assert.deepStrictEqual(responses[0], expectedResponse);
+                done();
+            }).catch((err: {}) => {
+                done(err);
+            });
+        });
 
-    it('invokes batchPredict with error', done => {
-      const client = new predictionserviceModule.v1.PredictionServiceClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      // Initialize client before mocking
-      client.initialize();
-      // Mock request
-      const request: protosTypes.google.cloud.automl.v1.IBatchPredictRequest = {};
-      request.name = '';
-      // Mock response
-      const expectedResponse = {};
-      // Mock gRPC layer
-      client._innerApiCalls.batchPredict = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
-      client
-        .batchPredict(request)
-        .then((responses: [Operation]) => {
-          const operation = responses[0];
-          return operation ? operation.promise() : {};
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch((err: FakeError) => {
-          assert(err instanceof FakeError);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
+        it('invokes batchPredict with error', done => {
+            const client = new predictionserviceModule.v1.PredictionServiceClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            // Initialize client before mocking
+            client.initialize();
+            // Mock request
+            const request: protosTypes.google.cloud.automl.v1.IBatchPredictRequest = {};
+            request.name = '';
+            // Mock gRPC layer
+            client._innerApiCalls.batchPredict = mockLongRunningGrpcMethod(
+                request,
+                null,
+                error
+            );
+            client.batchPredict(request).then((responses: [Operation]) => {
+                const operation = responses[0];
+                return operation? operation.promise() : {};
+            }).then(() => {
+                assert.fail();
+            }).catch((err: FakeError) => {
+                assert(err instanceof FakeError);
+                assert.strictEqual(err.code, FAKE_STATUS_CODE);
+                done();
+            });
         });
     });
-  });
 });
