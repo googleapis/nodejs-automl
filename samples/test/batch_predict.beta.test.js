@@ -37,7 +37,14 @@ describe('Automl Batch Predict Test', () => {
     const inputUri = `gs://${projectId}-lcm/entity_extraction/input.jsonl`;
     const outputUri = `gs://${projectId}-lcm/TEST_BATCH_PREDICT/`;
 
-    const args = [BATCH_PREDICT_REGION_TAG, projectId, LOCATION, MODEL_ID, inputUri, outputUri];
+    const args = [
+      BATCH_PREDICT_REGION_TAG,
+      projectId,
+      LOCATION,
+      MODEL_ID,
+      inputUri,
+      outputUri,
+    ];
     const output = cp.spawnSync('node', args, {encoding: 'utf8'});
 
     assert.match(output.stderr, /does not exist/);
