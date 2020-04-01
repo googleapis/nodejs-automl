@@ -20,8 +20,6 @@ const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
-
 const BATCH_PREDICT_REGION_TAG = 'beta/batch_predict';
 const LOCATION = 'us-central1';
 const MODEL_ID = 'TEN0000000000000000000';
