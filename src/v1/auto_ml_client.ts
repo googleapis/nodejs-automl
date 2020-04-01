@@ -17,20 +17,12 @@
 // ** All changes to this file may be overwritten. **
 
 import * as gax from 'google-gax';
-import {
-  APICallback,
-  Callback,
-  CallOptions,
-  Descriptors,
-  ClientOptions,
-  LROperation,
-  PaginationCallback,
-  PaginationResponse,
-} from 'google-gax';
+import {Callback, CallOptions, Descriptors, ClientOptions, LROperation, PaginationCallback, GaxCall} from 'google-gax';
 import * as path from 'path';
 
-import {Transform} from 'stream';
-import * as protosTypes from '../../protos/protos';
+import { Transform } from 'stream';
+import { RequestType } from 'google-gax/build/src/apitypes';
+import * as protos from '../../protos/protos';
 import * as gapicConfig from './auto_ml_client_config.json';
 
 const version = require('../../../package.json').version;
@@ -54,14 +46,6 @@ const version = require('../../../package.json').version;
  * @memberof v1
  */
 export class AutoMlClient {
-  private _descriptors: Descriptors = {
-    page: {},
-    stream: {},
-    longrunning: {},
-    batching: {},
-  };
-  private _innerApiCalls: {[name: string]: Function};
-  private _pathTemplates: {[name: string]: gax.PathTemplate};
   private _terminated = false;
   private _opts: ClientOptions;
   private _gaxModule: typeof gax | typeof gax.fallback;
@@ -69,6 +53,9 @@ export class AutoMlClient {
   private _protos: {};
   private _defaults: {[method: string]: gax.CallSettings};
   auth: gax.GoogleAuth;
+  descriptors: Descriptors = {page: {}, stream: {}, longrunning: {}, batching: {}};
+  innerApiCalls: {[name: string]: Function};
+  pathTemplates: {[name: string]: gax.PathTemplate};
   operationsClient: gax.OperationsClient;
   autoMlStub?: Promise<{[name: string]: Function}>;
 
@@ -101,12 +88,10 @@ export class AutoMlClient {
   constructor(opts?: ClientOptions) {
     // Ensure that options include the service address and port.
     const staticMembers = this.constructor as typeof AutoMlClient;
-    const servicePath =
-      opts && opts.servicePath
-        ? opts.servicePath
-        : opts && opts.apiEndpoint
-        ? opts.apiEndpoint
-        : staticMembers.servicePath;
+    const servicePath = opts && opts.servicePath ?
+        opts.servicePath :
+        ((opts && opts.apiEndpoint) ? opts.apiEndpoint :
+                                      staticMembers.servicePath);
     const port = opts && opts.port ? opts.port : staticMembers.port;
 
     if (!opts) {
@@ -116,8 +101,8 @@ export class AutoMlClient {
     opts.port = opts.port || port;
     opts.clientConfig = opts.clientConfig || {};
 
-    const isBrowser = typeof window !== 'undefined';
-    if (isBrowser) {
+    const isBrowser = (typeof window !== 'undefined');
+    if (isBrowser){
       opts.fallback = true;
     }
     // If we are in browser, we are already using fallback because of the
@@ -134,10 +119,13 @@ export class AutoMlClient {
     this._opts = opts;
 
     // Save the auth object to the client, for use by other methods.
-    this.auth = this._gaxGrpc.auth as gax.GoogleAuth;
+    this.auth = (this._gaxGrpc.auth as gax.GoogleAuth);
 
     // Determine the client header string.
-    const clientHeader = [`gax/${this._gaxModule.version}`, `gapic/${version}`];
+    const clientHeader = [
+      `gax/${this._gaxModule.version}`,
+      `gapic/${version}`,
+    ];
     if (typeof process !== 'undefined' && 'versions' in process) {
       clientHeader.push(`gl-node/${process.versions.node}`);
     } else {
@@ -153,21 +141,18 @@ export class AutoMlClient {
     // For Node.js, pass the path to JSON proto file.
     // For browsers, pass the JSON content.
 
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
+    const nodejsProtoPath = path.join(__dirname, '..', '..', 'protos', 'protos.json');
     this._protos = this._gaxGrpc.loadProto(
-      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
+      opts.fallback ?
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("../../protos/protos.json") :
+        nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
     // Create useful helper objects for these.
-    this._pathTemplates = {
+    this.pathTemplates = {
       annotationSpecPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/locations/{location}/datasets/{dataset}/annotationSpecs/{annotation_spec}'
       ),
@@ -188,154 +173,113 @@ export class AutoMlClient {
     // Some of the methods on this service return "paged" results,
     // (e.g. 50 results at a time, with tokens to get subsequent
     // pages). Denote the keys used for pagination and results.
-    this._descriptors.page = {
-      listDatasets: new this._gaxModule.PageDescriptor(
-        'pageToken',
-        'nextPageToken',
-        'datasets'
-      ),
-      listModels: new this._gaxModule.PageDescriptor(
-        'pageToken',
-        'nextPageToken',
-        'model'
-      ),
-      listModelEvaluations: new this._gaxModule.PageDescriptor(
-        'pageToken',
-        'nextPageToken',
-        'modelEvaluation'
-      ),
+    this.descriptors.page = {
+      listDatasets:
+          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'datasets'),
+      listModels:
+          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'model'),
+      listModelEvaluations:
+          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'modelEvaluation')
     };
 
     // This API contains "long-running operations", which return a
     // an Operation object that allows for tracking of the operation,
     // rather than holding a request open.
-    const protoFilesRoot = opts.fallback
-      ? this._gaxModule.protobuf.Root.fromJSON(
-          require('../../protos/protos.json')
-        )
-      : this._gaxModule.protobuf.loadSync(nodejsProtoPath);
+    const protoFilesRoot = opts.fallback ?
+      this._gaxModule.protobuf.Root.fromJSON(
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("../../protos/protos.json")) :
+      this._gaxModule.protobuf.loadSync(nodejsProtoPath);
 
-    this.operationsClient = this._gaxModule
-      .lro({
-        auth: this.auth,
-        grpc: 'grpc' in this._gaxGrpc ? this._gaxGrpc.grpc : undefined,
-      })
-      .operationsClient(opts);
+    this.operationsClient = this._gaxModule.lro({
+      auth: this.auth,
+      grpc: 'grpc' in this._gaxGrpc ? this._gaxGrpc.grpc : undefined
+    }).operationsClient(opts);
     const createDatasetResponse = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.Dataset'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.Dataset') as gax.protobuf.Type;
     const createDatasetMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const deleteDatasetResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const deleteDatasetMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const importDataResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const importDataMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const exportDataResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const exportDataMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const createModelResponse = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.Model'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.Model') as gax.protobuf.Type;
     const createModelMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const deleteModelResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const deleteModelMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const deployModelResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const deployModelMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const undeployModelResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const undeployModelMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
     const exportModelResponse = protoFilesRoot.lookup(
-      '.google.protobuf.Empty'
-    ) as gax.protobuf.Type;
+      '.google.protobuf.Empty') as gax.protobuf.Type;
     const exportModelMetadata = protoFilesRoot.lookup(
-      '.google.cloud.automl.v1.OperationMetadata'
-    ) as gax.protobuf.Type;
+      '.google.cloud.automl.v1.OperationMetadata') as gax.protobuf.Type;
 
-    this._descriptors.longrunning = {
+    this.descriptors.longrunning = {
       createDataset: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         createDatasetResponse.decode.bind(createDatasetResponse),
-        createDatasetMetadata.decode.bind(createDatasetMetadata)
-      ),
+        createDatasetMetadata.decode.bind(createDatasetMetadata)),
       deleteDataset: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         deleteDatasetResponse.decode.bind(deleteDatasetResponse),
-        deleteDatasetMetadata.decode.bind(deleteDatasetMetadata)
-      ),
+        deleteDatasetMetadata.decode.bind(deleteDatasetMetadata)),
       importData: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         importDataResponse.decode.bind(importDataResponse),
-        importDataMetadata.decode.bind(importDataMetadata)
-      ),
+        importDataMetadata.decode.bind(importDataMetadata)),
       exportData: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         exportDataResponse.decode.bind(exportDataResponse),
-        exportDataMetadata.decode.bind(exportDataMetadata)
-      ),
+        exportDataMetadata.decode.bind(exportDataMetadata)),
       createModel: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         createModelResponse.decode.bind(createModelResponse),
-        createModelMetadata.decode.bind(createModelMetadata)
-      ),
+        createModelMetadata.decode.bind(createModelMetadata)),
       deleteModel: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         deleteModelResponse.decode.bind(deleteModelResponse),
-        deleteModelMetadata.decode.bind(deleteModelMetadata)
-      ),
+        deleteModelMetadata.decode.bind(deleteModelMetadata)),
       deployModel: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         deployModelResponse.decode.bind(deployModelResponse),
-        deployModelMetadata.decode.bind(deployModelMetadata)
-      ),
+        deployModelMetadata.decode.bind(deployModelMetadata)),
       undeployModel: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         undeployModelResponse.decode.bind(undeployModelResponse),
-        undeployModelMetadata.decode.bind(undeployModelMetadata)
-      ),
+        undeployModelMetadata.decode.bind(undeployModelMetadata)),
       exportModel: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         exportModelResponse.decode.bind(exportModelResponse),
-        exportModelMetadata.decode.bind(exportModelMetadata)
-      ),
+        exportModelMetadata.decode.bind(exportModelMetadata))
     };
 
     // Put together the default options sent with requests.
     this._defaults = this._gaxGrpc.constructSettings(
-      'google.cloud.automl.v1.AutoMl',
-      gapicConfig as gax.ClientConfig,
-      opts.clientConfig || {},
-      {'x-goog-api-client': clientHeader.join(' ')}
-    );
+        'google.cloud.automl.v1.AutoMl', gapicConfig as gax.ClientConfig,
+        opts.clientConfig || {}, {'x-goog-api-client': clientHeader.join(' ')});
 
     // Set up a dictionary of "inner API calls"; the core implementation
     // of calling the API is handled in `google-gax`, with this code
     // merely providing the destination and request information.
-    this._innerApiCalls = {};
+    this.innerApiCalls = {};
   }
 
   /**
@@ -358,40 +302,18 @@ export class AutoMlClient {
     // Put together the "service stub" for
     // google.cloud.automl.v1.AutoMl.
     this.autoMlStub = this._gaxGrpc.createStub(
-      this._opts.fallback
-        ? (this._protos as protobuf.Root).lookupService(
-            'google.cloud.automl.v1.AutoMl'
-          )
-        : // tslint:disable-next-line no-any
+        this._opts.fallback ?
+          (this._protos as protobuf.Root).lookupService('google.cloud.automl.v1.AutoMl') :
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.cloud.automl.v1.AutoMl,
-      this._opts
-    ) as Promise<{[method: string]: Function}>;
+        this._opts) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    const autoMlStubMethods = [
-      'createDataset',
-      'getDataset',
-      'listDatasets',
-      'updateDataset',
-      'deleteDataset',
-      'importData',
-      'exportData',
-      'getAnnotationSpec',
-      'createModel',
-      'getModel',
-      'listModels',
-      'deleteModel',
-      'updateModel',
-      'deployModel',
-      'undeployModel',
-      'exportModel',
-      'getModelEvaluation',
-      'listModelEvaluations',
-    ];
-
+    const autoMlStubMethods =
+        ['createDataset', 'getDataset', 'listDatasets', 'updateDataset', 'deleteDataset', 'importData', 'exportData', 'getAnnotationSpec', 'createModel', 'getModel', 'listModels', 'deleteModel', 'updateModel', 'deployModel', 'undeployModel', 'exportModel', 'getModelEvaluation', 'listModelEvaluations'];
     for (const methodName of autoMlStubMethods) {
-      const innerCallPromise = this.autoMlStub.then(
+      const callPromise = this.autoMlStub.then(
         stub => (...args: Array<{}>) => {
           if (this._terminated) {
             return Promise.reject('The client has already been closed.');
@@ -399,26 +321,19 @@ export class AutoMlClient {
           const func = stub[methodName];
           return func.apply(stub, args);
         },
-        (err: Error | null | undefined) => () => {
+        (err: Error|null|undefined) => () => {
           throw err;
-        }
-      );
+        });
 
       const apiCall = this._gaxModule.createApiCall(
-        innerCallPromise,
+        callPromise,
         this._defaults[methodName],
-        this._descriptors.page[methodName] ||
-          this._descriptors.stream[methodName] ||
-          this._descriptors.longrunning[methodName]
+        this.descriptors.page[methodName] ||
+            this.descriptors.stream[methodName] ||
+            this.descriptors.longrunning[methodName]
       );
 
-      this._innerApiCalls[methodName] = (
-        argument: {},
-        callOptions?: CallOptions,
-        callback?: APICallback
-      ) => {
-        return apiCall(argument, callOptions, callback);
-      };
+      this.innerApiCalls[methodName] = apiCall;
     }
 
     return this.autoMlStub;
@@ -451,7 +366,9 @@ export class AutoMlClient {
    * in this service.
    */
   static get scopes() {
-    return ['https://www.googleapis.com/auth/cloud-platform'];
+    return [
+      'https://www.googleapis.com/auth/cloud-platform'
+    ];
   }
 
   getProjectId(): Promise<string>;
@@ -461,9 +378,8 @@ export class AutoMlClient {
    * @param {function(Error, string)} callback - the callback to
    *   be called with the current project Id.
    */
-  getProjectId(
-    callback?: Callback<string, undefined, undefined>
-  ): Promise<string> | void {
+  getProjectId(callback?: Callback<string, undefined, undefined>):
+      Promise<string>|void {
     if (callback) {
       this.auth.getProjectId(callback);
       return;
@@ -475,64 +391,59 @@ export class AutoMlClient {
   // -- Service calls --
   // -------------------
   getDataset(
-    request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IGetDatasetRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IDataset,
+        protos.google.cloud.automl.v1.IGetDatasetRequest|undefined, {}|undefined
+      ]>;
   getDataset(
-    request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Gets a dataset.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. The resource name of the dataset to retrieve.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Dataset]{@link google.cloud.automl.v1.Dataset}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IGetDatasetRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IGetDatasetRequest|null|undefined,
+          {}|null|undefined>): void;
   getDataset(
-    request: protosTypes.google.cloud.automl.v1.IGetDatasetRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IDataset,
-          protosTypes.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IGetDatasetRequest,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IGetDatasetRequest|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Gets a dataset.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The resource name of the dataset to retrieve.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Dataset]{@link google.cloud.automl.v1.Dataset}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  getDataset(
+      request: protos.google.cloud.automl.v1.IGetDatasetRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IGetDatasetRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IGetDatasetRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.cloud.automl.v1.IDataset,
+        protos.google.cloud.automl.v1.IGetDatasetRequest|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -541,72 +452,67 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.getDataset(request, options, callback);
+    return this.innerApiCalls.getDataset(request, options, callback);
   }
   updateDataset(
-    request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IUpdateDatasetRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IDataset,
+        protos.google.cloud.automl.v1.IUpdateDatasetRequest|undefined, {}|undefined
+      ]>;
   updateDataset(
-    request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Updates a dataset.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {google.cloud.automl.v1.Dataset} request.dataset
-   *   Required. The dataset which replaces the resource on the server.
-   * @param {google.protobuf.FieldMask} request.updateMask
-   *   Required. The update mask applies to the resource.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Dataset]{@link google.cloud.automl.v1.Dataset}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IUpdateDatasetRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IUpdateDatasetRequest|null|undefined,
+          {}|null|undefined>): void;
   updateDataset(
-    request: protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IDataset,
-          protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IDataset,
-      protosTypes.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IUpdateDatasetRequest,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IUpdateDatasetRequest|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Updates a dataset.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {google.cloud.automl.v1.Dataset} request.dataset
+ *   Required. The dataset which replaces the resource on the server.
+ * @param {google.protobuf.FieldMask} request.updateMask
+ *   Required. The update mask applies to the resource.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Dataset]{@link google.cloud.automl.v1.Dataset}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  updateDataset(
+      request: protos.google.cloud.automl.v1.IUpdateDatasetRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IUpdateDatasetRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.cloud.automl.v1.IDataset,
+          protos.google.cloud.automl.v1.IUpdateDatasetRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.cloud.automl.v1.IDataset,
+        protos.google.cloud.automl.v1.IUpdateDatasetRequest|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -618,68 +524,62 @@ export class AutoMlClient {
       'dataset.name': request.dataset!.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.updateDataset(request, options, callback);
+    return this.innerApiCalls.updateDataset(request, options, callback);
   }
   getAnnotationSpec(
-    request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IAnnotationSpec,
-      protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IGetAnnotationSpecRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IAnnotationSpec,
+        protos.google.cloud.automl.v1.IGetAnnotationSpecRequest|undefined, {}|undefined
+      ]>;
   getAnnotationSpec(
-    request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IAnnotationSpec,
-      protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Gets an annotation spec.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. The resource name of the annotation spec to retrieve.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [AnnotationSpec]{@link google.cloud.automl.v1.AnnotationSpec}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IGetAnnotationSpecRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IAnnotationSpec,
+          protos.google.cloud.automl.v1.IGetAnnotationSpecRequest|null|undefined,
+          {}|null|undefined>): void;
   getAnnotationSpec(
-    request: protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IAnnotationSpec,
-          | protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest
-          | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IAnnotationSpec,
-      protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IAnnotationSpec,
-      protosTypes.google.cloud.automl.v1.IGetAnnotationSpecRequest | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IGetAnnotationSpecRequest,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IAnnotationSpec,
+          protos.google.cloud.automl.v1.IGetAnnotationSpecRequest|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Gets an annotation spec.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The resource name of the annotation spec to retrieve.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [AnnotationSpec]{@link google.cloud.automl.v1.AnnotationSpec}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  getAnnotationSpec(
+      request: protos.google.cloud.automl.v1.IGetAnnotationSpecRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          protos.google.cloud.automl.v1.IAnnotationSpec,
+          protos.google.cloud.automl.v1.IGetAnnotationSpecRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.cloud.automl.v1.IAnnotationSpec,
+          protos.google.cloud.automl.v1.IGetAnnotationSpecRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.cloud.automl.v1.IAnnotationSpec,
+        protos.google.cloud.automl.v1.IGetAnnotationSpecRequest|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -688,70 +588,65 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.getAnnotationSpec(request, options, callback);
+    return this.innerApiCalls.getAnnotationSpec(request, options, callback);
   }
   getModel(
-    request: protosTypes.google.cloud.automl.v1.IGetModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IGetModelRequest | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IGetModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IModel,
+        protos.google.cloud.automl.v1.IGetModelRequest|undefined, {}|undefined
+      ]>;
   getModel(
-    request: protosTypes.google.cloud.automl.v1.IGetModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IGetModelRequest | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Gets a model.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. Resource name of the model.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Model]{@link google.cloud.automl.v1.Model}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IGetModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IGetModelRequest|null|undefined,
+          {}|null|undefined>): void;
   getModel(
-    request: protosTypes.google.cloud.automl.v1.IGetModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IModel,
-          protosTypes.google.cloud.automl.v1.IGetModelRequest | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IGetModelRequest | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IGetModelRequest | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IGetModelRequest,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IGetModelRequest|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Gets a model.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. Resource name of the model.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Model]{@link google.cloud.automl.v1.Model}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  getModel(
+      request: protos.google.cloud.automl.v1.IGetModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IGetModelRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IGetModelRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.cloud.automl.v1.IModel,
+        protos.google.cloud.automl.v1.IGetModelRequest|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -760,72 +655,67 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.getModel(request, options, callback);
+    return this.innerApiCalls.getModel(request, options, callback);
   }
   updateModel(
-    request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IUpdateModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IModel,
+        protos.google.cloud.automl.v1.IUpdateModelRequest|undefined, {}|undefined
+      ]>;
   updateModel(
-    request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Updates a model.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {google.cloud.automl.v1.Model} request.model
-   *   Required. The model which replaces the resource on the server.
-   * @param {google.protobuf.FieldMask} request.updateMask
-   *   Required. The update mask applies to the resource.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Model]{@link google.cloud.automl.v1.Model}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IUpdateModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IUpdateModelRequest|null|undefined,
+          {}|null|undefined>): void;
   updateModel(
-    request: protosTypes.google.cloud.automl.v1.IUpdateModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IModel,
-          protosTypes.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModel,
-      protosTypes.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IUpdateModelRequest,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IUpdateModelRequest|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Updates a model.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {google.cloud.automl.v1.Model} request.model
+ *   Required. The model which replaces the resource on the server.
+ * @param {google.protobuf.FieldMask} request.updateMask
+ *   Required. The update mask applies to the resource.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Model]{@link google.cloud.automl.v1.Model}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  updateModel(
+      request: protos.google.cloud.automl.v1.IUpdateModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IUpdateModelRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.cloud.automl.v1.IModel,
+          protos.google.cloud.automl.v1.IUpdateModelRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.cloud.automl.v1.IModel,
+        protos.google.cloud.automl.v1.IUpdateModelRequest|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -837,68 +727,62 @@ export class AutoMlClient {
       'model.name': request.model!.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.updateModel(request, options, callback);
+    return this.innerApiCalls.updateModel(request, options, callback);
   }
   getModelEvaluation(
-    request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModelEvaluation,
-      protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IGetModelEvaluationRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IModelEvaluation,
+        protos.google.cloud.automl.v1.IGetModelEvaluationRequest|undefined, {}|undefined
+      ]>;
   getModelEvaluation(
-    request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IModelEvaluation,
-      protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Gets a model evaluation.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. Resource name for the model evaluation.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IGetModelEvaluationRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IModelEvaluation,
+          protos.google.cloud.automl.v1.IGetModelEvaluationRequest|null|undefined,
+          {}|null|undefined>): void;
   getModelEvaluation(
-    request: protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IModelEvaluation,
-          | protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest
-          | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IModelEvaluation,
-      protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModelEvaluation,
-      protosTypes.google.cloud.automl.v1.IGetModelEvaluationRequest | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IGetModelEvaluationRequest,
+      callback: Callback<
+          protos.google.cloud.automl.v1.IModelEvaluation,
+          protos.google.cloud.automl.v1.IGetModelEvaluationRequest|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Gets a model evaluation.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. Resource name for the model evaluation.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  getModelEvaluation(
+      request: protos.google.cloud.automl.v1.IGetModelEvaluationRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          protos.google.cloud.automl.v1.IModelEvaluation,
+          protos.google.cloud.automl.v1.IGetModelEvaluationRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.cloud.automl.v1.IModelEvaluation,
+          protos.google.cloud.automl.v1.IGetModelEvaluationRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.cloud.automl.v1.IModelEvaluation,
+        protos.google.cloud.automl.v1.IGetModelEvaluationRequest|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -907,88 +791,68 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.getModelEvaluation(request, options, callback);
+    return this.innerApiCalls.getModelEvaluation(request, options, callback);
   }
 
   createDataset(
-    request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IDataset,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.ICreateDatasetRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.cloud.automl.v1.IDataset, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   createDataset(
-    request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IDataset,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Creates a dataset.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. The resource name of the project to create the dataset for.
-   * @param {google.cloud.automl.v1.Dataset} request.dataset
-   *   Required. The dataset to create.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.ICreateDatasetRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.cloud.automl.v1.IDataset, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   createDataset(
-    request: protosTypes.google.cloud.automl.v1.ICreateDatasetRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.cloud.automl.v1.IDataset,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IDataset,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IDataset,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.ICreateDatasetRequest,
+      callback: Callback<
+          LROperation<protos.google.cloud.automl.v1.IDataset, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Creates a dataset.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The resource name of the project to create the dataset for.
+ * @param {google.cloud.automl.v1.Dataset} request.dataset
+ *   Required. The dataset to create.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  createDataset(
+      request: protos.google.cloud.automl.v1.ICreateDatasetRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.cloud.automl.v1.IDataset, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.cloud.automl.v1.IDataset, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.cloud.automl.v1.IDataset, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -997,89 +861,69 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     this.initialize();
-    return this._innerApiCalls.createDataset(request, options, callback);
+    return this.innerApiCalls.createDataset(request, options, callback);
   }
   deleteDataset(
-    request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IDeleteDatasetRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   deleteDataset(
-    request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Deletes a dataset and all of its contents.
-   * Returns empty response in the
-   * {@link google.longrunning.Operation.response|response} field when it completes,
-   * and `delete_details` in the
-   * {@link google.longrunning.Operation.metadata|metadata} field.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. The resource name of the dataset to delete.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IDeleteDatasetRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   deleteDataset(
-    request: protosTypes.google.cloud.automl.v1.IDeleteDatasetRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IDeleteDatasetRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Deletes a dataset and all of its contents.
+ * Returns empty response in the
+ * {@link google.longrunning.Operation.response|response} field when it completes,
+ * and `delete_details` in the
+ * {@link google.longrunning.Operation.metadata|metadata} field.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The resource name of the dataset to delete.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  deleteDataset(
+      request: protos.google.cloud.automl.v1.IDeleteDatasetRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1088,97 +932,77 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.deleteDataset(request, options, callback);
+    return this.innerApiCalls.deleteDataset(request, options, callback);
   }
   importData(
-    request: protosTypes.google.cloud.automl.v1.IImportDataRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IImportDataRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   importData(
-    request: protosTypes.google.cloud.automl.v1.IImportDataRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Imports data into a dataset.
-   * For Tables this method can only be called on an empty Dataset.
-   *
-   * For Tables:
-   * *   A
-   * {@link google.cloud.automl.v1.InputConfig.params|schema_inference_version}
-   *     parameter must be explicitly set.
-   * Returns an empty response in the
-   * {@link google.longrunning.Operation.response|response} field when it completes.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. Dataset name. Dataset must already exist. All imported
-   *   annotations and examples will be added.
-   * @param {google.cloud.automl.v1.InputConfig} request.inputConfig
-   *   Required. The desired input location and its domain specific semantics,
-   *   if any.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IImportDataRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   importData(
-    request: protosTypes.google.cloud.automl.v1.IImportDataRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IImportDataRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Imports data into a dataset.
+ * For Tables this method can only be called on an empty Dataset.
+ *
+ * For Tables:
+ * *   A
+ * {@link google.cloud.automl.v1.InputConfig.params|schema_inference_version}
+ *     parameter must be explicitly set.
+ * Returns an empty response in the
+ * {@link google.longrunning.Operation.response|response} field when it completes.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. Dataset name. Dataset must already exist. All imported
+ *   annotations and examples will be added.
+ * @param {google.cloud.automl.v1.InputConfig} request.inputConfig
+ *   Required. The desired input location and its domain specific semantics,
+ *   if any.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  importData(
+      request: protos.google.cloud.automl.v1.IImportDataRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1187,89 +1011,69 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.importData(request, options, callback);
+    return this.innerApiCalls.importData(request, options, callback);
   }
   exportData(
-    request: protosTypes.google.cloud.automl.v1.IExportDataRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IExportDataRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   exportData(
-    request: protosTypes.google.cloud.automl.v1.IExportDataRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Exports dataset's data to the provided output location.
-   * Returns an empty response in the
-   * {@link google.longrunning.Operation.response|response} field when it completes.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. The resource name of the dataset.
-   * @param {google.cloud.automl.v1.OutputConfig} request.outputConfig
-   *   Required. The desired output location.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IExportDataRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   exportData(
-    request: protosTypes.google.cloud.automl.v1.IExportDataRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IExportDataRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Exports dataset's data to the provided output location.
+ * Returns an empty response in the
+ * {@link google.longrunning.Operation.response|response} field when it completes.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The resource name of the dataset.
+ * @param {google.cloud.automl.v1.OutputConfig} request.outputConfig
+ *   Required. The desired output location.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  exportData(
+      request: protos.google.cloud.automl.v1.IExportDataRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1278,91 +1082,71 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.exportData(request, options, callback);
+    return this.innerApiCalls.exportData(request, options, callback);
   }
   createModel(
-    request: protosTypes.google.cloud.automl.v1.ICreateModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IModel,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.ICreateModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.cloud.automl.v1.IModel, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   createModel(
-    request: protosTypes.google.cloud.automl.v1.ICreateModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IModel,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Creates a model.
-   * Returns a Model in the {@link google.longrunning.Operation.response|response}
-   * field when it completes.
-   * When you create a model, several model evaluations are created for it:
-   * a global evaluation, and one evaluation for each annotation spec.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. Resource name of the parent project where the model is being created.
-   * @param {google.cloud.automl.v1.Model} request.model
-   *   Required. The model to create.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.ICreateModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.cloud.automl.v1.IModel, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   createModel(
-    request: protosTypes.google.cloud.automl.v1.ICreateModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.cloud.automl.v1.IModel,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IModel,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.cloud.automl.v1.IModel,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.ICreateModelRequest,
+      callback: Callback<
+          LROperation<protos.google.cloud.automl.v1.IModel, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Creates a model.
+ * Returns a Model in the {@link google.longrunning.Operation.response|response}
+ * field when it completes.
+ * When you create a model, several model evaluations are created for it:
+ * a global evaluation, and one evaluation for each annotation spec.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the parent project where the model is being created.
+ * @param {google.cloud.automl.v1.Model} request.model
+ *   Required. The model to create.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  createModel(
+      request: protos.google.cloud.automl.v1.ICreateModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.cloud.automl.v1.IModel, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.cloud.automl.v1.IModel, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.cloud.automl.v1.IModel, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1371,89 +1155,69 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     this.initialize();
-    return this._innerApiCalls.createModel(request, options, callback);
+    return this.innerApiCalls.createModel(request, options, callback);
   }
   deleteModel(
-    request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IDeleteModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   deleteModel(
-    request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Deletes a model.
-   * Returns `google.protobuf.Empty` in the
-   * {@link google.longrunning.Operation.response|response} field when it completes,
-   * and `delete_details` in the
-   * {@link google.longrunning.Operation.metadata|metadata} field.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. Resource name of the model being deleted.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IDeleteModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   deleteModel(
-    request: protosTypes.google.cloud.automl.v1.IDeleteModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IDeleteModelRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Deletes a model.
+ * Returns `google.protobuf.Empty` in the
+ * {@link google.longrunning.Operation.response|response} field when it completes,
+ * and `delete_details` in the
+ * {@link google.longrunning.Operation.metadata|metadata} field.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. Resource name of the model being deleted.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  deleteModel(
+      request: protos.google.cloud.automl.v1.IDeleteModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1462,100 +1226,80 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.deleteModel(request, options, callback);
+    return this.innerApiCalls.deleteModel(request, options, callback);
   }
   deployModel(
-    request: protosTypes.google.cloud.automl.v1.IDeployModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IDeployModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   deployModel(
-    request: protosTypes.google.cloud.automl.v1.IDeployModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Deploys a model. If a model is already deployed, deploying it with the
-   * same parameters has no effect. Deploying with different parametrs
-   * (as e.g. changing
-   *
-   * {@link google.cloud.automl.v1p1beta.ImageObjectDetectionModelDeploymentMetadata.node_number|node_number})
-   *  will reset the deployment state without pausing the model's availability.
-   *
-   * Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
-   * deployment automatically.
-   *
-   * Returns an empty response in the
-   * {@link google.longrunning.Operation.response|response} field when it completes.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {google.cloud.automl.v1.ImageObjectDetectionModelDeploymentMetadata} request.imageObjectDetectionModelDeploymentMetadata
-   *   Model deployment metadata specific to Image Object Detection.
-   * @param {google.cloud.automl.v1.ImageClassificationModelDeploymentMetadata} request.imageClassificationModelDeploymentMetadata
-   *   Model deployment metadata specific to Image Classification.
-   * @param {string} request.name
-   *   Required. Resource name of the model to deploy.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IDeployModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   deployModel(
-    request: protosTypes.google.cloud.automl.v1.IDeployModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IDeployModelRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Deploys a model. If a model is already deployed, deploying it with the
+ * same parameters has no effect. Deploying with different parametrs
+ * (as e.g. changing
+ *
+ * {@link google.cloud.automl.v1p1beta.ImageObjectDetectionModelDeploymentMetadata.node_number|node_number})
+ *  will reset the deployment state without pausing the model's availability.
+ *
+ * Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
+ * deployment automatically.
+ *
+ * Returns an empty response in the
+ * {@link google.longrunning.Operation.response|response} field when it completes.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {google.cloud.automl.v1.ImageObjectDetectionModelDeploymentMetadata} request.imageObjectDetectionModelDeploymentMetadata
+ *   Model deployment metadata specific to Image Object Detection.
+ * @param {google.cloud.automl.v1.ImageClassificationModelDeploymentMetadata} request.imageClassificationModelDeploymentMetadata
+ *   Model deployment metadata specific to Image Classification.
+ * @param {string} request.name
+ *   Required. Resource name of the model to deploy.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  deployModel(
+      request: protos.google.cloud.automl.v1.IDeployModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1564,91 +1308,71 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.deployModel(request, options, callback);
+    return this.innerApiCalls.deployModel(request, options, callback);
   }
   undeployModel(
-    request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IUndeployModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   undeployModel(
-    request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Undeploys a model. If the model is not deployed this method has no effect.
-   *
-   * Only applicable for Text Classification, Image Object Detection and Tables;
-   * all other domains manage deployment automatically.
-   *
-   * Returns an empty response in the
-   * {@link google.longrunning.Operation.response|response} field when it completes.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. Resource name of the model to undeploy.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IUndeployModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   undeployModel(
-    request: protosTypes.google.cloud.automl.v1.IUndeployModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IUndeployModelRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Undeploys a model. If the model is not deployed this method has no effect.
+ *
+ * Only applicable for Text Classification, Image Object Detection and Tables;
+ * all other domains manage deployment automatically.
+ *
+ * Returns an empty response in the
+ * {@link google.longrunning.Operation.response|response} field when it completes.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. Resource name of the model to undeploy.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  undeployModel(
+      request: protos.google.cloud.automl.v1.IUndeployModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1657,93 +1381,73 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.undeployModel(request, options, callback);
+    return this.innerApiCalls.undeployModel(request, options, callback);
   }
   exportModel(
-    request: protosTypes.google.cloud.automl.v1.IExportModelRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IExportModelRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
   exportModel(
-    request: protosTypes.google.cloud.automl.v1.IExportModelRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): void;
-  /**
-   * Exports a trained, "export-able", model to a user specified Google Cloud
-   * Storage location. A model is considered export-able if and only if it has
-   * an export format defined for it in
-   * {@link google.cloud.automl.v1.ModelExportOutputConfig|ModelExportOutputConfig}.
-   *
-   * Returns an empty response in the
-   * {@link google.longrunning.Operation.response|response} field when it completes.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.name
-   *   Required. The resource name of the model to export.
-   * @param {google.cloud.automl.v1.ModelExportOutputConfig} request.outputConfig
-   *   Required. The desired output location and configuration.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IExportModelRequest,
+      options: gax.CallOptions,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
   exportModel(
-    request: protosTypes.google.cloud.automl.v1.IExportModelRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          LROperation<
-            protosTypes.google.protobuf.IEmpty,
-            protosTypes.google.cloud.automl.v1.IOperationMetadata
-          >,
-          protosTypes.google.longrunning.IOperation | undefined,
-          {} | undefined
-        >,
-    callback?: Callback<
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    >
-  ): Promise<
-    [
-      LROperation<
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.cloud.automl.v1.IOperationMetadata
-      >,
-      protosTypes.google.longrunning.IOperation | undefined,
-      {} | undefined
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IExportModelRequest,
+      callback: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+/**
+ * Exports a trained, "export-able", model to a user specified Google Cloud
+ * Storage location. A model is considered export-able if and only if it has
+ * an export format defined for it in
+ * {@link google.cloud.automl.v1.ModelExportOutputConfig|ModelExportOutputConfig}.
+ *
+ * Returns an empty response in the
+ * {@link google.longrunning.Operation.response|response} field when it completes.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The resource name of the model to export.
+ * @param {google.cloud.automl.v1.ModelExportOutputConfig} request.outputConfig
+ *   Required. The desired output location and configuration.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  exportModel(
+      request: protos.google.cloud.automl.v1.IExportModelRequest,
+      optionsOrCallback?: gax.CallOptions|Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.protobuf.IEmpty, protos.google.cloud.automl.v1.IOperationMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1752,98 +1456,95 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      name: request.name || '',
+      'name': request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.exportModel(request, options, callback);
+    return this.innerApiCalls.exportModel(request, options, callback);
   }
   listDatasets(
-    request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IDataset[],
-      protosTypes.google.cloud.automl.v1.IListDatasetsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListDatasetsResponse
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IListDatasetsRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IDataset[],
+        protos.google.cloud.automl.v1.IListDatasetsRequest|null,
+        protos.google.cloud.automl.v1.IListDatasetsResponse
+      ]>;
   listDatasets(
-    request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IDataset[],
-      protosTypes.google.cloud.automl.v1.IListDatasetsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListDatasetsResponse
-    >
-  ): void;
-  /**
-   * Lists datasets in a project.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. The resource name of the project from which to list datasets.
-   * @param {string} request.filter
-   *   An expression for filtering the results of the request.
-   *
-   *     * `dataset_metadata` - for existence of the case (e.g.
-   *               image_classification_dataset_metadata:*). Some examples of using the filter are:
-   *
-   *     * `translation_dataset_metadata:*` --> The dataset has
-   *                                            translation_dataset_metadata.
-   * @param {number} request.pageSize
-   *   Requested page size. Server may return fewer results than requested.
-   *   If unspecified, server will pick a default size.
-   * @param {string} request.pageToken
-   *   A token identifying a page of results for the server to return
-   *   Typically obtained via
-   *   {@link google.cloud.automl.v1.ListDatasetsResponse.next_page_token|ListDatasetsResponse.next_page_token} of the previous
-   *   {@link google.cloud.automl.v1.AutoMl.ListDatasets|AutoMl.ListDatasets} call.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is Array of [Dataset]{@link google.cloud.automl.v1.Dataset}.
-   *   The client library support auto-pagination by default: it will call the API as many
-   *   times as needed and will merge results from all the pages into this array.
-   *
-   *   When autoPaginate: false is specified through options, the array has three elements.
-   *   The first element is Array of [Dataset]{@link google.cloud.automl.v1.Dataset} that corresponds to
-   *   the one page received from the API server.
-   *   If the second element is not null it contains the request object of type [ListDatasetsRequest]{@link google.cloud.automl.v1.ListDatasetsRequest}
-   *   that can be used to obtain the next page of the results.
-   *   If it is null, the next page does not exist.
-   *   The third element contains the raw response received from the API server. Its type is
-   *   [ListDatasetsResponse]{@link google.cloud.automl.v1.ListDatasetsResponse}.
-   *
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IListDatasetsRequest,
+      options: gax.CallOptions,
+      callback: PaginationCallback<
+          protos.google.cloud.automl.v1.IListDatasetsRequest,
+          protos.google.cloud.automl.v1.IListDatasetsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IDataset>): void;
   listDatasets(
-    request: protosTypes.google.cloud.automl.v1.IListDatasetsRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IDataset[],
-          protosTypes.google.cloud.automl.v1.IListDatasetsRequest | null,
-          protosTypes.google.cloud.automl.v1.IListDatasetsResponse
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IDataset[],
-      protosTypes.google.cloud.automl.v1.IListDatasetsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListDatasetsResponse
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IDataset[],
-      protosTypes.google.cloud.automl.v1.IListDatasetsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListDatasetsResponse
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IListDatasetsRequest,
+      callback: PaginationCallback<
+          protos.google.cloud.automl.v1.IListDatasetsRequest,
+          protos.google.cloud.automl.v1.IListDatasetsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IDataset>): void;
+/**
+ * Lists datasets in a project.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The resource name of the project from which to list datasets.
+ * @param {string} request.filter
+ *   An expression for filtering the results of the request.
+ *
+ *     * `dataset_metadata` - for existence of the case (e.g.
+ *               image_classification_dataset_metadata:*). Some examples of using the filter are:
+ *
+ *     * `translation_dataset_metadata:*` --> The dataset has
+ *                                            translation_dataset_metadata.
+ * @param {number} request.pageSize
+ *   Requested page size. Server may return fewer results than requested.
+ *   If unspecified, server will pick a default size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListDatasetsResponse.next_page_token|ListDatasetsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListDatasets|AutoMl.ListDatasets} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is Array of [Dataset]{@link google.cloud.automl.v1.Dataset}.
+ *   The client library support auto-pagination by default: it will call the API as many
+ *   times as needed and will merge results from all the pages into this array.
+ *
+ *   When autoPaginate: false is specified through options, the array has three elements.
+ *   The first element is Array of [Dataset]{@link google.cloud.automl.v1.Dataset} that corresponds to
+ *   the one page received from the API server.
+ *   If the second element is not null it contains the request object of type [ListDatasetsRequest]{@link google.cloud.automl.v1.ListDatasetsRequest}
+ *   that can be used to obtain the next page of the results.
+ *   If it is null, the next page does not exist.
+ *   The third element contains the raw response received from the API server. Its type is
+ *   [ListDatasetsResponse]{@link google.cloud.automl.v1.ListDatasetsResponse}.
+ *
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  listDatasets(
+      request: protos.google.cloud.automl.v1.IListDatasetsRequest,
+      optionsOrCallback?: gax.CallOptions|PaginationCallback<
+          protos.google.cloud.automl.v1.IListDatasetsRequest,
+          protos.google.cloud.automl.v1.IListDatasetsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IDataset>,
+      callback?: PaginationCallback<
+          protos.google.cloud.automl.v1.IListDatasetsRequest,
+          protos.google.cloud.automl.v1.IListDatasetsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IDataset>):
+      Promise<[
+        protos.google.cloud.automl.v1.IDataset[],
+        protos.google.cloud.automl.v1.IListDatasetsRequest|null,
+        protos.google.cloud.automl.v1.IListDatasetsResponse
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1852,54 +1553,54 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     this.initialize();
-    return this._innerApiCalls.listDatasets(request, options, callback);
+    return this.innerApiCalls.listDatasets(request, options, callback);
   }
 
-  /**
-   * Equivalent to {@link listDatasets}, but returns a NodeJS Stream object.
-   *
-   * This fetches the paged responses for {@link listDatasets} continuously
-   * and invokes the callback registered for 'data' event for each element in the
-   * responses.
-   *
-   * The returned object has 'end' method when no more elements are required.
-   *
-   * autoPaginate option will be ignored.
-   *
-   * @see {@link https://nodejs.org/api/stream.html}
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. The resource name of the project from which to list datasets.
-   * @param {string} request.filter
-   *   An expression for filtering the results of the request.
-   *
-   *     * `dataset_metadata` - for existence of the case (e.g.
-   *               image_classification_dataset_metadata:*). Some examples of using the filter are:
-   *
-   *     * `translation_dataset_metadata:*` --> The dataset has
-   *                                            translation_dataset_metadata.
-   * @param {number} request.pageSize
-   *   Requested page size. Server may return fewer results than requested.
-   *   If unspecified, server will pick a default size.
-   * @param {string} request.pageToken
-   *   A token identifying a page of results for the server to return
-   *   Typically obtained via
-   *   {@link google.cloud.automl.v1.ListDatasetsResponse.next_page_token|ListDatasetsResponse.next_page_token} of the previous
-   *   {@link google.cloud.automl.v1.AutoMl.ListDatasets|AutoMl.ListDatasets} call.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Stream}
-   *   An object stream which emits an object representing [Dataset]{@link google.cloud.automl.v1.Dataset} on 'data' event.
-   */
+/**
+ * Equivalent to {@link listDatasets}, but returns a NodeJS Stream object.
+ *
+ * This fetches the paged responses for {@link listDatasets} continuously
+ * and invokes the callback registered for 'data' event for each element in the
+ * responses.
+ *
+ * The returned object has 'end' method when no more elements are required.
+ *
+ * autoPaginate option will be ignored.
+ *
+ * @see {@link https://nodejs.org/api/stream.html}
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The resource name of the project from which to list datasets.
+ * @param {string} request.filter
+ *   An expression for filtering the results of the request.
+ *
+ *     * `dataset_metadata` - for existence of the case (e.g.
+ *               image_classification_dataset_metadata:*). Some examples of using the filter are:
+ *
+ *     * `translation_dataset_metadata:*` --> The dataset has
+ *                                            translation_dataset_metadata.
+ * @param {number} request.pageSize
+ *   Requested page size. Server may return fewer results than requested.
+ *   If unspecified, server will pick a default size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListDatasetsResponse.next_page_token|ListDatasetsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListDatasets|AutoMl.ListDatasets} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Stream}
+ *   An object stream which emits an object representing [Dataset]{@link google.cloud.automl.v1.Dataset} on 'data' event.
+ */
   listDatasetsStream(
-    request?: protosTypes.google.cloud.automl.v1.IListDatasetsRequest,
-    options?: gax.CallOptions
-  ): Transform {
+      request?: protos.google.cloud.automl.v1.IListDatasetsRequest,
+      options?: gax.CallOptions):
+    Transform{
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1907,104 +1608,154 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     const callSettings = new gax.CallSettings(options);
     this.initialize();
-    return this._descriptors.page.listDatasets.createStream(
-      this._innerApiCalls.listDatasets as gax.GaxCall,
+    return this.descriptors.page.listDatasets.createStream(
+      this.innerApiCalls.listDatasets as gax.GaxCall,
       request,
       callSettings
     );
   }
+
+/**
+ * Equivalent to {@link listDatasets}, but returns an iterable object.
+ *
+ * for-await-of syntax is used with the iterable to recursively get response element on-demand.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The resource name of the project from which to list datasets.
+ * @param {string} request.filter
+ *   An expression for filtering the results of the request.
+ *
+ *     * `dataset_metadata` - for existence of the case (e.g.
+ *               image_classification_dataset_metadata:*). Some examples of using the filter are:
+ *
+ *     * `translation_dataset_metadata:*` --> The dataset has
+ *                                            translation_dataset_metadata.
+ * @param {number} request.pageSize
+ *   Requested page size. Server may return fewer results than requested.
+ *   If unspecified, server will pick a default size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListDatasetsResponse.next_page_token|ListDatasetsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListDatasets|AutoMl.ListDatasets} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Object}
+ *   An iterable Object that conforms to @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols.
+ */
+  listDatasetsAsync(
+      request?: protos.google.cloud.automl.v1.IListDatasetsRequest,
+      options?: gax.CallOptions):
+    AsyncIterable<protos.google.cloud.automl.v1.IDataset>{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      'parent': request.parent || '',
+    });
+    options = options || {};
+    const callSettings = new gax.CallSettings(options);
+    this.initialize();
+    return this.descriptors.page.listDatasets.asyncIterate(
+      this.innerApiCalls['listDatasets'] as GaxCall,
+      request as unknown as RequestType,
+      callSettings
+    ) as AsyncIterable<protos.google.cloud.automl.v1.IDataset>;
+  }
   listModels(
-    request: protosTypes.google.cloud.automl.v1.IListModelsRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModel[],
-      protosTypes.google.cloud.automl.v1.IListModelsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelsResponse
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IListModelsRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IModel[],
+        protos.google.cloud.automl.v1.IListModelsRequest|null,
+        protos.google.cloud.automl.v1.IListModelsResponse
+      ]>;
   listModels(
-    request: protosTypes.google.cloud.automl.v1.IListModelsRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IModel[],
-      protosTypes.google.cloud.automl.v1.IListModelsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelsResponse
-    >
-  ): void;
-  /**
-   * Lists models.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. Resource name of the project, from which to list the models.
-   * @param {string} request.filter
-   *   An expression for filtering the results of the request.
-   *
-   *     * `model_metadata` - for existence of the case (e.g.
-   *               video_classification_model_metadata:*).
-   *     * `dataset_id` - for = or !=. Some examples of using the filter are:
-   *
-   *     * `image_classification_model_metadata:*` --> The model has
-   *                                          image_classification_model_metadata.
-   *     * `dataset_id=5` --> The model was created from a dataset with ID 5.
-   * @param {number} request.pageSize
-   *   Requested page size.
-   * @param {string} request.pageToken
-   *   A token identifying a page of results for the server to return
-   *   Typically obtained via
-   *   {@link google.cloud.automl.v1.ListModelsResponse.next_page_token|ListModelsResponse.next_page_token} of the previous
-   *   {@link google.cloud.automl.v1.AutoMl.ListModels|AutoMl.ListModels} call.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is Array of [Model]{@link google.cloud.automl.v1.Model}.
-   *   The client library support auto-pagination by default: it will call the API as many
-   *   times as needed and will merge results from all the pages into this array.
-   *
-   *   When autoPaginate: false is specified through options, the array has three elements.
-   *   The first element is Array of [Model]{@link google.cloud.automl.v1.Model} that corresponds to
-   *   the one page received from the API server.
-   *   If the second element is not null it contains the request object of type [ListModelsRequest]{@link google.cloud.automl.v1.ListModelsRequest}
-   *   that can be used to obtain the next page of the results.
-   *   If it is null, the next page does not exist.
-   *   The third element contains the raw response received from the API server. Its type is
-   *   [ListModelsResponse]{@link google.cloud.automl.v1.ListModelsResponse}.
-   *
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IListModelsRequest,
+      options: gax.CallOptions,
+      callback: PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelsRequest,
+          protos.google.cloud.automl.v1.IListModelsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModel>): void;
   listModels(
-    request: protosTypes.google.cloud.automl.v1.IListModelsRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IModel[],
-          protosTypes.google.cloud.automl.v1.IListModelsRequest | null,
-          protosTypes.google.cloud.automl.v1.IListModelsResponse
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IModel[],
-      protosTypes.google.cloud.automl.v1.IListModelsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelsResponse
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModel[],
-      protosTypes.google.cloud.automl.v1.IListModelsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelsResponse
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IListModelsRequest,
+      callback: PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelsRequest,
+          protos.google.cloud.automl.v1.IListModelsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModel>): void;
+/**
+ * Lists models.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the project, from which to list the models.
+ * @param {string} request.filter
+ *   An expression for filtering the results of the request.
+ *
+ *     * `model_metadata` - for existence of the case (e.g.
+ *               video_classification_model_metadata:*).
+ *     * `dataset_id` - for = or !=. Some examples of using the filter are:
+ *
+ *     * `image_classification_model_metadata:*` --> The model has
+ *                                          image_classification_model_metadata.
+ *     * `dataset_id=5` --> The model was created from a dataset with ID 5.
+ * @param {number} request.pageSize
+ *   Requested page size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListModelsResponse.next_page_token|ListModelsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListModels|AutoMl.ListModels} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is Array of [Model]{@link google.cloud.automl.v1.Model}.
+ *   The client library support auto-pagination by default: it will call the API as many
+ *   times as needed and will merge results from all the pages into this array.
+ *
+ *   When autoPaginate: false is specified through options, the array has three elements.
+ *   The first element is Array of [Model]{@link google.cloud.automl.v1.Model} that corresponds to
+ *   the one page received from the API server.
+ *   If the second element is not null it contains the request object of type [ListModelsRequest]{@link google.cloud.automl.v1.ListModelsRequest}
+ *   that can be used to obtain the next page of the results.
+ *   If it is null, the next page does not exist.
+ *   The third element contains the raw response received from the API server. Its type is
+ *   [ListModelsResponse]{@link google.cloud.automl.v1.ListModelsResponse}.
+ *
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  listModels(
+      request: protos.google.cloud.automl.v1.IListModelsRequest,
+      optionsOrCallback?: gax.CallOptions|PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelsRequest,
+          protos.google.cloud.automl.v1.IListModelsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModel>,
+      callback?: PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelsRequest,
+          protos.google.cloud.automl.v1.IListModelsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModel>):
+      Promise<[
+        protos.google.cloud.automl.v1.IModel[],
+        protos.google.cloud.automl.v1.IListModelsRequest|null,
+        protos.google.cloud.automl.v1.IListModelsResponse
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -2013,55 +1764,55 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     this.initialize();
-    return this._innerApiCalls.listModels(request, options, callback);
+    return this.innerApiCalls.listModels(request, options, callback);
   }
 
-  /**
-   * Equivalent to {@link listModels}, but returns a NodeJS Stream object.
-   *
-   * This fetches the paged responses for {@link listModels} continuously
-   * and invokes the callback registered for 'data' event for each element in the
-   * responses.
-   *
-   * The returned object has 'end' method when no more elements are required.
-   *
-   * autoPaginate option will be ignored.
-   *
-   * @see {@link https://nodejs.org/api/stream.html}
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. Resource name of the project, from which to list the models.
-   * @param {string} request.filter
-   *   An expression for filtering the results of the request.
-   *
-   *     * `model_metadata` - for existence of the case (e.g.
-   *               video_classification_model_metadata:*).
-   *     * `dataset_id` - for = or !=. Some examples of using the filter are:
-   *
-   *     * `image_classification_model_metadata:*` --> The model has
-   *                                          image_classification_model_metadata.
-   *     * `dataset_id=5` --> The model was created from a dataset with ID 5.
-   * @param {number} request.pageSize
-   *   Requested page size.
-   * @param {string} request.pageToken
-   *   A token identifying a page of results for the server to return
-   *   Typically obtained via
-   *   {@link google.cloud.automl.v1.ListModelsResponse.next_page_token|ListModelsResponse.next_page_token} of the previous
-   *   {@link google.cloud.automl.v1.AutoMl.ListModels|AutoMl.ListModels} call.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Stream}
-   *   An object stream which emits an object representing [Model]{@link google.cloud.automl.v1.Model} on 'data' event.
-   */
+/**
+ * Equivalent to {@link listModels}, but returns a NodeJS Stream object.
+ *
+ * This fetches the paged responses for {@link listModels} continuously
+ * and invokes the callback registered for 'data' event for each element in the
+ * responses.
+ *
+ * The returned object has 'end' method when no more elements are required.
+ *
+ * autoPaginate option will be ignored.
+ *
+ * @see {@link https://nodejs.org/api/stream.html}
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the project, from which to list the models.
+ * @param {string} request.filter
+ *   An expression for filtering the results of the request.
+ *
+ *     * `model_metadata` - for existence of the case (e.g.
+ *               video_classification_model_metadata:*).
+ *     * `dataset_id` - for = or !=. Some examples of using the filter are:
+ *
+ *     * `image_classification_model_metadata:*` --> The model has
+ *                                          image_classification_model_metadata.
+ *     * `dataset_id=5` --> The model was created from a dataset with ID 5.
+ * @param {number} request.pageSize
+ *   Requested page size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListModelsResponse.next_page_token|ListModelsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListModels|AutoMl.ListModels} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Stream}
+ *   An object stream which emits an object representing [Model]{@link google.cloud.automl.v1.Model} on 'data' event.
+ */
   listModelsStream(
-    request?: protosTypes.google.cloud.automl.v1.IListModelsRequest,
-    options?: gax.CallOptions
-  ): Transform {
+      request?: protos.google.cloud.automl.v1.IListModelsRequest,
+      options?: gax.CallOptions):
+    Transform{
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -2069,108 +1820,159 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     const callSettings = new gax.CallSettings(options);
     this.initialize();
-    return this._descriptors.page.listModels.createStream(
-      this._innerApiCalls.listModels as gax.GaxCall,
+    return this.descriptors.page.listModels.createStream(
+      this.innerApiCalls.listModels as gax.GaxCall,
       request,
       callSettings
     );
   }
+
+/**
+ * Equivalent to {@link listModels}, but returns an iterable object.
+ *
+ * for-await-of syntax is used with the iterable to recursively get response element on-demand.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the project, from which to list the models.
+ * @param {string} request.filter
+ *   An expression for filtering the results of the request.
+ *
+ *     * `model_metadata` - for existence of the case (e.g.
+ *               video_classification_model_metadata:*).
+ *     * `dataset_id` - for = or !=. Some examples of using the filter are:
+ *
+ *     * `image_classification_model_metadata:*` --> The model has
+ *                                          image_classification_model_metadata.
+ *     * `dataset_id=5` --> The model was created from a dataset with ID 5.
+ * @param {number} request.pageSize
+ *   Requested page size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListModelsResponse.next_page_token|ListModelsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListModels|AutoMl.ListModels} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Object}
+ *   An iterable Object that conforms to @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols.
+ */
+  listModelsAsync(
+      request?: protos.google.cloud.automl.v1.IListModelsRequest,
+      options?: gax.CallOptions):
+    AsyncIterable<protos.google.cloud.automl.v1.IModel>{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      'parent': request.parent || '',
+    });
+    options = options || {};
+    const callSettings = new gax.CallSettings(options);
+    this.initialize();
+    return this.descriptors.page.listModels.asyncIterate(
+      this.innerApiCalls['listModels'] as GaxCall,
+      request as unknown as RequestType,
+      callSettings
+    ) as AsyncIterable<protos.google.cloud.automl.v1.IModel>;
+  }
   listModelEvaluations(
-    request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest,
-    options?: gax.CallOptions
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModelEvaluation[],
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsResponse
-    ]
-  >;
+      request: protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+      options?: gax.CallOptions):
+      Promise<[
+        protos.google.cloud.automl.v1.IModelEvaluation[],
+        protos.google.cloud.automl.v1.IListModelEvaluationsRequest|null,
+        protos.google.cloud.automl.v1.IListModelEvaluationsResponse
+      ]>;
   listModelEvaluations(
-    request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest,
-    options: gax.CallOptions,
-    callback: Callback<
-      protosTypes.google.cloud.automl.v1.IModelEvaluation[],
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsResponse
-    >
-  ): void;
-  /**
-   * Lists model evaluations.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. Resource name of the model to list the model evaluations for.
-   *   If modelId is set as "-", this will list model evaluations from across all
-   *   models of the parent location.
-   * @param {string} request.filter
-   *   Required. An expression for filtering the results of the request.
-   *
-   *     * `annotation_spec_id` - for =, !=  or existence. See example below for
-   *                            the last.
-   *
-   *   Some examples of using the filter are:
-   *
-   *     * `annotation_spec_id!=4` --> The model evaluation was done for
-   *                               annotation spec with ID different than 4.
-   *     * `NOT annotation_spec_id:*` --> The model evaluation was done for
-   *                                  aggregate of all annotation specs.
-   * @param {number} request.pageSize
-   *   Requested page size.
-   * @param {string} request.pageToken
-   *   A token identifying a page of results for the server to return.
-   *   Typically obtained via
-   *   {@link google.cloud.automl.v1.ListModelEvaluationsResponse.next_page_token|ListModelEvaluationsResponse.next_page_token} of the previous
-   *   {@link google.cloud.automl.v1.AutoMl.ListModelEvaluations|AutoMl.ListModelEvaluations} call.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is Array of [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation}.
-   *   The client library support auto-pagination by default: it will call the API as many
-   *   times as needed and will merge results from all the pages into this array.
-   *
-   *   When autoPaginate: false is specified through options, the array has three elements.
-   *   The first element is Array of [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation} that corresponds to
-   *   the one page received from the API server.
-   *   If the second element is not null it contains the request object of type [ListModelEvaluationsRequest]{@link google.cloud.automl.v1.ListModelEvaluationsRequest}
-   *   that can be used to obtain the next page of the results.
-   *   If it is null, the next page does not exist.
-   *   The third element contains the raw response received from the API server. Its type is
-   *   [ListModelEvaluationsResponse]{@link google.cloud.automl.v1.ListModelEvaluationsResponse}.
-   *
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   */
+      request: protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+      options: gax.CallOptions,
+      callback: PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+          protos.google.cloud.automl.v1.IListModelEvaluationsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModelEvaluation>): void;
   listModelEvaluations(
-    request: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest,
-    optionsOrCallback?:
-      | gax.CallOptions
-      | Callback<
-          protosTypes.google.cloud.automl.v1.IModelEvaluation[],
-          protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-          protosTypes.google.cloud.automl.v1.IListModelEvaluationsResponse
-        >,
-    callback?: Callback<
-      protosTypes.google.cloud.automl.v1.IModelEvaluation[],
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsResponse
-    >
-  ): Promise<
-    [
-      protosTypes.google.cloud.automl.v1.IModelEvaluation[],
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-      protosTypes.google.cloud.automl.v1.IListModelEvaluationsResponse
-    ]
-  > | void {
+      request: protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+      callback: PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+          protos.google.cloud.automl.v1.IListModelEvaluationsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModelEvaluation>): void;
+/**
+ * Lists model evaluations.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the model to list the model evaluations for.
+ *   If modelId is set as "-", this will list model evaluations from across all
+ *   models of the parent location.
+ * @param {string} request.filter
+ *   Required. An expression for filtering the results of the request.
+ *
+ *     * `annotation_spec_id` - for =, !=  or existence. See example below for
+ *                            the last.
+ *
+ *   Some examples of using the filter are:
+ *
+ *     * `annotation_spec_id!=4` --> The model evaluation was done for
+ *                               annotation spec with ID different than 4.
+ *     * `NOT annotation_spec_id:*` --> The model evaluation was done for
+ *                                  aggregate of all annotation specs.
+ * @param {number} request.pageSize
+ *   Requested page size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return.
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListModelEvaluationsResponse.next_page_token|ListModelEvaluationsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListModelEvaluations|AutoMl.ListModelEvaluations} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is Array of [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation}.
+ *   The client library support auto-pagination by default: it will call the API as many
+ *   times as needed and will merge results from all the pages into this array.
+ *
+ *   When autoPaginate: false is specified through options, the array has three elements.
+ *   The first element is Array of [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation} that corresponds to
+ *   the one page received from the API server.
+ *   If the second element is not null it contains the request object of type [ListModelEvaluationsRequest]{@link google.cloud.automl.v1.ListModelEvaluationsRequest}
+ *   that can be used to obtain the next page of the results.
+ *   If it is null, the next page does not exist.
+ *   The third element contains the raw response received from the API server. Its type is
+ *   [ListModelEvaluationsResponse]{@link google.cloud.automl.v1.ListModelEvaluationsResponse}.
+ *
+ *   The promise has a method named "cancel" which cancels the ongoing API call.
+ */
+  listModelEvaluations(
+      request: protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+      optionsOrCallback?: gax.CallOptions|PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+          protos.google.cloud.automl.v1.IListModelEvaluationsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModelEvaluation>,
+      callback?: PaginationCallback<
+          protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+          protos.google.cloud.automl.v1.IListModelEvaluationsResponse|null|undefined,
+          protos.google.cloud.automl.v1.IModelEvaluation>):
+      Promise<[
+        protos.google.cloud.automl.v1.IModelEvaluation[],
+        protos.google.cloud.automl.v1.IListModelEvaluationsRequest|null,
+        protos.google.cloud.automl.v1.IListModelEvaluationsResponse
+      ]>|void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    } else {
+    }
+    else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -2179,59 +1981,59 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     this.initialize();
-    return this._innerApiCalls.listModelEvaluations(request, options, callback);
+    return this.innerApiCalls.listModelEvaluations(request, options, callback);
   }
 
-  /**
-   * Equivalent to {@link listModelEvaluations}, but returns a NodeJS Stream object.
-   *
-   * This fetches the paged responses for {@link listModelEvaluations} continuously
-   * and invokes the callback registered for 'data' event for each element in the
-   * responses.
-   *
-   * The returned object has 'end' method when no more elements are required.
-   *
-   * autoPaginate option will be ignored.
-   *
-   * @see {@link https://nodejs.org/api/stream.html}
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. Resource name of the model to list the model evaluations for.
-   *   If modelId is set as "-", this will list model evaluations from across all
-   *   models of the parent location.
-   * @param {string} request.filter
-   *   Required. An expression for filtering the results of the request.
-   *
-   *     * `annotation_spec_id` - for =, !=  or existence. See example below for
-   *                            the last.
-   *
-   *   Some examples of using the filter are:
-   *
-   *     * `annotation_spec_id!=4` --> The model evaluation was done for
-   *                               annotation spec with ID different than 4.
-   *     * `NOT annotation_spec_id:*` --> The model evaluation was done for
-   *                                  aggregate of all annotation specs.
-   * @param {number} request.pageSize
-   *   Requested page size.
-   * @param {string} request.pageToken
-   *   A token identifying a page of results for the server to return.
-   *   Typically obtained via
-   *   {@link google.cloud.automl.v1.ListModelEvaluationsResponse.next_page_token|ListModelEvaluationsResponse.next_page_token} of the previous
-   *   {@link google.cloud.automl.v1.AutoMl.ListModelEvaluations|AutoMl.ListModelEvaluations} call.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Stream}
-   *   An object stream which emits an object representing [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation} on 'data' event.
-   */
+/**
+ * Equivalent to {@link listModelEvaluations}, but returns a NodeJS Stream object.
+ *
+ * This fetches the paged responses for {@link listModelEvaluations} continuously
+ * and invokes the callback registered for 'data' event for each element in the
+ * responses.
+ *
+ * The returned object has 'end' method when no more elements are required.
+ *
+ * autoPaginate option will be ignored.
+ *
+ * @see {@link https://nodejs.org/api/stream.html}
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the model to list the model evaluations for.
+ *   If modelId is set as "-", this will list model evaluations from across all
+ *   models of the parent location.
+ * @param {string} request.filter
+ *   Required. An expression for filtering the results of the request.
+ *
+ *     * `annotation_spec_id` - for =, !=  or existence. See example below for
+ *                            the last.
+ *
+ *   Some examples of using the filter are:
+ *
+ *     * `annotation_spec_id!=4` --> The model evaluation was done for
+ *                               annotation spec with ID different than 4.
+ *     * `NOT annotation_spec_id:*` --> The model evaluation was done for
+ *                                  aggregate of all annotation specs.
+ * @param {number} request.pageSize
+ *   Requested page size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return.
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListModelEvaluationsResponse.next_page_token|ListModelEvaluationsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListModelEvaluations|AutoMl.ListModelEvaluations} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Stream}
+ *   An object stream which emits an object representing [ModelEvaluation]{@link google.cloud.automl.v1.ModelEvaluation} on 'data' event.
+ */
   listModelEvaluationsStream(
-    request?: protosTypes.google.cloud.automl.v1.IListModelEvaluationsRequest,
-    options?: gax.CallOptions
-  ): Transform {
+      request?: protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+      options?: gax.CallOptions):
+    Transform{
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -2239,15 +2041,73 @@ export class AutoMlClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
+      'parent': request.parent || '',
     });
     const callSettings = new gax.CallSettings(options);
     this.initialize();
-    return this._descriptors.page.listModelEvaluations.createStream(
-      this._innerApiCalls.listModelEvaluations as gax.GaxCall,
+    return this.descriptors.page.listModelEvaluations.createStream(
+      this.innerApiCalls.listModelEvaluations as gax.GaxCall,
       request,
       callSettings
     );
+  }
+
+/**
+ * Equivalent to {@link listModelEvaluations}, but returns an iterable object.
+ *
+ * for-await-of syntax is used with the iterable to recursively get response element on-demand.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. Resource name of the model to list the model evaluations for.
+ *   If modelId is set as "-", this will list model evaluations from across all
+ *   models of the parent location.
+ * @param {string} request.filter
+ *   Required. An expression for filtering the results of the request.
+ *
+ *     * `annotation_spec_id` - for =, !=  or existence. See example below for
+ *                            the last.
+ *
+ *   Some examples of using the filter are:
+ *
+ *     * `annotation_spec_id!=4` --> The model evaluation was done for
+ *                               annotation spec with ID different than 4.
+ *     * `NOT annotation_spec_id:*` --> The model evaluation was done for
+ *                                  aggregate of all annotation specs.
+ * @param {number} request.pageSize
+ *   Requested page size.
+ * @param {string} request.pageToken
+ *   A token identifying a page of results for the server to return.
+ *   Typically obtained via
+ *   {@link google.cloud.automl.v1.ListModelEvaluationsResponse.next_page_token|ListModelEvaluationsResponse.next_page_token} of the previous
+ *   {@link google.cloud.automl.v1.AutoMl.ListModelEvaluations|AutoMl.ListModelEvaluations} call.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Object}
+ *   An iterable Object that conforms to @link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols.
+ */
+  listModelEvaluationsAsync(
+      request?: protos.google.cloud.automl.v1.IListModelEvaluationsRequest,
+      options?: gax.CallOptions):
+    AsyncIterable<protos.google.cloud.automl.v1.IModelEvaluation>{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      'parent': request.parent || '',
+    });
+    options = options || {};
+    const callSettings = new gax.CallSettings(options);
+    this.initialize();
+    return this.descriptors.page.listModelEvaluations.asyncIterate(
+      this.innerApiCalls['listModelEvaluations'] as GaxCall,
+      request as unknown as RequestType,
+      callSettings
+    ) as AsyncIterable<protos.google.cloud.automl.v1.IModelEvaluation>;
   }
   // --------------------
   // -- Path templates --
@@ -2262,13 +2122,8 @@ export class AutoMlClient {
    * @param {string} annotation_spec
    * @returns {string} Resource name string.
    */
-  annotationSpecPath(
-    project: string,
-    location: string,
-    dataset: string,
-    annotationSpec: string
-  ) {
-    return this._pathTemplates.annotationSpecPathTemplate.render({
+  annotationSpecPath(project:string,location:string,dataset:string,annotationSpec:string) {
+    return this.pathTemplates.annotationSpecPathTemplate.render({
       project,
       location,
       dataset,
@@ -2284,9 +2139,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromAnnotationSpecName(annotationSpecName: string) {
-    return this._pathTemplates.annotationSpecPathTemplate.match(
-      annotationSpecName
-    ).project;
+    return this.pathTemplates.annotationSpecPathTemplate.match(annotationSpecName).project;
   }
 
   /**
@@ -2297,9 +2150,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the location.
    */
   matchLocationFromAnnotationSpecName(annotationSpecName: string) {
-    return this._pathTemplates.annotationSpecPathTemplate.match(
-      annotationSpecName
-    ).location;
+    return this.pathTemplates.annotationSpecPathTemplate.match(annotationSpecName).location;
   }
 
   /**
@@ -2310,9 +2161,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the dataset.
    */
   matchDatasetFromAnnotationSpecName(annotationSpecName: string) {
-    return this._pathTemplates.annotationSpecPathTemplate.match(
-      annotationSpecName
-    ).dataset;
+    return this.pathTemplates.annotationSpecPathTemplate.match(annotationSpecName).dataset;
   }
 
   /**
@@ -2323,9 +2172,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the annotation_spec.
    */
   matchAnnotationSpecFromAnnotationSpecName(annotationSpecName: string) {
-    return this._pathTemplates.annotationSpecPathTemplate.match(
-      annotationSpecName
-    ).annotation_spec;
+    return this.pathTemplates.annotationSpecPathTemplate.match(annotationSpecName).annotation_spec;
   }
 
   /**
@@ -2336,8 +2183,8 @@ export class AutoMlClient {
    * @param {string} dataset
    * @returns {string} Resource name string.
    */
-  datasetPath(project: string, location: string, dataset: string) {
-    return this._pathTemplates.datasetPathTemplate.render({
+  datasetPath(project:string,location:string,dataset:string) {
+    return this.pathTemplates.datasetPathTemplate.render({
       project,
       location,
       dataset,
@@ -2352,7 +2199,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromDatasetName(datasetName: string) {
-    return this._pathTemplates.datasetPathTemplate.match(datasetName).project;
+    return this.pathTemplates.datasetPathTemplate.match(datasetName).project;
   }
 
   /**
@@ -2363,7 +2210,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the location.
    */
   matchLocationFromDatasetName(datasetName: string) {
-    return this._pathTemplates.datasetPathTemplate.match(datasetName).location;
+    return this.pathTemplates.datasetPathTemplate.match(datasetName).location;
   }
 
   /**
@@ -2374,7 +2221,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the dataset.
    */
   matchDatasetFromDatasetName(datasetName: string) {
-    return this._pathTemplates.datasetPathTemplate.match(datasetName).dataset;
+    return this.pathTemplates.datasetPathTemplate.match(datasetName).dataset;
   }
 
   /**
@@ -2384,8 +2231,8 @@ export class AutoMlClient {
    * @param {string} location
    * @returns {string} Resource name string.
    */
-  locationPath(project: string, location: string) {
-    return this._pathTemplates.locationPathTemplate.render({
+  locationPath(project:string,location:string) {
+    return this.pathTemplates.locationPathTemplate.render({
       project,
       location,
     });
@@ -2399,7 +2246,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromLocationName(locationName: string) {
-    return this._pathTemplates.locationPathTemplate.match(locationName).project;
+    return this.pathTemplates.locationPathTemplate.match(locationName).project;
   }
 
   /**
@@ -2410,8 +2257,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the location.
    */
   matchLocationFromLocationName(locationName: string) {
-    return this._pathTemplates.locationPathTemplate.match(locationName)
-      .location;
+    return this.pathTemplates.locationPathTemplate.match(locationName).location;
   }
 
   /**
@@ -2422,8 +2268,8 @@ export class AutoMlClient {
    * @param {string} model
    * @returns {string} Resource name string.
    */
-  modelPath(project: string, location: string, model: string) {
-    return this._pathTemplates.modelPathTemplate.render({
+  modelPath(project:string,location:string,model:string) {
+    return this.pathTemplates.modelPathTemplate.render({
       project,
       location,
       model,
@@ -2438,7 +2284,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromModelName(modelName: string) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).project;
+    return this.pathTemplates.modelPathTemplate.match(modelName).project;
   }
 
   /**
@@ -2449,7 +2295,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the location.
    */
   matchLocationFromModelName(modelName: string) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).location;
+    return this.pathTemplates.modelPathTemplate.match(modelName).location;
   }
 
   /**
@@ -2460,7 +2306,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the model.
    */
   matchModelFromModelName(modelName: string) {
-    return this._pathTemplates.modelPathTemplate.match(modelName).model;
+    return this.pathTemplates.modelPathTemplate.match(modelName).model;
   }
 
   /**
@@ -2472,13 +2318,8 @@ export class AutoMlClient {
    * @param {string} model_evaluation
    * @returns {string} Resource name string.
    */
-  modelEvaluationPath(
-    project: string,
-    location: string,
-    model: string,
-    modelEvaluation: string
-  ) {
-    return this._pathTemplates.modelEvaluationPathTemplate.render({
+  modelEvaluationPath(project:string,location:string,model:string,modelEvaluation:string) {
+    return this.pathTemplates.modelEvaluationPathTemplate.render({
       project,
       location,
       model,
@@ -2494,9 +2335,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromModelEvaluationName(modelEvaluationName: string) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).project;
+    return this.pathTemplates.modelEvaluationPathTemplate.match(modelEvaluationName).project;
   }
 
   /**
@@ -2507,9 +2346,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the location.
    */
   matchLocationFromModelEvaluationName(modelEvaluationName: string) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).location;
+    return this.pathTemplates.modelEvaluationPathTemplate.match(modelEvaluationName).location;
   }
 
   /**
@@ -2520,9 +2357,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the model.
    */
   matchModelFromModelEvaluationName(modelEvaluationName: string) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).model;
+    return this.pathTemplates.modelEvaluationPathTemplate.match(modelEvaluationName).model;
   }
 
   /**
@@ -2533,9 +2368,7 @@ export class AutoMlClient {
    * @returns {string} A string representing the model_evaluation.
    */
   matchModelEvaluationFromModelEvaluationName(modelEvaluationName: string) {
-    return this._pathTemplates.modelEvaluationPathTemplate.match(
-      modelEvaluationName
-    ).model_evaluation;
+    return this.pathTemplates.modelEvaluationPathTemplate.match(modelEvaluationName).model_evaluation;
   }
 
   /**
