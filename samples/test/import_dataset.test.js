@@ -69,7 +69,7 @@ describe('Automl Import Dataset Test', () => {
       [response.name.split('/').length - 1].split('\n')[0];
   });
 
-  it('should create, import, and delete a dataset', async () => {
+  it('should create, import, and delete a dataset', async function() {
     this.retries(5);
     await delay(this.test);
     const projectId = await client.getProjectId();
