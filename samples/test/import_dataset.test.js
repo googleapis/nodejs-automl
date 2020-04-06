@@ -15,7 +15,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const {describe, it, before, after} = require('mocha');
+const {describe, it, before} = require('mocha');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
@@ -25,6 +25,7 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const IMPORT_DATASET_REGION_TAG = 'import_dataset';
 const LOCATION = 'us-central1';
+const TWENTY_MINUTES_IN_SECONDS = 60 * 20;
 
 // If two suites of tests are running parallel, importing and creating
 // datasets can fail, with:
@@ -44,7 +45,44 @@ describe('Automl Import Dataset Test', () => {
   const client = new AutoMlClient();
   let datasetId;
 
-  before('should create a dataset', async function() {
+  before(async () => {
+    await cleanupOldDatasets();
+  });
+
+  async function cleanupOldDatasets() {
+    const projectId = await client.getProjectId();
+    let request = {
+      parent: client.locationPath(projectId, LOCATION),
+      filter: 'translation_dataset_metadata:*',
+    };
+    const [response] = await client.listDatasets(request);
+    for (const dataset of response) {
+      try {
+        const id = dataset.name
+          .split('/')
+          [response.name.split('/').length - 1].split('\n')[0];
+        console.info(`checking dataset ${id}`);
+        if (id.match(/test_[0-9a-f]{8}/)) {
+          console.info(`deleting dataset ${id}`);
+          if (
+            dataset.createTime.seconds - Date.now() / 1000 >
+            TWENTY_MINUTES_IN_SECONDS
+          ) {
+            console.info(`dataset ${id} is greater than 20 minutes old`);
+            request = {
+              name: client.datasetPath(projectId, LOCATION, id),
+            };
+            const [operation] = await client.deleteDataset(request);
+            await operation.promise();
+          }
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  }
+
+  it('should create a dataset', async function() {
     this.retries(5);
     await delay(this.test);
     const projectId = await client.getProjectId();
@@ -69,7 +107,7 @@ describe('Automl Import Dataset Test', () => {
       [response.name.split('/').length - 1].split('\n')[0];
   });
 
-  it('should create, import, and delete a dataset', async function() {
+  it('should import dataset', async function() {
     this.retries(5);
     await delay(this.test);
     const projectId = await client.getProjectId();
@@ -80,16 +118,14 @@ describe('Automl Import Dataset Test', () => {
     assert.match(import_output, /Dataset imported/);
   });
 
-  after('delete created dataset', async () => {
+  it('should delete created dataset', async () => {
+    this.retries(5);
+    await delay(this.test);
     const projectId = await client.getProjectId();
     const request = {
       name: client.datasetPath(projectId, LOCATION, datasetId),
     };
-    try {
-      const [operation] = await client.deleteDataset(request);
-      await operation.promise();
-    } catch (err) {
-      console.error(err);
-    }
+    const [operation] = await client.deleteDataset(request);
+    await operation.promise();
   });
 });
