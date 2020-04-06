@@ -118,7 +118,7 @@ describe('Automl Import Dataset Test', () => {
     assert.match(import_output, /Dataset imported/);
   });
 
-  it('should delete created dataset', async () => {
+  it('should delete created dataset', async function() {
     this.retries(5);
     await delay(this.test);
     const projectId = await client.getProjectId();
