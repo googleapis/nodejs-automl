@@ -26,11 +26,27 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const IMPORT_DATASET_REGION_TAG = 'import_dataset';
 const LOCATION = 'us-central1';
 
+// If two suites of tests are running parallel, importing and creating
+// datasets can fail, with:
+// No other operations should be working on projects/1046198160504/*.
+const delay = async test => {
+  const retries = test.currentRetry();
+  if (retries === 0) return; // no retry on the first failure.
+  // see: https://cloud.google.com/storage/docs/exponential-backoff:
+  const ms = Math.pow(2, retries) * 1000 + Math.random() * 2000;
+  return new Promise(done => {
+    console.info(`retrying "${test.title}" in ${ms}ms`);
+    setTimeout(done, ms);
+  });
+};
+
 describe('Automl Import Dataset Test', () => {
   const client = new AutoMlClient();
   let datasetId;
 
-  before('should create a dataset', async () => {
+  before('should create a dataset', async function() {
+    this.retries(5);
+    await delay(this.test);
     const projectId = await client.getProjectId();
     const displayName = `test_${uuid
       .v4()
@@ -54,6 +70,8 @@ describe('Automl Import Dataset Test', () => {
   });
 
   it('should create, import, and delete a dataset', async () => {
+    this.retries(5);
+    await delay(this.test);
     const projectId = await client.getProjectId();
     const data = `gs://${projectId}-automl-translate/en-ja-short.csv`;
     const import_output = execSync(
@@ -67,7 +85,11 @@ describe('Automl Import Dataset Test', () => {
     const request = {
       name: client.datasetPath(projectId, LOCATION, datasetId),
     };
-    const [operation] = await client.deleteDataset(request);
-    await operation.promise();
+    try {
+      const [operation] = await client.deleteDataset(request);
+      await operation.promise();
+    } catch (err) {
+      console.error(err);
+    }
   });
 });
