@@ -28,7 +28,7 @@ const LOCATION = 'us-central1';
 
 // If two suites of tests are running parallel, importing and creating
 // datasets can fail, with:
-// model operation is running on the model: projects/1046198160504/*
+// "Another DEPLOY model operation is running on the model".
 const delay = async test => {
   const retries = test.currentRetry();
   if (retries === 0) return; // no retry on the first failure.
