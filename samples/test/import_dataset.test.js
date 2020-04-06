@@ -60,7 +60,7 @@ describe('Automl Import Dataset Test', () => {
       try {
         const id = dataset.name
           .split('/')
-          [response.name.split('/').length - 1].split('\n')[0];
+          [dataset.name.split('/').length - 1].split('\n')[0];
         console.info(`checking dataset ${id}`);
         if (id.match(/test_[0-9a-f]{8}/)) {
           console.info(`deleting dataset ${id}`);
