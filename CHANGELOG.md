@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/automl?activeTab=versions
 
+### [2.0.1](https://www.github.com/googleapis/nodejs-automl/compare/v2.0.0...v2.0.1) (2020-05-01)
+
+
+### Bug Fixes
+
+* remove eslint, update gax, fix generated protos, run the generator ([#377](https://www.github.com/googleapis/nodejs-automl/issues/377)) ([7889f29](https://www.github.com/googleapis/nodejs-automl/commit/7889f29cb2ebaf0ac96d68cd9ca1f74122449fcd))
+
 ## [2.0.0](https://www.github.com/googleapis/nodejs-automl/compare/v1.11.0...v2.0.0) (2020-04-07)
 
 
