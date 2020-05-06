@@ -9,14 +9,6 @@
     },
     {
       "git": {
-        "name": "googleapis",
-        "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "4bef0001ac7040431ea24b6187424fdec9c08b1b",
-        "internalRef": "309990843"
-      }
-    },
-    {
-      "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
         "sha": "ab883569eb0257bbf16a6d825fd018b3adde3912"
