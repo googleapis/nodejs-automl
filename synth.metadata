@@ -4,22 +4,22 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-automl.git",
-        "sha": "73c802577a5ed762e0bd285c6305d596f92f9550"
+        "sha": "a35606438799b2ad25d6bd0ed84691a28e0a00d6"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "371206424e6db4df2cb3734bb1013dcaac9dbe4b",
-        "internalRef": "308716969"
+        "sha": "2fc2caaacb15949c7f80426bfc7dafdd41dbc333",
+        "internalRef": "310239576"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "19465d3ec5e5acdb01521d8f3bddd311bcbee28d"
+        "sha": "be74d3e532faa47eb59f1a0eaebde0860d1d8ab4"
       }
     }
   ],
@@ -28,7 +28,7 @@
       "client": {
         "source": "googleapis",
         "apiName": "automl",
-        "apiVersion": "v1beta1",
+        "apiVersion": "v1",
         "language": "typescript",
         "generator": "gapic-generator-typescript"
       }
@@ -37,7 +37,7 @@
       "client": {
         "source": "googleapis",
         "apiName": "automl",
-        "apiVersion": "v1",
+        "apiVersion": "v1beta1",
         "language": "typescript",
         "generator": "gapic-generator-typescript"
       }
