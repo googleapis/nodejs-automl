@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 /**
  * Copyright 2019 Google LLC
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,7 @@
 
 'use strict';
 
-const {assert, expect} = require('chai');
+const {assert} = require('chai');
 const {describe, it} = require('mocha');
 const proxyquire = require('proxyquire');
 
@@ -62,22 +63,21 @@ describe('Tables PredictionAPI', () => {
       {stringValue: 'unknown'}, // POutcome
     ];
 
-    const payload = samples.predict.runSample(
+    const payload = await samples.predict.main(
       projectId,
       region,
       modelId,
       inputs
     );
-    payload.then(result => {
-      assert(result);
-      expect(result).to.include.keys('payload');
-    });
+
+    assert(payload);
+    assert.ok(payload.hasOwnProperty('payload'));
   });
 
   it.skip(`should perform batch prediction using GCS as source and
     GCS as destination`, async () => {
     // Run batch prediction using GCS as source and GCS as destination
-    const operation = samples.predictGcs.runSample(
+    const operation = samples.predictGcs.main(
       projectId,
       region,
       modelId,
@@ -90,7 +90,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using BQ as source and
     GCS as destination`, async () => {
     //  Run batch prediction using BQ as source and GCS as destination
-    const output = samples.predictBq.runSample(
+    const output = samples.predictBq.main(
       projectId,
       region,
       modelId,
@@ -103,7 +103,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using GCS as source and
     BQ as destination`, async () => {
     // Run batch prediction using GCS as source and BQ as destination
-    const output = samples.predictBq.runSample(
+    const output = samples.predictBq.main(
       projectId,
       region,
       modelId,
@@ -117,7 +117,7 @@ describe('Tables PredictionAPI', () => {
   it.skip(`should perform batch prediction using BQ as source and
     BQ as destination`, async () => {
     // Run batch prediction using BQ as source and BQ as destination
-    const output = samples.predictBq.runSample(
+    const output = samples.predictBq.main(
       projectId,
       region,
       modelId,

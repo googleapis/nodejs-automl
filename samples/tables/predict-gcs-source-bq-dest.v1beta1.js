@@ -14,7 +14,7 @@
 
 'use strict';
 
-function runSample(
+function main(
   projectId = 'YOUR_GCP_PROJECT_ID',
   computeRegion = 'REGION',
   modelId = 'MODEL_ID',
@@ -58,23 +58,25 @@ function runSample(
       },
     };
 
-    const responses = await automlClient.batchPredict({
+    const [, operation] = await automlClient.batchPredict({
       name: modelFullId,
       inputConfig: inputConfig,
       outputConfig: outputConfig,
     });
 
     // Get the latest state of long-running operation.
-    const operation = responses[1];
     console.log(`Operation name: ${operation.name}`);
   }
 
   batchPredict();
-
   // [END automl_tables_predict_using_gcs_source_and_bq_dest]
 }
 
-if (module === require.main) {
-  runSample().catch(console.error);
-}
-module.exports = runSample;
+main(...process.argv.slice(2)).catch(err => {
+  console.error(err.message);
+  process.exitCode = 1;
+});
+process.on('unhandledRejection', err => {
+  console.error(err.message);
+  process.exitCode = 1;
+});

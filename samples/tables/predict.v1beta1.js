@@ -13,7 +13,7 @@
 
 'use strict';
 
-function runSample(
+function main(
   projectId = 'YOUR_GCP_PROJECT_ID',
   computeRegion = 'REGION',
   modelId = 'YOUR_MODEL_ID',
@@ -80,12 +80,15 @@ function runSample(
       return response;
     }
   }
-
   return predict();
   // [END automl_tables_predict]
 }
 
-if (module === require.main) {
-  runSample().catch(console.error);
-}
-module.exports = runSample;
+main(...process.argv.slice(2)).catch(err => {
+  console.error(err.message);
+  process.exitCode = 1;
+});
+process.on('unhandledRejection', err => {
+  console.error(err.message);
+  process.exitCode = 1;
+});
