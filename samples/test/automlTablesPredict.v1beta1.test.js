@@ -15,74 +15,116 @@
 
 'use strict';
 
-const {assert} = require('chai');
+const {assert, expect} = require('chai');
 const {describe, it} = require('mocha');
-const {execSync} = require('child_process');
+const proxyquire = require('proxyquire');
 
 /** Tests for AutoML Tables "Prediction API" sample. */
 
-const cmdPredict = 'node automlTablesPrediction.js';
-
-// // TODO(developer): Before running the test cases, set the environment
-// variables PROJECT_ID, REGION_NAME and
-// change modelId, gcsInputUri, gcsOutputUriPrefix, bqInputUri and
-// bqOutputUriPrefix.
-//const projectId = process.env.PROJECT_ID;
-//const computeRegion = process.env.REGION_NAME;
-const modelId = 'TBL3613734080685801472';
-const filePath = './resource/predictTest.csv';
-const gcsInputUri = 'gs://automl-tables/input/test.csv';
-const gcsOutputUriPrefix = 'gs://automl-tables/output';
+const projectId = process.env.AUTOML_PROJECT_ID;
+const region = 'us-central1';
+const modelId = process.env.TABLE_MODEL_ID;
+const gcsInputUri = `gs://${projectId}-tables/predictTest.csv`;
+const gcsOutputUriPrefix = `gs://${projectId}-tables/test_outputs/`;
 const bqInputUri = 'bq://automl-tables-bg-input';
 const bqOutputUriPrefix = 'bq://automl-tables-bg-output';
 
-const exec = cmd => execSync(cmd, {encoding: 'utf8'});
+const pathStub = {};
+
+const samples = {
+  predict: {path: '../tables/predict.v1beta1.js'},
+  predictGcs: {path: '../tables/predict-gcs-source-gcs-dest.v1beta1.js'},
+  predictBq: {path: '../tables/predict-gcs-source-bq-dest.v1beta1.js'},
+};
+
+for (const sample of Object.values(samples)) {
+  sample.runSample = proxyquire(sample.path, {path: pathStub});
+}
 
 describe('Tables PredictionAPI', () => {
-  it.skip('should perform single prediction', async () => {
-    // Run single prediction on predictTest.csv in resource folder
-    const output = exec(`${cmdPredict} predict "${modelId}" "${filePath}"`);
-    assert.match(output, /Prediction results:/);
-    assert.match(output, /Features of top importance:/);
+  it('should perform single prediction', async () => {
+    const inputs = [
+      {numberValue: 39}, // Age
+      {stringValue: 'technician'}, // Job
+      {stringValue: 'married'}, // MaritalStatus
+      {stringValue: 'secondary'}, // Education
+      {stringValue: 'no'}, // Default
+      {numberValue: 52}, // Balance
+      {stringValue: 'no'}, // Housing
+      {stringValue: 'no'}, // Loan
+      {stringValue: 'cellular'}, // Contact
+      {numberValue: 12}, // Day
+      {stringValue: 'aug'}, // Month
+      {numberValue: 96}, // Duration
+      {numberValue: 2}, //Campaign
+      {numberValue: -1}, // PDays
+      {numberValue: 0}, // Previous
+      {stringValue: 'unknown'}, // POutcome
+    ];
+
+    const payload = samples.predict.runSample(
+      projectId,
+      region,
+      modelId,
+      inputs
+    );
+    payload.then(result => {
+      assert(result);
+      expect(result).to.include.keys('payload');
+    });
   });
 
   it.skip(`should perform batch prediction using GCS as source and
     GCS as destination`, async () => {
     // Run batch prediction using GCS as source and GCS as destination
-    const output = exec(
-      `${cmdPredict} predict-using-gcs-source-and-gcs-dest "${modelId}"` +
-        ` "${gcsInputUri}" "${gcsOutputUriPrefix}"`
+    const operation = samples.predictGcs.runSample(
+      projectId,
+      region,
+      modelId,
+      gcsInputUri,
+      gcsOutputUriPrefix
     );
-    assert.match(output, /Operation name:/);
+    assert(operation);
   });
 
   it.skip(`should perform batch prediction using BQ as source and
     GCS as destination`, async () => {
     //  Run batch prediction using BQ as source and GCS as destination
-    const output = exec(
-      `${cmdPredict} predict-using-bq-source-and-gcs-dest "${modelId}"` +
-        ` "${bqInputUri}" "${gcsOutputUriPrefix}"`
+    const output = samples.predictBq.runSample(
+      projectId,
+      region,
+      modelId,
+      bqInputUri,
+      gcsOutputUriPrefix
     );
-    assert.match(output, /Operation name:/);
+    assert(output);
   });
 
   it.skip(`should perform batch prediction using GCS as source and
     BQ as destination`, async () => {
     // Run batch prediction using GCS as source and BQ as destination
-    const output = exec(
-      `${cmdPredict} predict-using-gcs-source-and-bq-dest "${modelId}"` +
-        ` "${gcsInputUri}" "${bqOutputUriPrefix}"`
+    const output = samples.predictBq.runSample(
+      projectId,
+      region,
+      modelId,
+      gcsInputUri,
+      bqOutputUriPrefix
     );
-    assert.match(output, /Operation name:/);
+
+    assert(output);
   });
 
   it.skip(`should perform batch prediction using BQ as source and
     BQ as destination`, async () => {
     // Run batch prediction using BQ as source and BQ as destination
-    const output = exec(
-      `${cmdPredict} predict-using-bq-source-and-bq-dest "${modelId}"` +
-        ` "${bqInputUri}" "${bqOutputUriPrefix}"`
+    const output = samples.predictBq.runSample(
+      projectId,
+      region,
+      modelId,
+      bqInputUri,
+      bqOutputUriPrefix
     );
-    assert.match(output, /Operation name:/);
+
+    assert(output);
   });
 });

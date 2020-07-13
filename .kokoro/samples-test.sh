@@ -22,6 +22,9 @@ export NPM_CONFIG_PREFIX=/home/node/.npm-global
 export GOOGLE_APPLICATION_CREDENTIALS=${KOKORO_GFILE_DIR}/service-account.json
 export GCLOUD_PROJECT=long-door-651
 
+# Setup env vars for AutoML tests
+source "${KOKORO_GFILE_DIR}/automl_secrets.txt"
+
 cd $(dirname $0)/..
 
 # Run a pre-test hook, if a pre-samples-test.sh is in the project
