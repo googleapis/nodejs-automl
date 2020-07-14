@@ -13,7 +13,7 @@
 
 'use strict';
 
-function main(
+async function main(
   projectId = 'YOUR_GCP_PROJECT_ID',
   computeRegion = 'REGION',
   modelId = 'YOUR_MODEL_ID',
@@ -38,6 +38,8 @@ function main(
 
   // Get the full path of the model.
   const modelFullId = automlClient.modelPath(projectId, computeRegion, modelId);
+
+  inputs = JSON.parse(inputs);
 
   async function predict() {
     // Set the payload by giving the row values.
@@ -77,10 +79,9 @@ function main(
       // Print top 10 important features
       console.log('Features of top importance');
       console.log(featureList.slice(0, 10));
-      return response;
     }
   }
-  return predict();
+  predict();
   // [END automl_tables_predict]
 }
 

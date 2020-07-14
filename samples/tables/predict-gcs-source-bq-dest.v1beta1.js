@@ -14,7 +14,7 @@
 
 'use strict';
 
-function main(
+async function main(
   projectId = 'YOUR_GCP_PROJECT_ID',
   computeRegion = 'REGION',
   modelId = 'MODEL_ID',

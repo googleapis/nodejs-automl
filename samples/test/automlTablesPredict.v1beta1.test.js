@@ -1,4 +1,3 @@
-/* eslint-disable no-prototype-builtins */
 /**
  * Copyright 2019 Google LLC
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +17,7 @@
 
 const {assert} = require('chai');
 const {describe, it} = require('mocha');
-const proxyquire = require('proxyquire');
+const {execSync} = require('child_process');
 
 /** Tests for AutoML Tables "Prediction API" sample. */
 
@@ -30,17 +29,7 @@ const gcsOutputUriPrefix = `gs://${projectId}-tables/test_outputs/`;
 const bqInputUri = 'bq://automl-tables-bg-input';
 const bqOutputUriPrefix = 'bq://automl-tables-bg-output';
 
-const pathStub = {};
-
-const samples = {
-  predict: {path: '../tables/predict.v1beta1.js'},
-  predictGcs: {path: '../tables/predict-gcs-source-gcs-dest.v1beta1.js'},
-  predictBq: {path: '../tables/predict-gcs-source-bq-dest.v1beta1.js'},
-};
-
-for (const sample of Object.values(samples)) {
-  sample.runSample = proxyquire(sample.path, {path: pathStub});
-}
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 describe('Tables PredictionAPI', () => {
   it('should perform single prediction', async () => {
@@ -63,68 +52,51 @@ describe('Tables PredictionAPI', () => {
       {stringValue: 'unknown'}, // POutcome
     ];
 
-    const payload = await samples.predict.main(
-      projectId,
-      region,
-      modelId,
-      inputs
+    const output = exec(
+      `node tables/predict.v1beta1.js "${projectId}" "${region}" "${modelId}" '${JSON.stringify(
+        inputs
+      )}'`
     );
 
-    assert(payload);
-    assert.ok(payload.hasOwnProperty('payload'));
+    assert.include(output, 'Prediction results:');
   });
 
-  it.skip(`should perform batch prediction using GCS as source and
+  it(`should perform batch prediction using GCS as source and
     GCS as destination`, async () => {
     // Run batch prediction using GCS as source and GCS as destination
-    const operation = samples.predictGcs.main(
-      projectId,
-      region,
-      modelId,
-      gcsInputUri,
-      gcsOutputUriPrefix
+    const output = exec(
+      `node tables/predict-gcs-source-gcs-dest.v1beta1.js "${projectId}" "${region}" "${modelId}" "${gcsInputUri}" "${gcsOutputUriPrefix}"`
     );
-    assert(operation);
+    assert.include(output, 'Operation name:');
   });
 
   it.skip(`should perform batch prediction using BQ as source and
     GCS as destination`, async () => {
     //  Run batch prediction using BQ as source and GCS as destination
-    const output = samples.predictBq.main(
-      projectId,
-      region,
-      modelId,
-      bqInputUri,
-      gcsOutputUriPrefix
+    const output = exec(
+      `node tables/predict-gcs-source-bq-dest.v1beta1.js predict-using-bq-source-and-gcs-dest "${modelId}"` +
+        ` "${bqInputUri}" "${gcsOutputUriPrefix}"`
     );
-    assert(output);
+    assert.match(output, /Operation name:/);
   });
 
-  it.skip(`should perform batch prediction using GCS as source and
+  it(`should perform batch prediction using GCS as source and
     BQ as destination`, async () => {
     // Run batch prediction using GCS as source and BQ as destination
-    const output = samples.predictBq.main(
-      projectId,
-      region,
-      modelId,
-      gcsInputUri,
-      bqOutputUriPrefix
+    const output = exec(
+      `node tables/predict-gcs-source-bq-dest.v1beta1.js "${projectId}" "${region}" "${modelId}" ` +
+        ` "${gcsInputUri}" "${bqOutputUriPrefix}"`
     );
-
-    assert(output);
+    assert.include(output, 'Operation name:');
   });
 
   it.skip(`should perform batch prediction using BQ as source and
     BQ as destination`, async () => {
     // Run batch prediction using BQ as source and BQ as destination
-    const output = samples.predictBq.main(
-      projectId,
-      region,
-      modelId,
-      bqInputUri,
-      bqOutputUriPrefix
+    const output = exec(
+      `node tables/predict-gcs-source-bq-dest.v1beta1.js predict-using-bq-source-and-bq-dest "${modelId}"` +
+        ` "${bqInputUri}" "${bqOutputUriPrefix}"`
     );
-
-    assert(output);
+    assert.match(output, /Operation name:/);
   });
 });
