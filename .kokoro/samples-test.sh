@@ -22,6 +22,11 @@ export NPM_CONFIG_PREFIX=/home/node/.npm-global
 export GOOGLE_APPLICATION_CREDENTIALS=${KOKORO_GFILE_DIR}/service-account.json
 export GCLOUD_PROJECT=long-door-651
 
+# The following text file includes env vars of the automl centralized project
+# (which removes duplicate work all languages, and reduce mgmt of resources) for
+# AutoML tables, vision, translate, video intelligence, and so on.
+source "${KOKORO_GFILE_DIR}/automl_secrets.txt"
+
 cd $(dirname $0)/..
 
 # Run a pre-test hook, if a pre-samples-test.sh is in the project
