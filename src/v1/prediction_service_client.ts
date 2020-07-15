@@ -28,7 +28,7 @@ import * as path from 'path';
 
 import * as protos from '../../protos/protos';
 import * as gapicConfig from './prediction_service_client_config.json';
-
+import {operationsProtos} from 'google-gax';
 const version = require('../../../package.json').version;
 
 /**
@@ -100,16 +100,20 @@ export class PredictionServiceClient {
     }
     opts.servicePath = opts.servicePath || servicePath;
     opts.port = opts.port || port;
+
+    // users can override the config from client side, like retry codes name.
+    // The detailed structure of the clientConfig can be found here: https://github.com/googleapis/gax-nodejs/blob/master/src/gax.ts#L546
+    // The way to override client config for Showcase API:
+    //
+    // const customConfig = {"interfaces": {"google.showcase.v1beta1.Echo": {"methods": {"Echo": {"retry_codes_name": "idempotent", "retry_params_name": "default"}}}}}
+    // const showcaseClient = new showcaseClient({ projectId, customConfig });
     opts.clientConfig = opts.clientConfig || {};
 
-    const isBrowser = typeof window !== 'undefined';
-    if (isBrowser) {
-      opts.fallback = true;
-    }
-    // If we are in browser, we are already using fallback because of the
-    // "browser" field in package.json.
-    // But if we were explicitly requested to use fallback, let's do it now.
-    this._gaxModule = !isBrowser && opts.fallback ? gax.fallback : gax;
+    // If we're running in browser, it's OK to omit `fallback` since
+    // google-gax has `browser` field in its `package.json`.
+    // For Electron (which does not respect `browser` field),
+    // pass `{fallback: true}` to the PredictionServiceClient constructor.
+    this._gaxModule = opts.fallback ? gax.fallback : gax;
 
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
@@ -358,42 +362,38 @@ export class PredictionServiceClient {
    * returned in the response.
    * Available for following ML scenarios, and their expected request payloads:
    *
-   * <table>
-   * <tr>
-   * <td>AutoML Vision Classification</td>
-   * <td>An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.</td>
-   * </tr>
-   * <tr>
-   * <td>AutoML Vision Object Detection</td>
-   * <td>An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.</td>
-   * </tr>
-   * <tr>
-   * <td>AutoML Natural Language Classification</td>
-   * <td>A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in
-   * .PDF, .TIF or .TIFF format with size upto 2MB.</td>
-   * </tr>
-   * <tr>
-   * <td>AutoML Natural Language Entity Extraction</td>
-   * <td>A TextSnippet up to 10,000 characters, UTF-8 NFC encoded or a document
-   *  in .PDF, .TIF or .TIFF format with size upto 20MB.</td>
-   * </tr>
-   * <tr>
-   * <td>AutoML Natural Language Sentiment Analysis</td>
-   * <td>A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in
-   * .PDF, .TIF or .TIFF format with size upto 2MB.</td>
-   * </tr>
-   * <tr>
-   * <td>AutoML Translation</td>
-   * <td>A TextSnippet up to 25,000 characters, UTF-8 encoded.</td>
-   * </tr>
-   * <tr>
-   * <td>AutoML Tables</td>
-   * <td>A row with column values matching
+   * AutoML Vision Classification
+   *
+   * * An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.
+   *
+   * AutoML Vision Object Detection
+   *
+   * * An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.
+   *
+   * AutoML Natural Language Classification
+   *
+   * * A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in
+   * .PDF, .TIF or .TIFF format with size upto 2MB.
+   *
+   * AutoML Natural Language Entity Extraction
+   *
+   * * A TextSnippet up to 10,000 characters, UTF-8 NFC encoded or a document
+   *  in .PDF, .TIF or .TIFF format with size upto 20MB.
+   *
+   * AutoML Natural Language Sentiment Analysis
+   *
+   * * A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in
+   * .PDF, .TIF or .TIFF format with size upto 2MB.
+   *
+   * AutoML Translation
+   *
+   * * A TextSnippet up to 25,000 characters, UTF-8 encoded.
+   *
+   * AutoML Tables
+   *
+   * * A row with column values matching
    *   the columns of the model, up to 5MB. Not available for FORECASTING
    *   `prediction_type`.
-   * </td>
-   * </tr>
-   * </table>
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -406,14 +406,14 @@ export class PredictionServiceClient {
    *   Additional domain-specific parameters, any string must be up to 25000
    *   characters long.
    *
-   *   <h4>AutoML Vision Classification</h4>
+   *   AutoML Vision Classification
    *
    *   `score_threshold`
    *   : (float) A value from 0.0 to 1.0. When the model
    *     makes predictions for an image, it will only produce results that have
    *     at least this confidence score. The default is 0.5.
    *
-   *   <h4>AutoML Vision Object Detection</h4>
+   *   AutoML Vision Object Detection
    *
    *   `score_threshold`
    *   : (float) When Model detects objects on the image,
@@ -425,7 +425,7 @@ export class PredictionServiceClient {
    *     boxes returned. The default is 100. The
    *     number of returned bounding boxes might be limited by the server.
    *
-   *   <h4>AutoML Tables</h4>
+   *   AutoML Tables
    *
    *   `feature_importance`
    *   : (boolean) Whether
@@ -547,7 +547,7 @@ export class PredictionServiceClient {
    *   Additional domain-specific parameters for the predictions, any string must
    *   be up to 25000 characters long.
    *
-   *   <h4>AutoML Natural Language Classification</h4>
+   *   AutoML Natural Language Classification
    *
    *   `score_threshold`
    *   : (float) A value from 0.0 to 1.0. When the model
@@ -555,14 +555,14 @@ export class PredictionServiceClient {
    *     that have at least this confidence score. The default is 0.5.
    *
    *
-   *   <h4>AutoML Vision Classification</h4>
+   *   AutoML Vision Classification
    *
    *   `score_threshold`
    *   : (float) A value from 0.0 to 1.0. When the model
    *     makes predictions for an image, it will only produce results that
    *     have at least this confidence score. The default is 0.5.
    *
-   *   <h4>AutoML Vision Object Detection</h4>
+   *   AutoML Vision Object Detection
    *
    *   `score_threshold`
    *   : (float) When Model detects objects on the image,
@@ -573,7 +573,7 @@ export class PredictionServiceClient {
    *   : (int64) The maximum number of bounding
    *     boxes returned per image. The default is 100, the
    *     number of bounding boxes returned might be limited by the server.
-   *   <h4>AutoML Video Intelligence Classification</h4>
+   *   AutoML Video Intelligence Classification
    *
    *   `score_threshold`
    *   : (float) A value from 0.0 to 1.0. When the model
@@ -611,7 +611,7 @@ export class PredictionServiceClient {
    *     type, the quality of it depends on training data, but there are no
    *     metrics provided to describe that quality.
    *
-   *   <h4>AutoML Video Intelligence Object Tracking</h4>
+   *   AutoML Video Intelligence Object Tracking
    *
    *   `score_threshold`
    *   : (float) When Model detects objects on video frames,
@@ -682,6 +682,42 @@ export class PredictionServiceClient {
     });
     this.initialize();
     return this.innerApiCalls.batchPredict(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by the batchPredict() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkBatchPredictProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkBatchPredictProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.cloud.automl.v1.BatchPredictResult,
+      protos.google.cloud.automl.v1.OperationMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.batchPredict,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.cloud.automl.v1.BatchPredictResult,
+      protos.google.cloud.automl.v1.OperationMetadata
+    >;
   }
   // --------------------
   // -- Path templates --

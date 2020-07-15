@@ -28,7 +28,7 @@ import * as path from 'path';
 
 import * as protos from '../../protos/protos';
 import * as gapicConfig from './prediction_service_client_config.json';
-
+import {operationsProtos} from 'google-gax';
 const version = require('../../../package.json').version;
 
 /**
@@ -100,16 +100,20 @@ export class PredictionServiceClient {
     }
     opts.servicePath = opts.servicePath || servicePath;
     opts.port = opts.port || port;
+
+    // users can override the config from client side, like retry codes name.
+    // The detailed structure of the clientConfig can be found here: https://github.com/googleapis/gax-nodejs/blob/master/src/gax.ts#L546
+    // The way to override client config for Showcase API:
+    //
+    // const customConfig = {"interfaces": {"google.showcase.v1beta1.Echo": {"methods": {"Echo": {"retry_codes_name": "idempotent", "retry_params_name": "default"}}}}}
+    // const showcaseClient = new showcaseClient({ projectId, customConfig });
     opts.clientConfig = opts.clientConfig || {};
 
-    const isBrowser = typeof window !== 'undefined';
-    if (isBrowser) {
-      opts.fallback = true;
-    }
-    // If we are in browser, we are already using fallback because of the
-    // "browser" field in package.json.
-    // But if we were explicitly requested to use fallback, let's do it now.
-    this._gaxModule = !isBrowser && opts.fallback ? gax.fallback : gax;
+    // If we're running in browser, it's OK to omit `fallback` since
+    // google-gax has `browser` field in its `package.json`.
+    // For Electron (which does not respect `browser` field),
+    // pass `{fallback: true}` to the PredictionServiceClient constructor.
+    this._gaxModule = opts.fallback ? gax.fallback : gax;
 
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
@@ -639,6 +643,42 @@ export class PredictionServiceClient {
     });
     this.initialize();
     return this.innerApiCalls.batchPredict(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by the batchPredict() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkBatchPredictProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkBatchPredictProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.cloud.automl.v1beta1.BatchPredictResult,
+      protos.google.cloud.automl.v1beta1.OperationMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.batchPredict,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.cloud.automl.v1beta1.BatchPredictResult,
+      protos.google.cloud.automl.v1beta1.OperationMetadata
+    >;
   }
   // --------------------
   // -- Path templates --
