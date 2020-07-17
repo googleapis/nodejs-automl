@@ -3,8 +3,16 @@
     {
       "git": {
         "name": ".",
-        "remote": "git@github.com:googleapis/nodejs-automl.git",
-        "sha": "b74b206e1b627b00de5be54411cab94a5b86474c"
+        "remote": "https://github.com/googleapis/nodejs-automl.git",
+        "sha": "d7415321eac5ebc3007fd26aa1b303cd1596a1aa"
+      }
+    },
+    {
+      "git": {
+        "name": "googleapis",
+        "remote": "https://github.com/googleapis/googleapis.git",
+        "sha": "bb46f87724ddd2fd1ce9f9dcb71f147427775592",
+        "internalRef": "321696862"
       }
     },
     {
