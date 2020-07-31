@@ -34,11 +34,6 @@ async function main(
   const client = new AutoMlClient();
 
   async function cancelOperation() {
-    // Construct request
-    const request = {
-      name: operationFullId,
-    };
-
     client.operationsClient.cancelOperation({
       name: operationFullId.toString(),
     });
