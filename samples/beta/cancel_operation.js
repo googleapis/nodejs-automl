@@ -14,28 +14,23 @@
 
 'use strict';
 
-async function main(
-  operationFullId = 'projects/YOUR_PROJECT_ID/locations/YOUR_LOCATIOIN/operations/OPERATION_ID'
-) {
+async function main(operationFullId) {
   // [START automl_cancel_operation_beta]
 
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
-  // const projectId = 'YOUR_PROJECT_ID';
-  // const location = 'us-central1';
-  // const datasetId = 'YOUR_DATASET_ID';
+  // const operationFullId = 'projects/YOUR_PROJECT_ID/locations/YOUR_LOCATIOIN/operations/OPERATION_ID';
 
   // Imports the Google Cloud AutoML library
   const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
-  console.log(operationFullId);
   // Instantiates a client
   const client = new AutoMlClient();
 
   async function cancelOperation() {
     client.operationsClient.cancelOperation({
-      name: operationFullId.toString(),
+      name: operationFullId,
     });
 
     // Wait for operation to complete.
