@@ -14,13 +14,13 @@
 
 'use strict';
 
-const {assert} = require('chai');
-const {after, describe, it} = require('mocha');
-const {AutoMlClient} = require('@google-cloud/automl').v1;
+const { assert } = require('chai');
+const { after, describe, it } = require('mocha');
+const { AutoMlClient } = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
+const execSync = cmd => cp.execSync(cmd, { encoding: 'utf-8' });
 
 const CREATE_MODEL_REGION_TAG = 'vision_classification_create_model';
 const LOCATION = 'us-central1';
@@ -30,7 +30,7 @@ describe('Automl Vision Classification Create Model Tests', () => {
   const client = new AutoMlClient();
   let operationId;
 
-  it('should create a model', async () => {
+  it.skip('should create a model', async () => {
     const projectId = await client.getProjectId();
     const create_output = execSync(
       `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} classification_test_create_model`
@@ -44,6 +44,6 @@ describe('Automl Vision Classification Create Model Tests', () => {
   });
 
   after('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({name: operationId});
+    await client.operationsClient.cancelOperation({ name: operationId });
   });
 });

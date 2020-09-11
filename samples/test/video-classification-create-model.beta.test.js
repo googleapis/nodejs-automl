@@ -14,13 +14,13 @@
 
 'use strict';
 
-const {assert} = require('chai');
-const {after, describe, it} = require('mocha');
-const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
+const { assert } = require('chai');
+const { after, describe, it } = require('mocha');
+const { AutoMlClient } = require('@google-cloud/automl').v1beta1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
+const execSync = cmd => cp.execSync(cmd, { encoding: 'utf-8' });
 
 const CREATE_MODEL_REGION_TAG = 'beta/video-classification-create-model';
 const LOCATION = 'us-central1';
@@ -30,7 +30,7 @@ describe('Automl Video Classification Create Model Test', () => {
   const client = new AutoMlClient();
   let operationId;
 
-  it('should create a model', async () => {
+  it.skip('should create a model', async () => {
     const projectId = await client.getProjectId();
     const create_output = execSync(
       `node ${CREATE_MODEL_REGION_TAG}.js ${projectId} ${LOCATION} ${DATASET_ID} video_test_create_model`
@@ -44,6 +44,6 @@ describe('Automl Video Classification Create Model Test', () => {
   });
 
   after('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({name: operationId});
+    await client.operationsClient.cancelOperation({ name: operationId });
   });
 });
