@@ -14,19 +14,19 @@
 
 'use strict';
 
-const { assert } = require('chai');
-const { describe, it, afterEach } = require('mocha');
-const { AutoMlClient } = require('@google-cloud/automl').v1;
+const {assert} = require('chai');
+const {describe, it, afterEach} = require('mocha');
+const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, { encoding: 'utf-8' });
+const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const CREATE_MODEL_REGION_TAG = 'translate_create_model';
 const LOCATION = 'us-central1';
 const DATASET_ID = 'TRL8522556519449886720';
 
-const { delay } = require('./util');
+const {delay} = require('./util');
 
 describe('Automl Translate Create Model Tests', () => {
   const client = new AutoMlClient();
@@ -49,6 +49,6 @@ describe('Automl Translate Create Model Tests', () => {
   });
 
   afterEach('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({ name: operationId });
+    await client.operationsClient.cancelOperation({name: operationId});
   });
 });

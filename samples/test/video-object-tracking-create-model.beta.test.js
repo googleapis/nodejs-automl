@@ -14,13 +14,13 @@
 
 'use strict';
 
-const { assert } = require('chai');
-const { after, describe, it } = require('mocha');
-const { AutoMlClient } = require('@google-cloud/automl').v1beta1;
+const {assert} = require('chai');
+const {after, describe, it} = require('mocha');
+const {AutoMlClient} = require('@google-cloud/automl').v1beta1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, { encoding: 'utf-8' });
+const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const CREATE_MODEL_REGION_TAG = 'beta/video-object-tracking-create-model';
 const LOCATION = 'us-central1';
@@ -44,6 +44,6 @@ describe('Automl Video Object Tracking Create Model Test', () => {
   });
 
   after('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({ name: operationId });
+    await client.operationsClient.cancelOperation({name: operationId});
   });
 });

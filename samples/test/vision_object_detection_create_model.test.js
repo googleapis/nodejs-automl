@@ -14,13 +14,13 @@
 
 'use strict';
 
-const { assert } = require('chai');
-const { after, describe, it } = require('mocha');
-const { AutoMlClient } = require('@google-cloud/automl').v1;
+const {assert} = require('chai');
+const {after, describe, it} = require('mocha');
+const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
 
-const execSync = cmd => cp.execSync(cmd, { encoding: 'utf-8' });
+const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const CREATE_MODEL_REGION_TAG = 'vision_object_detection_create_model';
 const LOCATION = 'us-central1';
@@ -44,6 +44,6 @@ describe('Automl Vision Object Detection Create Model Test', () => {
   });
 
   after('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({ name: operationId });
+    await client.operationsClient.cancelOperation({name: operationId});
   });
 });
