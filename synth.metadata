@@ -19,7 +19,7 @@
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "3a00b7fea8c4c83eaff8eb207f530a2e3e8e1de3"
+        "sha": "89d431fb2975fc4e0ed24995a6e6dfc8ff4c24fa"
       }
     }
   ],
@@ -66,8 +66,6 @@
     ".kokoro/continuous/node10/test.cfg",
     ".kokoro/continuous/node12/common.cfg",
     ".kokoro/continuous/node12/test.cfg",
-    ".kokoro/continuous/node8/common.cfg",
-    ".kokoro/continuous/node8/test.cfg",
     ".kokoro/docs.sh",
     ".kokoro/lint.sh",
     ".kokoro/populate-secrets.sh",
@@ -149,7 +147,7 @@
     "renovate.json",
     "samples/README.md",
     "samples/package.json",
-    "samples/package.json.3687668671",
+    "samples/package.json.1885641499",
     "src/index.ts",
     "src/v1/auto_ml_client.ts",
     "src/v1/auto_ml_client_config.json",
