@@ -19,7 +19,7 @@
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "21f1470ecd01424dc91c70f1a7c798e4e87d1eec"
+        "sha": "99c93fe09f8c1dca09dfc0301c8668e3a70dd796"
       }
     }
   ],
@@ -148,7 +148,7 @@
     "renovate.json",
     "samples/README.md",
     "samples/package.json",
-    "samples/package.json.4192084652",
+    "samples/package.json.3204617373",
     "src/index.ts",
     "src/v1/auto_ml_client.ts",
     "src/v1/auto_ml_client_config.json",
