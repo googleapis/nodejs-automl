@@ -19,7 +19,7 @@
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "2a5693326b1e708ea8464b4cb06ea2894691c365"
+        "sha": "21f1470ecd01424dc91c70f1a7c798e4e87d1eec"
       }
     }
   ],
@@ -76,6 +76,8 @@
     ".kokoro/presubmit/node12/common.cfg",
     ".kokoro/presubmit/node12/test.cfg",
     ".kokoro/publish.sh",
+    ".kokoro/release/docs-devsite.cfg",
+    ".kokoro/release/docs-devsite.sh",
     ".kokoro/release/docs.cfg",
     ".kokoro/release/docs.sh",
     ".kokoro/release/publish.cfg",
@@ -91,6 +93,7 @@
     "CONTRIBUTING.md",
     "LICENSE",
     "README.md",
+    "api-extractor.json",
     "linkinator.config.json",
     "protos/google/cloud/automl/v1/annotation_payload.proto",
     "protos/google/cloud/automl/v1/annotation_spec.proto",
