@@ -15,7 +15,7 @@
 'use strict';
 
 const {assert} = require('chai');
-const {after, describe, it} = require('mocha');
+const {describe, it} = require('mocha');
 const {AutoMlClient} = require('@google-cloud/automl').v1;
 
 const cp = require('child_process');
@@ -28,7 +28,6 @@ const DATASET_ID = 'IOD4700715673951666176';
 
 describe('Automl Vision Object Detection Create Model Test', () => {
   const client = new AutoMlClient();
-  let operationId;
 
   it.skip('should create a model', async () => {
     const projectId = await client.getProjectId();
@@ -37,13 +36,5 @@ describe('Automl Vision Object Detection Create Model Test', () => {
     );
 
     assert.match(create_output, /Training started/);
-
-    operationId = create_output
-      .split('Training operation name: ')[1]
-      .split('\n')[0];
-  });
-
-  after('cancel model training', async () => {
-    await client.operationsClient.cancelOperation({name: operationId});
   });
 });
