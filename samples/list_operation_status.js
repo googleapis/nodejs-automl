@@ -28,7 +28,6 @@ function main(projectId = 'YOUR_PROJECT_ID', location = 'us-central1') {
   // Instantiates a client
   const client = new AutoMlClient();
 
-  const count = 0;
   async function listOperationStatus() {
     // Construct request
     const request = {
@@ -47,7 +46,6 @@ function main(projectId = 'YOUR_PROJECT_ID', location = 'us-central1') {
   }
 
   listOperationStatus();
-
   // [END automl_list_operation_status]
 }
 
