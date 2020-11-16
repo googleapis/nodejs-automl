@@ -28,13 +28,12 @@ function main(projectId = 'YOUR_PROJECT_ID', location = 'us-central1') {
   // Instantiates a client
   const client = new AutoMlClient();
 
-  let count = 0;
+  const count = 0;
   async function listOperationStatus() {
     // Construct request
     const request = {
       name: client.locationPath(projectId, location),
-      filter: 'done=true',
-      pageSize: 10,
+      filter: '',
     };
 
     const [response] = await client.operationsClient.listOperations(request);
@@ -44,8 +43,6 @@ function main(projectId = 'YOUR_PROJECT_ID', location = 'us-central1') {
       console.log(`Name: ${operation.name}`);
       console.log('Operation details:');
       console.log(`${operation}`);
-      count++;
-      console.log(count);
     }
   }
 
