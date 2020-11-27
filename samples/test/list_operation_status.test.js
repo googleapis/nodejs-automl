@@ -34,6 +34,6 @@ describe('Automl List Operation Status Tests', () => {
     const list_output = execSync(
       `node ${LIST_OPERATION_STATUS_REGION_TAG}.js ${projectId} ${LOCATION} `
     );
-    assert.match(list_output, /Operation details/);
+    assert.match(list_output, /List of operation status:/);
   });
 });
