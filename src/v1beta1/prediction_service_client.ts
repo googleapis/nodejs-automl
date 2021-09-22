@@ -428,6 +428,10 @@ export class PredictionServiceClient {
    *   for more details and examples.
    * @example
    * const [response] = await client.predict(request);
+   *
+   * @example <caption>include:samples/generated/v1beta1/prediction_service.predict.js</caption>
+   * region_tag:automl_predict_sample
+   *
    */
   predict(
     request?: protos.google.cloud.automl.v1beta1.IPredictRequest,
@@ -611,6 +615,10 @@ export class PredictionServiceClient {
    * @example
    * const [operation] = await client.batchPredict(request);
    * const [response] = await operation.promise();
+   *
+   * @example <caption>include:samples/generated/v1beta1/prediction_service.batch_predict.js</caption>
+   * region_tag:automl_batch_predict_sample
+   *
    */
   batchPredict(
     request?: protos.google.cloud.automl.v1beta1.IBatchPredictRequest,
@@ -674,6 +682,10 @@ export class PredictionServiceClient {
    * console.log(decodedOperation.result);
    * console.log(decodedOperation.done);
    * console.log(decodedOperation.metadata);
+   *
+   * @example <caption>include:samples/generated/v1beta1/prediction_service.batch_predict.js</caption>
+   * region_tag:automl_batch_predict_sample
+   *
    */
   async checkBatchPredictProgress(
     name: string
