@@ -63,7 +63,7 @@ describe('Tables PredictionAPI', () => {
   });
 
   it(`should perform batch prediction using GCS as source and
-    GCS as destination`, async () => {
+    GCS as destination`, async function () {
     this.retries(5);
     await delay(this.test);
 
@@ -75,7 +75,7 @@ describe('Tables PredictionAPI', () => {
   });
 
   it.skip(`should perform batch prediction using BQ as source and
-    GCS as destination`, async () => {
+    GCS as destination`, async function () {
     this.retries(5);
     await delay(this.test);
 
@@ -88,7 +88,7 @@ describe('Tables PredictionAPI', () => {
   });
 
   it(`should perform batch prediction using GCS as source and
-    BQ as destination`, async () => {
+    BQ as destination`, async function () {
     this.retries(5);
     await delay(this.test);
 
@@ -101,7 +101,7 @@ describe('Tables PredictionAPI', () => {
   });
 
   it(`should perform batch prediction using BQ as source and
-    BQ as destination`, async () => {
+    BQ as destination`, async function () {
     this.retries(5);
     await delay(this.test);
 
