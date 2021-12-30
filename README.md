@@ -6,7 +6,6 @@
 
 
 [![npm version](https://img.shields.io/npm/v/@google-cloud/automl.svg)](https://www.npmjs.org/package/@google-cloud/automl)
-[![codecov](https://img.shields.io/codecov/c/github/googleapis/nodejs-automl/main.svg?style=flat)](https://codecov.io/gh/googleapis/nodejs-automl)
 
 
 
