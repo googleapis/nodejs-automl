@@ -13,5 +13,5 @@
   "api_id": "automl.googleapis.com",
   "codeowner_team": "@googleapis/ml-apis",
   "api_shortname": "automl",
-  "library_type": "GAPIC_AUTO"
+  "library_type": "GAPIC_COMBO"
 }
