@@ -17,7 +17,7 @@ async function main(
   projectId = 'YOUR_GCP_PROJECT_ID',
   computeRegion = 'REGION',
   modelId = 'YOUR_MODEL_ID',
-  inputs = '[{"numberValue": 1}, {"stringValue": "value"}]'
+  inputs = [{"numberValue": 1}, {"stringValue": "value"}]
 ) {
   // [START automl_tables_predict]
 
@@ -38,8 +38,6 @@ async function main(
 
   // Get the full path of the model.
   const modelFullId = automlClient.modelPath(projectId, computeRegion, modelId);
-
-  inputs = JSON.parse(inputs);
 
   async function predict() {
     // Set the payload by giving the row values.
