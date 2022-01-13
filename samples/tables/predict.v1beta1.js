@@ -31,7 +31,7 @@ async function main(
   // const projectId = '[PROJECT_ID]' e.g., "my-gcloud-project";
   // const computeRegion = '[REGION_NAME]' e.g., "us-central1";
   // const modelId = '[MODEL_ID]' e.g., "TBL000000000000";
-      // let inputs = JSON.stringify([{ numberValue: 1 }, { stringValue: 'value' }, { stringValue: 'value2' } ...])
+  // const inputs = [{ numberValue: 1 }, { stringValue: 'value' }, { stringValue: 'value2' } ...]
 
   const automl = require('@google-cloud/automl');
 
