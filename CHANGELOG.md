@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/automl?activeTab=versions
 
+### [2.5.3](https://github.com/googleapis/nodejs-automl/compare/v2.5.2...v2.5.3) (2022-05-09)
+
+
+### Bug Fixes
+
+* Add back java_multiple_files option to the text_sentiment.proto to match with the previous published version of text_sentiment proto ([20995db](https://github.com/googleapis/nodejs-automl/commit/20995db72854243213a6ffabcb188a52c9cef8f6))
+* proto field markdown comment for the display_name field in annotation_payload.proto to point the correct public v1/ version ([20995db](https://github.com/googleapis/nodejs-automl/commit/20995db72854243213a6ffabcb188a52c9cef8f6))
+
 ### [2.5.2](https://www.github.com/googleapis/nodejs-automl/compare/v2.5.1...v2.5.2) (2021-12-30)
 
 
