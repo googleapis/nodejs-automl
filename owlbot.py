@@ -16,5 +16,5 @@ import synthtool.languages.node as node
 
 node.owlbot_main(
     staging_excludes=['README.md', 'package.json'],
-    templates_excludes=['.kokoro/trampoline.sh']
+    templates_excludes=['.kokoro/trampoline.sh', '.kokoro/continuous/node12/samples-test.cfg', '.kokoro/presubmit/node12/samples-test.cfg']
 )

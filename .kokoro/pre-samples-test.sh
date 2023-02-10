@@ -14,5 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source $KOKORO_GFILE_DIR/secret_manager/long-door-651-kokoro-system-test-service-account
-
+source $KOKORO_GFILE_DIR/secret_manager/nodejs-automl-secrets
