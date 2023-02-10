@@ -15,4 +15,3 @@
 # limitations under the License.
 
 source $KOKORO_GFILE_DIR/secret_manager/nodejs-automl-secrets
-
