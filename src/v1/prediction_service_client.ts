@@ -513,7 +513,7 @@ export class PredictionServiceClient {
     [
       protos.google.cloud.automl.v1.IPredictResponse,
       protos.google.cloud.automl.v1.IPredictRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   predict(
@@ -551,7 +551,7 @@ export class PredictionServiceClient {
     [
       protos.google.cloud.automl.v1.IPredictResponse,
       protos.google.cloud.automl.v1.IPredictRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -705,7 +705,7 @@ export class PredictionServiceClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   batchPredict(
@@ -758,7 +758,7 @@ export class PredictionServiceClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};

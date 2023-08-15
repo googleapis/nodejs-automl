@@ -590,7 +590,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IDataset,
       protos.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getDataset(
@@ -628,7 +628,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IDataset,
       protos.google.cloud.automl.v1.IGetDatasetRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -674,7 +674,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IDataset,
       protos.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   updateDataset(
@@ -714,7 +714,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IDataset,
       protos.google.cloud.automl.v1.IUpdateDatasetRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -758,7 +758,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IAnnotationSpec,
       protos.google.cloud.automl.v1.IGetAnnotationSpecRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getAnnotationSpec(
@@ -804,7 +804,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IAnnotationSpec,
       protos.google.cloud.automl.v1.IGetAnnotationSpecRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -848,7 +848,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModel,
       protos.google.cloud.automl.v1.IGetModelRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getModel(
@@ -886,7 +886,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModel,
       protos.google.cloud.automl.v1.IGetModelRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -932,7 +932,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModel,
       protos.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   updateModel(
@@ -970,7 +970,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModel,
       protos.google.cloud.automl.v1.IUpdateModelRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1014,7 +1014,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModelEvaluation,
       protos.google.cloud.automl.v1.IGetModelEvaluationRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getModelEvaluation(
@@ -1060,7 +1060,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModelEvaluation,
       protos.google.cloud.automl.v1.IGetModelEvaluationRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1112,7 +1112,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   createDataset(
@@ -1165,7 +1165,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1252,7 +1252,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   deleteDataset(
@@ -1305,7 +1305,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1400,7 +1400,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   importData(
@@ -1453,7 +1453,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1540,7 +1540,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   exportData(
@@ -1593,7 +1593,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1682,7 +1682,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   createModel(
@@ -1735,7 +1735,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1822,7 +1822,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   deleteModel(
@@ -1875,7 +1875,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1972,7 +1972,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   deployModel(
@@ -2025,7 +2025,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2114,7 +2114,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   undeployModel(
@@ -2167,7 +2167,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2258,7 +2258,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   exportModel(
@@ -2311,7 +2311,7 @@ export class AutoMlClient {
         protos.google.cloud.automl.v1.IOperationMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2408,7 +2408,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IDataset[],
       protos.google.cloud.automl.v1.IListDatasetsRequest | null,
-      protos.google.cloud.automl.v1.IListDatasetsResponse
+      protos.google.cloud.automl.v1.IListDatasetsResponse,
     ]
   >;
   listDatasets(
@@ -2448,7 +2448,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IDataset[],
       protos.google.cloud.automl.v1.IListDatasetsRequest | null,
-      protos.google.cloud.automl.v1.IListDatasetsResponse
+      protos.google.cloud.automl.v1.IListDatasetsResponse,
     ]
   > | void {
     request = request || {};
@@ -2625,7 +2625,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModel[],
       protos.google.cloud.automl.v1.IListModelsRequest | null,
-      protos.google.cloud.automl.v1.IListModelsResponse
+      protos.google.cloud.automl.v1.IListModelsResponse,
     ]
   >;
   listModels(
@@ -2663,7 +2663,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModel[],
       protos.google.cloud.automl.v1.IListModelsRequest | null,
-      protos.google.cloud.automl.v1.IListModelsResponse
+      protos.google.cloud.automl.v1.IListModelsResponse,
     ]
   > | void {
     request = request || {};
@@ -2846,7 +2846,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModelEvaluation[],
       protos.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-      protos.google.cloud.automl.v1.IListModelEvaluationsResponse
+      protos.google.cloud.automl.v1.IListModelEvaluationsResponse,
     ]
   >;
   listModelEvaluations(
@@ -2892,7 +2892,7 @@ export class AutoMlClient {
     [
       protos.google.cloud.automl.v1.IModelEvaluation[],
       protos.google.cloud.automl.v1.IListModelEvaluationsRequest | null,
-      protos.google.cloud.automl.v1.IListModelEvaluationsResponse
+      protos.google.cloud.automl.v1.IListModelEvaluationsResponse,
     ]
   > | void {
     request = request || {};
